@@ -30,11 +30,12 @@ Depois acesse `http://localhost:8000`.
 
 ## Conteúdo a revisar
 
-- **Serviços**: a lista em `#servicos` usa nomes comuns de massoterapia
-  (Relaxante, Terapêutica, Drenagem Linfática, Modeladora, Reflexologia Podal,
-  Pedras Quentes) sem preço fixo. Ajuste para os serviços reais oferecidos.
-- **Avaliações**: a seção `#avaliacoes` linka para o perfil do Google Meu
-  Negócio em vez de citar depoimentos, já que não havia texto de avaliação
-  disponível no momento da criação da página.
+- **Serviços**: a lista em `#servicos` (Relaxante, Terapêutica, Drenagem
+  Linfática, Drenagem Pós-Operatória, Modeladora, Reflexologia Podal, Pedras
+  Quentes, Reiki) foi montada a partir de termos comuns de massoterapia e do
+  que aparece nas avaliações reais do Google. Sem preço fixo. Vale confirmar
+  com a Terezinha se a lista bate exatamente com o que ela oferece.
+- **Avaliações**: `#avaliacoes` traz 6 depoimentos reais extraídos do perfil
+  do Google Meu Negócio (5,0 ★, 28 avaliações), com link para ver todas.
 - **WhatsApp/endereço**: já preenchidos com os dados informados
   ((51) 98458-8761 — R. José de Alencar, 658/306, Menino Deus, Porto Alegre).
