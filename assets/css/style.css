@@ -173,7 +173,7 @@ address { font-style: normal; }
   flex-direction: column;
   justify-content: center;
   gap: 0;
-  padding: 100px 48px 100px max(24px, calc((100vw - var(--container-w)) / 2 + 24px));
+  padding: 100px 48px;
 }
 .hero-text .eyebrow { color: var(--sand); }
 .hero-text h1 { color: #fff; }
