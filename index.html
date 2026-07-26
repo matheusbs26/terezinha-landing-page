@@ -392,6 +392,12 @@
       link_url: whatsappLink.href,
       link_text: whatsappLink.textContent.trim() || whatsappLink.getAttribute('aria-label') || 'WhatsApp'
     });
+
+    gtag('event', 'conversion', {
+      send_to: 'AW-18025240124/C6WGCKnPhqQcELysjZND',
+      value: 1.0,
+      currency: 'BRL'
+    });
   });
 </script>
 <script src="assets/js/script.js"></script>
