@@ -38,4 +38,4 @@ Depois acesse `http://localhost:8000`.
 - **Avaliações**: `#avaliacoes` traz 6 depoimentos reais extraídos do perfil
   do Google Meu Negócio (5,0 ★, 28 avaliações), com link para ver todas.
 - **WhatsApp/endereço**: já preenchidos com os dados informados
-  ((51) 98458-8761 — R. José de Alencar, 658/306, Menino Deus, Porto Alegre).
+  ((51) 98958-2730 — R. José de Alencar, 658/306, Menino Deus, Porto Alegre).
