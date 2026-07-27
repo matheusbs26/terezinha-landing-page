@@ -27,6 +27,21 @@
     toggleFloat();
   }
 
+  // Google Ads conversion ("Contato - whats") on WhatsApp button clicks.
+  // The buttons open WhatsApp in a new tab, so this page stays alive and the
+  // event has time to send — no navigation callback needed, and hijacking
+  // window.location (as the default Google snippet does) would break the
+  // target="_blank" behaviour.
+  document.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
+    link.addEventListener("click", function () {
+      if (typeof gtag === "function") {
+        gtag("event", "conversion", {
+          send_to: "AW-18025240124/C6WGCKnPhqQcELysjZND"
+        });
+      }
+    });
+  });
+
   var revealEls = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window && revealEls.length) {
     var observer = new IntersectionObserver(
