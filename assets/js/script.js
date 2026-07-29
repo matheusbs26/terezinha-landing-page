@@ -28,17 +28,31 @@
   }
 
   // Google Ads conversion ("Contato - whats") on WhatsApp button clicks.
+  //
+  // This is the ONLY place the conversion is sent. There used to be a second
+  // copy inline in index.html, which meant every click counted twice and the
+  // two copies disagreed on the value. Keep it here — one listener, delegated
+  // from the document so links added later are covered too.
+  //
   // The buttons open WhatsApp in a new tab, so this page stays alive and the
   // event has time to send — no navigation callback needed, and hijacking
   // window.location (as the default Google snippet does) would break the
   // target="_blank" behaviour.
-  document.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
-    link.addEventListener("click", function () {
-      if (typeof gtag === "function") {
-        gtag("event", "conversion", {
-          send_to: "AW-18025240124/C6WGCKnPhqQcELysjZND"
-        });
-      }
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest && event.target.closest('a[href*="wa.me"]');
+    if (!link || typeof gtag !== "function") return;
+
+    // Read in the Google tag / GA4 reports: which button people actually use.
+    gtag("event", "whatsapp_click", {
+      link_url: link.href,
+      link_text:
+        link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp"
+    });
+
+    gtag("event", "conversion", {
+      send_to: "AW-18025240124/C6WGCKnPhqQcELysjZND",
+      value: 1.0,
+      currency: "BRL"
     });
   });
 
