@@ -1,5 +1,6 @@
 (function () {
-  document.getElementById("year").textContent = new Date().getFullYear();
+  var yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   var navToggle = document.getElementById("navToggle");
   var mainNav = document.getElementById("mainNav");
@@ -42,8 +43,17 @@
     var link = event.target.closest && event.target.closest('a[href*="wa.me"]');
     if (!link || typeof gtag !== "function") return;
 
+    // Qual técnica originou o clique: o data-service do próprio link (cards e
+    // botões das páginas de serviço) ou, na falta dele, o da página inteira.
+    // Serve para comparar no GA4 quais massagens da campanha geram contato.
+    var service =
+      link.getAttribute("data-service") ||
+      document.body.getAttribute("data-service") ||
+      "(geral)";
+
     // Read in the Google tag / GA4 reports: which button people actually use.
     gtag("event", "whatsapp_click", {
+      service: service,
       link_url: link.href,
       link_text:
         link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp"
