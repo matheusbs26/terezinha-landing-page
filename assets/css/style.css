@@ -222,6 +222,17 @@ address { font-style: normal; }
 }
 .hero-text .eyebrow { color: var(--sand); }
 .hero-text h1 { color: #fff; }
+
+/* Título de duas frases: a quebra fica sempre entre elas, em qualquer largura.
+   Diferente do <br> que existia aqui antes, que cortava uma frase única num
+   ponto que só funcionava numa tela.
+   A primeira linha é o estado em que a pessoa chega e a segunda o estado em que
+   sai — a diferença de tom faz a transformação acontecer na própria tipografia,
+   sem precisar de mais nenhum elemento. */
+.hero-headline .h1-antes,
+.hero-headline .h1-depois { display: block; }
+.hero-headline .h1-antes { color: rgba(247, 244, 238, 0.6); }
+.hero-headline .h1-depois { color: #fff; }
 .hero-sub { color: rgba(247,244,238,0.86); font-size: 1.08rem; max-width: 480px; }
 
 .hero-actions {
@@ -914,7 +925,7 @@ address { font-style: normal; }
      tela — sendo que quase todo o tráfego vem de anúncio no celular e o botão
      é a única conversão do site. Em 34vh o título, a prova social e o botão
      cabem juntos antes de qualquer rolagem. */
-  .hero-image { order: -1; height: 30vh; min-height: 196px; max-height: 300px; }
+  .hero-image { order: -1; height: 37vh; min-height: 240px; max-height: 340px; }
   /* Empilhado, a emenda com o painel passa a ser embaixo, não à esquerda. */
   .hero-image::before {
     background: linear-gradient(180deg, rgba(27, 26, 23, 0) 62%, rgba(27, 26, 23, 0.55) 88%, var(--ink) 100%);
@@ -943,9 +954,9 @@ address { font-style: normal; }
    o botão de WhatsApp cai 70px abaixo da dobra justamente nos aparelhos com
    menos espaço. */
 @media (max-width: 720px) and (max-height: 720px) {
-  .hero-image { height: 24vh; min-height: 148px; }
+  .hero-image { height: 30vh; min-height: 186px; }
   .hero-text { padding-top: 20px; }
-  .hero-text h1 { font-size: 1.78rem; }
+  .hero-text h1 { font-size: 1.9rem; }
   .hero-sub { font-size: 0.94rem; margin-bottom: 0; }
   .hero-text .hero-trust { margin-bottom: 16px; }
 }
