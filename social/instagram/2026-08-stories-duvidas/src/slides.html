@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Stories — Dúvidas</title>
+<style>
+  /* Mesma dupla tipográfica do carrossel, servida localmente. */
+  @font-face { font-family: "Poiret One"; src: url("fonts/poiretone.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-300.woff2") format("woff2"); font-weight: 300; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+  :root {
+    --bg: #ded8cf;
+    --green: #4b5a39;
+    --green-soft: #6d7a5c;
+    --ink: #1f1f1c;
+    --hair: rgba(31, 31, 28, 0.55);
+
+    --pad: 96px;
+    /* Zona segura do Instagram: o topo some atrás da barra de perfil e o pé,
+       atrás da caixa de resposta. Todo conteúdo vive entre estas marcas. */
+    --safe-top: 300px;
+    --safe-bottom: 380px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #4a4a4a; }
+  body { font-family: "Poppins", sans-serif; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+  /* Cada story é um quadro 1080×1920 (9:16). */
+  .story {
+    position: relative;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: var(--bg);
+    display: none;
+  }
+  body[data-slide="1"] #s1, body[data-slide="2"] #s2, body[data-slide="3"] #s3,
+  body[data-slide="4"] #s4, body[data-slide="5"] #s5, body[data-slide="6"] #s6,
+  body[data-slide="7"] #s7, body[data-slide="8"] #s8 { display: block; }
+
+  .head {
+    position: absolute;
+    top: var(--safe-top);
+    left: var(--pad);
+    right: var(--pad);
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-weight: 300;
+    font-size: 27px;
+    color: var(--ink);
+    z-index: 4;
+  }
+  .head .line { flex: 1; height: 1px; background: var(--hair); }
+
+  .footrule {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    bottom: var(--safe-bottom);
+    height: 1px;
+    background: var(--hair);
+    z-index: 4;
+  }
+
+  /* Bloco central: sempre dentro da zona segura, ancorado ao mesmo eixo. */
+  .stage {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    top: 470px;
+    z-index: 3;
+  }
+
+  .kicker {
+    font-weight: 300;
+    font-size: 26px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+    margin-bottom: 34px;
+  }
+  h2 {
+    font-family: "Poiret One", sans-serif;
+    font-weight: 400;
+    color: var(--green);
+    font-size: 104px;
+    line-height: 0.96;
+    letter-spacing: -0.005em;
+  }
+  p.answer {
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-top: 52px;
+  }
+  p.answer strong { font-weight: 400; color: var(--green); }
+
+  .photo {
+    position: absolute;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    filter: saturate(0.7) contrast(1.02);
+    z-index: 1;
+  }
+
+  /* ======================= 1 · CAPA ======================= */
+  #s1 .photo {
+    left: 0; bottom: 0;
+    width: 1080px; height: 1180px;
+    object-position: 50% 12%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 34%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 34%);
+  }
+  #s1 .stage { top: 520px; }
+  #s1 h2 { font-size: 168px; }
+  #s1 .sub {
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-top: 44px;
+    max-width: 700px;
+  }
+  #s1 .swipe {
+    position: absolute;
+    left: var(--pad);
+    bottom: calc(var(--safe-bottom) + 54px);
+    font-weight: 300;
+    font-size: 28px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+    z-index: 4;
+  }
+
+  /* =============== 2–7 · PERGUNTA E RESPOSTA ============== */
+  .qa .num {
+    position: absolute;
+    right: var(--pad);
+    bottom: calc(var(--safe-bottom) + 52px);
+    font-weight: 300;
+    font-size: 27px;
+    letter-spacing: 0.22em;
+    color: var(--green-soft);
+    z-index: 4;
+  }
+  .qa .tag {
+    position: absolute;
+    left: var(--pad);
+    bottom: calc(var(--safe-bottom) + 52px);
+    font-weight: 300;
+    font-size: 27px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+    z-index: 4;
+  }
+  .leaf { position: absolute; left: -46px; bottom: -28px; width: 222px; z-index: 2; opacity: 0.9; }
+
+  /* ==================== 8 · CHAMADA ======================= */
+  #s8 .photo {
+    right: -70px; bottom: 0;
+    width: 720px; height: 1150px;
+    object-position: 46% 10%;
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 48%),
+      linear-gradient(180deg, transparent 0%, #000 34%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 48%),
+      linear-gradient(180deg, transparent 0%, #000 34%);
+    mask-composite: intersect;
+  }
+  #s8 .stage { top: 520px; right: 440px; }
+  #s8 h2 { font-size: 116px; }
+  #s8 .contact {
+    position: absolute;
+    left: var(--pad);
+    width: 620px;          /* fica à esquerda da foto, sem cruzar o rosto */
+    bottom: calc(var(--safe-bottom) + 56px);
+    z-index: 4;
+  }
+  #s8 .contact div {
+    padding: 20px 0;
+    border-top: 1px solid rgba(31,31,28,0.25);
+    font-weight: 300;
+    font-size: 34px;
+    color: var(--ink);
+  }
+  #s8 .contact div small {
+    display: block;
+    font-size: 22px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- 1 · CAPA -->
+  <section class="story" id="s1">
+    <img class="photo" src="../../../../assets/img/portrait-laugh3.jpg" alt="Terezinha Ramos no consultório">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Perguntas frequentes</p>
+      <h2>Dúvidas</h2>
+      <p class="sub">As seis perguntas que mais chegam no WhatsApp — respondidas sem enrolação.</p>
+    </div>
+    <span class="swipe">Arraste →</span>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 2 · DÓI? -->
+  <section class="story qa" id="s2">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Dúvida 01</p>
+      <h2>Dói?</h2>
+      <p class="answer"><strong>Não deve doer.</strong> A pressão é ajustada com você durante a sessão inteira — se apertar demais, é só avisar que a Terezinha alivia na hora.</p>
+      <p class="answer">Em pontos muito tensos existe aquele “dói e alivia”, mas nunca uma dor que faça você prender a respiração.</p>
+    </div>
+    <span class="tag">Dói?</span>
+    <span class="num">01 / 06</span>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 3 · ROUPA -->
+  <section class="story qa" id="s3">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Dúvida 02</p>
+      <h2>Preciso tirar<br>a roupa?</h2>
+      <p class="answer"><strong>Só o necessário</strong> para a região que vai ser trabalhada — a roupa íntima fica.</p>
+      <p class="answer">Você permanece coberto pelo lençol o tempo todo, e só a área da vez é descoberta. Se preferir trazer uma peça sua, sem problema.</p>
+    </div>
+    <span class="tag">Roupa</span>
+    <span class="num">02 / 06</span>
+    <svg class="leaf" viewBox="0 0 320 520" fill="none" aria-hidden="true"></svg>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 4 · QUANTAS SESSÕES -->
+  <section class="story qa" id="s4">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Dúvida 03</p>
+      <h2>Quantas sessões<br>eu preciso?</h2>
+      <p class="answer"><strong>Depende do que te trouxe.</strong> Para relaxar, uma sessão já faz diferença.</p>
+      <p class="answer">Para uma dor que se repete há meses, o caminho costuma ser um ciclo com reavaliação no meio — nada é fechado antes de conversar com você.</p>
+    </div>
+    <span class="tag">Sessões</span>
+    <span class="num">03 / 06</span>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 5 · GRAVIDEZ -->
+  <section class="story qa" id="s5">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Dúvida 04</p>
+      <h2>Posso fazer<br>grávida?</h2>
+      <p class="answer"><strong>Pode, com a liberação do seu obstetra.</strong></p>
+      <p class="answer">A sessão muda de forma: você deita de lado, com apoios, e algumas manobras e regiões são evitadas. Conte a idade gestacional ao agendar.</p>
+    </div>
+    <span class="tag">Gestação</span>
+    <span class="num">04 / 06</span>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 6 · MENSTRUAÇÃO -->
+  <section class="story qa" id="s6">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Dúvida 05</p>
+      <h2>E se eu estiver<br>menstruada?</h2>
+      <p class="answer"><strong>Pode fazer normalmente.</strong> Não é contraindicação.</p>
+      <p class="answer">Se estiver com cólica ou mais sensível, avise: a pressão no abdômen e na lombar é reduzida, ou a região fica de fora da sessão.</p>
+    </div>
+    <span class="tag">Menstruação</span>
+    <span class="num">05 / 06</span>
+    <svg class="leaf" viewBox="0 0 320 520" fill="none" aria-hidden="true"></svg>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 7 · HÉRNIA DE DISCO -->
+  <section class="story qa" id="s7">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Dúvida 06</p>
+      <h2>Posso fazer com<br>hérnia de disco?</h2>
+      <p class="answer"><strong>Na maioria dos casos, sim</strong> — com técnica adaptada e pressão controlada.</p>
+      <p class="answer">A massoterapia não trata a hérnia: ela cuida da musculatura ao redor, que costuma estar sobrecarregada. Traga a orientação do seu médico ou fisioterapeuta.</p>
+    </div>
+    <span class="tag">Coluna</span>
+    <span class="num">06 / 06</span>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 8 · CHAMADA -->
+  <section class="story" id="s8">
+    <img class="photo" src="../../../../assets/img/portrait-smile.jpg" alt="Terezinha Ramos no consultório">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+    <div class="stage">
+      <p class="kicker">Ficou outra dúvida?</p>
+      <h2>Pergunta<br>sem medo.</h2>
+      <p class="answer">Toda sessão começa com uma conversa — pode começar por aqui.</p>
+    </div>
+    <div class="contact">
+      <div><small>WhatsApp</small>(51) 98958-2730</div>
+      <div><small>Consultório</small>R. José de Alencar, 658/306<br>Menino Deus, Porto Alegre</div>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+<script>
+  // Ramo desenhado a uma linha, o mesmo ornamento do carrossel.
+  function leaf(svg) {
+    const S = "stroke='#1f1f1c' stroke-width='2' fill='none' stroke-linecap='round'";
+    let d = `<path d="M40 512 C 60 380, 110 250, 205 60" ${S}/>`;
+    const pairs = 7;
+    for (let i = 0; i < pairs; i++) {
+      const t = i / (pairs - 1);
+      const p = (a, b, c, e) => {
+        const u = 1 - t;
+        return u*u*u*a + 3*u*u*t*b + 3*u*t*t*c + t*t*t*e;
+      };
+      const x = p(40, 60, 110, 205), y = p(512, 380, 250, 60);
+      const len = 168 * (1 - 0.62 * t);
+      const lift = 40 * (1 - 0.5 * t);
+      for (const s of [-1, 1]) {
+        const tipX = x + s * len * 0.92, tipY = y - lift - len * 0.16;
+        d += `<path d="M${x.toFixed(1)} ${y.toFixed(1)}
+          C ${(x + s*len*0.34).toFixed(1)} ${(y - lift - len*0.42).toFixed(1)},
+            ${(x + s*len*0.74).toFixed(1)} ${(tipY - len*0.18).toFixed(1)},
+            ${tipX.toFixed(1)} ${tipY.toFixed(1)}
+          C ${(x + s*len*0.7).toFixed(1)} ${(tipY + len*0.2).toFixed(1)},
+            ${(x + s*len*0.32).toFixed(1)} ${(y - lift + len*0.06).toFixed(1)},
+            ${x.toFixed(1)} ${y.toFixed(1)} Z" ${S}/>`;
+      }
+    }
+    svg.innerHTML = d;
+  }
+  document.querySelectorAll(".leaf").forEach(leaf);
+
+  document.body.dataset.slide = new URLSearchParams(location.search).get("slide") || "1";
+</script>
+</body>
+</html>
