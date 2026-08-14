@@ -108,7 +108,7 @@ const GTAG_GT = `<!-- Google tag (gtag.js) -->
 const header = () => `<header class="site-header" id="topo">
   <div class="container header-inner">
     <a href="/" class="brand">
-      <img src="/assets/img/logo.png" alt="Terezinha Ramos Massoterapeuta" class="brand-logo">
+      <img src="/assets/img/logo-mark.png" alt="Terezinha Ramos Massoterapeuta" class="brand-logo">
     </a>
 
     <nav class="main-nav" id="mainNav">
@@ -138,7 +138,7 @@ const footerServices = (currentSlug) =>
 const footer = (currentSlug) => `<footer class="site-footer">
   <div class="container footer-inner">
     <div class="footer-brand">
-      <img src="/assets/img/logo.png" alt="Terezinha Ramos Massoterapeuta" class="footer-logo">
+      <img src="/assets/img/logo-mark.png" alt="Terezinha Ramos Massoterapeuta" class="footer-logo">
       <p>Massoterapia com técnica, presença e cuidado.</p>
     </div>
     <nav class="footer-nav">
@@ -341,12 +341,15 @@ ${header()}
           ${WA_ICON}
           <span>Agendar no WhatsApp</span>
         </a>
-        <a href="#detalhes" class="btn btn-ghost btn-large">Ver como funciona</a>
+        <a href="#detalhes" class="hero-secondary">Ver como funciona</a>
       </div>
       <ul class="hero-trust">
-        <li>${SITE.district}, ${SITE.city}</li>
-        <li>5,0 ★ no Google (28 avaliações)</li>
-        <li>Atendimento individualizado</li>
+        <li class="trust-rating">
+          <span class="trust-score">5,0</span>
+          <span class="trust-stars" aria-hidden="true">★★★★★</span>
+          <span class="trust-count">em 28 avaliações no Google</span>
+        </li>
+        <li>Clientes desde 2009</li>
       </ul>
     </div>
     <div class="hero-image">

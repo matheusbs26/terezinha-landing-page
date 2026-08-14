@@ -6,6 +6,9 @@
   --cream-alt: #efe9df;
   --sand: #d9d0bf;
   --gold: #a9895f;
+  /* Versão escurecida do dourado para texto pequeno: o --gold original fica em
+     3,2:1 sobre o creme, abaixo do mínimo de 4,5:1 da WCAG AA. */
+  --gold-deep: #8a6a3f;
   --whatsapp: #25d366;
   --whatsapp-dark: #1ebc59;
   --text-muted: #6b6558;
@@ -18,6 +21,24 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+
+/* O header é sticky: sem isso, âncoras como #servicos param com o título
+   escondido atrás dele. */
+:where([id]) { scroll-margin-top: 92px; }
+
+/* Foco visível para quem navega por teclado — o site não tinha nenhum estado
+   de foco, então o Tab corria invisível pela página inteira. */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.btn:focus-visible,
+.whatsapp-float:focus-visible { outline-offset: 4px; }
+.hero :focus-visible,
+.site-header :focus-visible,
+.site-footer :focus-visible,
+.cta-final :focus-visible { outline-color: var(--sand); }
 
 body {
   margin: 0;
@@ -54,13 +75,32 @@ h1, h2, h3 {
   line-height: 1.15;
   margin: 0 0 0.5em;
   color: var(--ink);
+  /* Evita a linha órfã de uma palavra só no fim do título. Substitui os <br>
+     manuais, que só acertavam a quebra numa largura de tela. */
+  text-wrap: balance;
 }
 
-h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); }
-h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
-h3 { font-size: 1.2rem; }
+/* A Fraunces é variável no eixo óptico (opsz 9–144), já carregado pela fonte
+   mas nunca usado. O padrão do navegador deriva o opsz do tamanho em pixels;
+   fixar os extremos é o que dá o corte de display nos títulos grandes (traço
+   mais fino e contrastado) e o corte de texto nos títulos pequenos, que sem
+   isso ficam frágeis. */
+h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-variation-settings: "opsz" 144, "wght" 500;
+  letter-spacing: -0.015em;
+}
+h2 {
+  font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+  font-variation-settings: "opsz" 96, "wght" 500;
+  letter-spacing: -0.01em;
+}
+h3 {
+  font-size: 1.2rem;
+  font-variation-settings: "opsz" 24, "wght" 600;
+}
 
-p { margin: 0 0 1em; color: var(--ink-soft); }
+p { margin: 0 0 1em; color: var(--ink-soft); text-wrap: pretty; }
 .lead { font-size: 1.1rem; color: var(--ink); }
 
 .eyebrow {
@@ -69,7 +109,7 @@ p { margin: 0 0 1em; color: var(--ink-soft); }
   letter-spacing: 0.18em;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--gold);
+  color: var(--gold-deep);
   margin: 0 0 0.9em;
 }
 
@@ -125,7 +165,10 @@ address { font-style: normal; }
 }
 
 .brand { display: flex; align-items: center; }
-.brand-logo { height: 52px; width: auto; }
+/* logo-mark.png é o logo recortado na caixa do desenho. O arquivo original
+   tinha 64% de área transparente em volta, então a marca renderizava a ~29px
+   dentro de uma caixa de 52px e sumia contra o header escuro. */
+.brand-logo { height: 46px; width: auto; }
 
 .main-nav { display: flex; align-items: center; gap: 32px; }
 .main-nav a:not(.btn) {
@@ -162,7 +205,9 @@ address { font-style: normal; }
 /* ========== Hero ========== */
 .hero {
   display: grid;
-  grid-template-columns: minmax(320px, 560px) 1fr;
+  /* 560px deixava 464px úteis, estreito demais para o CTA e a ação secundária
+     na mesma linha. Em 600px sobra folga sem alargar demais a medida do H1. */
+  grid-template-columns: minmax(320px, 600px) 1fr;
   min-height: 92vh;
   background: var(--ink);
   overflow: hidden;
@@ -179,15 +224,49 @@ address { font-style: normal; }
 .hero-text h1 { color: #fff; }
 .hero-sub { color: rgba(247,244,238,0.86); font-size: 1.08rem; max-width: 480px; }
 
-.hero-actions { display: flex; flex-wrap: wrap; gap: 16px; margin: 28px 0 32px; }
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 26px;
+  margin: 28px 0 30px;
+}
 .hero-actions .btn-ghost { color: #fff; border-color: rgba(255,255,255,0.45); }
 .hero-actions .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+
+/* A ação secundária era um segundo botão do mesmo tamanho do CTA verde: os dois
+   somavam 533px numa coluna de 464px (quebrava em duas linhas) e disputavam a
+   atenção com o único link que converte. Como link, cabe na mesma linha e a
+   hierarquia fica explícita. */
+.hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(247, 244, 238, 0.9);
+  font-weight: 600;
+  font-size: 0.98rem;
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(247, 244, 238, 0.28);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.hero-secondary::after {
+  content: "→";
+  transition: transform 0.2s ease;
+}
+.hero-secondary:hover { color: #fff; border-color: #fff; }
+.hero-secondary:hover::after { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .hero-secondary::after { transition: none; }
+  .hero-secondary:hover::after { transform: none; }
+}
 
 .hero-trust {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 28px;
+  align-items: center;
+  gap: 10px 26px;
   padding: 0;
   margin: 0;
 }
@@ -210,12 +289,45 @@ address { font-style: normal; }
   background: var(--gold);
 }
 
+/* A nota do Google é o argumento mais forte que ela tem e estava diluída como
+   mais um marcador da lista. Aqui vira o item com peso, sem virar um banner. */
+.hero-trust .trust-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 0;
+  color: var(--cream);
+}
+.hero-trust .trust-rating::before { content: none; }
+.hero-trust .trust-score {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 18, "wght" 600;
+  font-size: 1.12rem;
+  line-height: 1;
+}
+.hero-trust .trust-stars {
+  color: #e8b563;
+  letter-spacing: 1px;
+  font-size: 0.82rem;
+}
+.hero-trust .trust-count { color: rgba(247,244,238,0.7); font-weight: 400; }
+
 .hero-image { position: relative; min-height: 320px; }
 .hero-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 15%;
+}
+/* Emenda entre o painel escuro e a foto. Sem isso o corte é uma linha reta e
+   dura no meio da tela; o degradê faz a foto nascer do painel. */
+.hero-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--ink) 0%, rgba(27, 26, 23, 0.42) 9%, rgba(27, 26, 23, 0) 26%);
 }
 
 /* Hero content plays a guaranteed CSS entrance animation instead of
@@ -338,7 +450,7 @@ address { font-style: normal; }
 }
 .service-cta {
   display: inline-block;
-  color: var(--gold);
+  color: var(--gold-deep);
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
@@ -381,8 +493,9 @@ address { font-style: normal; }
   height: 52px;
   border-radius: 50%;
   border: 1.5px solid var(--gold);
-  color: var(--gold);
+  color: var(--gold-deep);
   font-family: var(--font-display);
+  font-variation-settings: "opsz" 26, "wght" 600;
   font-size: 1.3rem;
   margin-bottom: 18px;
 }
@@ -604,6 +717,7 @@ address { font-style: normal; }
   padding: 20px 40px 20px 0;
   position: relative;
   font-family: var(--font-display);
+  font-variation-settings: "opsz" 22, "wght" 600;
   font-size: 1.08rem;
   color: var(--ink);
 }
@@ -647,6 +761,7 @@ address { font-style: normal; }
 .related-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 .related-name {
   font-family: var(--font-display);
+  font-variation-settings: "opsz" 20, "wght" 600;
   font-size: 1.02rem;
   color: var(--ink);
 }
@@ -795,10 +910,25 @@ address { font-style: normal; }
   .nav-toggle { display: flex; }
 
   .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-image { order: -1; height: 52vh; min-height: 320px; }
-  .hero-text { padding: 44px 24px 56px; }
-  .hero-service .hero-text { padding: 40px 24px 48px; }
-  .hero-service .hero-image { height: 40vh; min-height: 260px; }
+  /* A foto ocupava 52vh e empurrava o botão de WhatsApp para fora da primeira
+     tela — sendo que quase todo o tráfego vem de anúncio no celular e o botão
+     é a única conversão do site. Em 34vh o título, a prova social e o botão
+     cabem juntos antes de qualquer rolagem. */
+  .hero-image { order: -1; height: 30vh; min-height: 196px; max-height: 300px; }
+  /* Empilhado, a emenda com o painel passa a ser embaixo, não à esquerda. */
+  .hero-image::before {
+    background: linear-gradient(180deg, rgba(27, 26, 23, 0) 62%, rgba(27, 26, 23, 0.55) 88%, var(--ink) 100%);
+  }
+  .hero-text { padding: 28px 24px 44px; }
+  .hero-text h1 { font-size: clamp(1.95rem, 8.2vw, 2.4rem); }
+  .hero-sub { font-size: 1rem; }
+  /* No celular a prova social sobe para logo antes do botão: a nota do Google
+     é o que justifica o clique, e depois dele ninguém mais a lê. */
+  .hero-text .hero-trust { order: 1; margin-bottom: 22px; gap: 7px 20px; }
+  .hero-text .hero-actions { order: 2; margin: 0; }
+  .hero-trust li { font-size: 0.83rem; }
+  .hero-service .hero-text { padding: 26px 24px 40px; }
+  .hero-service .hero-image { height: 28vh; min-height: 200px; }
 
   .benefit-grid, .service-grid, .gallery-grid, .review-grid { grid-template-columns: 1fr 1fr; }
   .gallery-grid { gap: 12px; }
@@ -809,11 +939,25 @@ address { font-style: normal; }
   .footer-inner { grid-template-columns: 1fr; }
 }
 
+/* Celulares de tela curta (iPhone SE e similares, ~667px de altura). Sem isto
+   o botão de WhatsApp cai 70px abaixo da dobra justamente nos aparelhos com
+   menos espaço. */
+@media (max-width: 720px) and (max-height: 720px) {
+  .hero-image { height: 24vh; min-height: 148px; }
+  .hero-text { padding-top: 20px; }
+  .hero-text h1 { font-size: 1.78rem; }
+  .hero-sub { font-size: 0.94rem; margin-bottom: 0; }
+  .hero-text .hero-trust { margin-bottom: 16px; }
+}
+
 @media (max-width: 480px) {
   .benefit-grid, .benefit-grid.cols-3, .service-grid, .review-grid { grid-template-columns: 1fr; }
   .related-grid { grid-template-columns: 1fr; }
-  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 18px; }
   .hero-actions .btn { justify-content: center; }
+  /* Esticar o link secundário na largura toda o faria parecer um segundo
+     botão — exatamente o que ele deixou de ser. */
+  .hero-secondary { align-self: flex-start; }
   .location-actions { flex-direction: column; align-items: stretch; }
   .location-actions .btn { justify-content: center; }
   .location-strip .location-actions { width: 100%; }
