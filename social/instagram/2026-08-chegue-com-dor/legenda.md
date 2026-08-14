@@ -1,7 +1,8 @@
 # Post do feed — "Chegue com dor. Saia mais leve."
 
-**Formato:** carrossel de 4 imagens, 1080×1080 (1:1)
-**Arquivos, nesta ordem:** `01-capa.png` · `02-tecnicas.png` · `03-avaliacoes.png` · `04-agende.png`
+**Formato:** carrossel de 7 imagens, 1080×1350 (4:5)
+**Arquivos, nesta ordem:** `01-capa.png` · `02-dores.png` · `03-estresse.png` ·
+`04-circulacao.png` · `05-tecnicas.png` · `06-avaliacoes.png` · `07-agende.png`
 
 ---
 
@@ -46,24 +47,35 @@ como primeiro comentário logo após postar.
 
 Cole em *Configurações avançadas → Escrever texto alternativo*, imagem por imagem:
 
-1. **01-capa** — Terezinha Ramos, massoterapeuta, aplicando massagem nas costas de
-   uma cliente deitada na maca. Texto: "Chegue com dor. Saia mais leve."
-2. **02-tecnicas** — Lista das nove técnicas atendidas: massagem relaxante,
-   terapêutica, drenagem linfática, drenagem pós-operatória, modeladora,
-   reflexologia podal, pedras quentes, ventosaterapia e reiki.
-3. **03-avaliacoes** — Nota 5,0 em 28 avaliações no Google e o depoimento do
+1. **01-capa** — Terezinha Ramos sorrindo no consultório. Texto: "Chegue com dor.
+   Saia mais leve. Massoterapia em Porto Alegre."
+2. **02-dores** — Terezinha aplicando massagem nas costas de uma cliente. Texto:
+   "Alivia dores e tensões."
+3. **03-estresse** — Fundo bege com um ramo desenhado a traço e o texto "Acalma o
+   estresse".
+4. **04-circulacao** — Fundo bege com arcos finos nos cantos e o texto "Ativa a
+   circulação".
+5. **05-tecnicas** — Lista das nove técnicas atendidas: relaxante, terapêutica,
+   drenagem linfática, drenagem pós-operatória, modeladora, reflexologia podal,
+   pedras quentes, ventosaterapia e reiki.
+6. **06-avaliacoes** — Nota 5,0 em 28 avaliações no Google e o depoimento do
    cliente Sidnei Schneider: "Se chegar lá com alguma dor no corpo, é só avisar
    que sairá aliviado."
-4. **04-agende** — Terezinha Ramos sorrindo no consultório, com WhatsApp
-   (51) 98958-2730, endereço na R. José de Alencar, 658/306, Menino Deus, e o
-   site terezinharamos.com.br.
+7. **07-agende** — Terezinha sorrindo, com WhatsApp (51) 98958-2730, endereço na
+   R. José de Alencar, 658/306, Menino Deus, e o site terezinharamos.com.br.
 
 ---
 
 ## Antes de publicar
 
-- Confirme com a Terezinha se as nove técnicas do slide 2 seguem corretas.
-- O depoimento do slide 3 é real, do perfil dela no Google Meu Negócio
-  (Sidnei Schneider) — está citado com o nome como aparece publicamente.
+- **Assinatura do topo:** as peças trazem `terezinharamos.com.br` à esquerda. Para
+  usar o @ do perfil no lugar, troque as sete ocorrências de
+  `terezinharamos.com.br` em `src/slides.html` e rode `./src/render.sh`.
+- Confirme com a Terezinha se as nove técnicas do slide 5 seguem corretas.
+- Os textos dos slides 2 a 4 falam de alívio de tensão, relaxamento e estímulo à
+  circulação — sem prometer cura, "eliminação de toxinas" ou ganho de imunidade,
+  que são alegações de saúde difíceis de sustentar.
+- O depoimento do slide 6 é real, do perfil dela no Google Meu Negócio
+  (Sidnei Schneider), citado com o nome como aparece publicamente.
 - Localização do post: **Porto Alegre, Rio Grande do Sul**.
-- Vale marcar o link do WhatsApp na bio antes de publicar, já que a legenda o cita.
+- Vale conferir o link do WhatsApp na bio antes de publicar, já que a legenda o cita.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gera os PNGs 1080x1080 do carrossel a partir de slides.html.
+# Gera os PNGs 1080x1350 (4:5) do carrossel a partir de slides.html.
 #
 #   ./src/render.sh            # usa o Chromium do Playwright, se existir
 #   CHROME=/usr/bin/chromium ./src/render.sh
@@ -21,16 +21,16 @@ if [ -z "$CHROME" ]; then
 fi
 [ -n "$CHROME" ] || { echo "Chromium não encontrado. Defina CHROME=/caminho/do/chrome" >&2; exit 1; }
 
-names=(01-capa 02-tecnicas 03-avaliacoes 04-agende)
+names=(01-capa 02-dores 03-estresse 04-circulacao 05-tecnicas 06-avaliacoes 07-agende)
 
 # A janela é pedida mais alta que o slide porque o headless reserva alguns
 # pixels da moldura do navegador; o excesso é cortado depois (Pillow).
-for i in 1 2 3 4; do
+for i in $(seq 1 ${#names[@]}); do
   out="$PWD/${names[$((i-1))]}.png"
   "$CHROME" --headless --disable-gpu --no-sandbox --hide-scrollbars \
     --allow-file-access-from-files \
     --force-device-scale-factor=1 \
-    --window-size=1080,1280 \
+    --window-size=1080,1550 \
     --virtual-time-budget=4000 \
     --screenshot="$out" \
     "file://$SRC?slide=$i" >/dev/null 2>&1
@@ -40,8 +40,8 @@ import sys
 from PIL import Image
 p = sys.argv[1]
 im = Image.open(p)
-if im.size != (1080, 1080):
-    im.crop((0, 0, 1080, 1080)).convert("RGB").save(p, optimize=True)
+if im.size != (1080, 1350):
+    im.crop((0, 0, 1080, 1350)).convert("RGB").save(p, optimize=True)
 PY
   echo "→ ${names[$((i-1))]}.png"
 done
