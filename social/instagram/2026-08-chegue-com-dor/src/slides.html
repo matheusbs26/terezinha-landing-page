@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Post do feed — Chegue com dor. Saia mais leve.</title>
+<style>
+  /* Mesmas famílias do site (assets/css/style.css), servidas localmente para
+     que a renderização não dependa da rede. */
+  @font-face {
+    font-family: "Fraunces";
+    src: url("fonts/fraunces.woff2") format("woff2");
+    font-weight: 100 900;
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Work Sans";
+    src: url("fonts/worksans.woff2") format("woff2");
+    font-weight: 100 900;
+    font-display: block;
+  }
+
+  :root {
+    --ink: #1b1a17;
+    --ink-deep: #131210;
+    --cream: #f7f4ee;
+    --cream-alt: #efe9df;
+    --sand: #d9d0bf;
+    --gold: #a9895f;
+    --gold-light: #c9a878;
+    --muted: #6b6558;
+
+    --pad: 84px;      /* margem viva de todos os slides */
+    --hair: 1px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { background: #4a4a4a; }
+
+  body {
+    font-family: "Work Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  /* Cada slide é um quadro de 1080×1080; o render.sh captura um por vez. */
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    display: none;
+  }
+  body[data-slide="1"] #s1,
+  body[data-slide="2"] #s2,
+  body[data-slide="3"] #s3,
+  body[data-slide="4"] #s4 { display: block; }
+
+  /* Moldura interna: a hairline que organiza a composição sem se anunciar. */
+  .frame {
+    position: absolute;
+    inset: 40px;
+    border: var(--hair) solid rgba(217, 208, 191, 0.38);
+    pointer-events: none;
+    z-index: 5;
+  }
+  .frame--ink { border-color: rgba(27, 26, 23, 0.16); }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Aquece a foto para a mesma temperatura do creme da marca. */
+    filter: saturate(0.86) contrast(1.02) brightness(1.02) sepia(0.1);
+  }
+
+  .eyebrow {
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+  }
+
+  .rule {
+    height: var(--hair);
+    background: currentColor;
+    opacity: 0.35;
+  }
+
+  .mark {
+    font-family: "Fraunces", serif;
+    font-size: 22px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Cabeçalho corrido: assinatura à esquerda, posição do slide à direita. */
+  .runner {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .runner .idx {
+    font-size: 15px;
+    letter-spacing: 0.28em;
+    opacity: 0.6;
+  }
+
+  /* ======================= 1 · CAPA ======================= */
+  #s1 { background: var(--ink); }
+  #s1 .scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(178deg, rgba(19,18,16,0.5) 0%, rgba(19,18,16,0) 32%),
+      linear-gradient(0deg, rgba(19,18,16,0.9) 14%, rgba(19,18,16,0.6) 42%, rgba(19,18,16,0.04) 70%);
+  }
+  #s1 .top {
+    position: absolute;
+    top: var(--pad);
+    left: var(--pad);
+    right: var(--pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: var(--sand);
+    z-index: 6;
+  }
+  #s1 .top .mark { color: var(--cream); }
+  #s1 .top .idx {
+    font-size: 15px;
+    letter-spacing: 0.28em;
+    opacity: 0.65;
+  }
+  #s1 .bottom {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    bottom: 92px;
+    z-index: 6;
+  }
+  #s1 .eyebrow { color: var(--gold-light); margin-bottom: 34px; }
+  #s1 h1 {
+    font-family: "Fraunces", serif;
+    font-weight: 400;
+    font-size: 104px;
+    line-height: 1.02;
+    letter-spacing: -0.018em;
+    color: var(--cream);
+  }
+  #s1 h1 .leve {
+    display: block;
+    color: var(--gold-light);
+    font-style: italic;
+    font-weight: 300;
+  }
+  #s1 .foot {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-top: 44px;
+    color: var(--sand);
+    font-size: 17px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  #s1 .foot .rule { flex: 1; color: var(--sand); }
+
+  /* ==================== 2 · TÉCNICAS ====================== */
+  #s2 { background: var(--cream); color: var(--ink); }
+  #s2 .inner {
+    position: absolute;
+    inset: var(--pad);
+    display: flex;
+    flex-direction: column;
+  }
+  #s2 .eyebrow { color: var(--gold); }
+  #s2 h2 {
+    font-family: "Fraunces", serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    margin-top: 22px;
+  }
+  #s2 .list {
+    margin-top: 40px;
+    border-top: var(--hair) solid rgba(27,26,23,0.14);
+  }
+  #s2 .item {
+    display: flex;
+    align-items: baseline;
+    gap: 22px;
+    padding: 14px 4px;
+    border-bottom: var(--hair) solid rgba(27,26,23,0.14);
+  }
+  #s2 .num {
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    width: 42px;
+    flex: none;
+    font-variant-numeric: tabular-nums;
+  }
+  #s2 .name {
+    font-family: "Fraunces", serif;
+    font-size: 29px;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+  #s2 .note {
+    margin-top: auto;
+    padding-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: var(--muted);
+    font-size: 17px;
+    letter-spacing: 0.02em;
+  }
+  #s2 .note .rule { flex: none; width: 56px; color: var(--gold); opacity: 0.6; }
+
+  /* ================== 3 · PROVA SOCIAL ==================== */
+  #s3 { background: var(--ink); color: var(--cream); }
+  #s3 .inner {
+    position: absolute;
+    inset: var(--pad);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  #s3 .stars {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    color: var(--gold-light);
+  }
+  #s3 .score {
+    font-family: "Fraunces", serif;
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 400;
+  }
+  #s3 .glyphs { font-size: 27px; letter-spacing: 0.16em; }
+  #s3 .count {
+    margin-top: 20px;
+    font-size: 17px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sand);
+    opacity: 0.8;
+  }
+  #s3 .quote {
+    font-family: "Fraunces", serif;
+    font-weight: 300;
+    font-size: 52px;
+    line-height: 1.24;
+    letter-spacing: -0.012em;
+    margin-top: 58px;
+    color: var(--cream);
+  }
+  #s3 .quote .open { color: var(--gold-light); }
+  #s3 .by {
+    margin-top: 46px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 17px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sand);
+  }
+  #s3 .by .rule { width: 46px; flex: none; color: var(--gold-light); opacity: 0.8; }
+  #s3 .corner {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    font-size: 15px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--sand);
+    opacity: 0.5;
+  }
+
+  /* ======================= 4 · CTA ======================== */
+  #s4 { background: var(--cream); }
+  #s4 .photo-wrap {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 540px;
+    overflow: hidden;
+  }
+  #s4 .photo { object-position: 50% 26%; }
+  #s4 .photo-fade {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 190px;
+    background: linear-gradient(0deg, var(--cream) 6%, rgba(247,244,238,0) 100%);
+  }
+  #s4 .inner {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    bottom: 84px;
+    color: var(--ink);
+  }
+  #s4 .eyebrow { color: var(--gold); }
+  #s4 h2 {
+    font-family: "Fraunces", serif;
+    font-weight: 400;
+    font-size: 62px;
+    line-height: 1.06;
+    letter-spacing: -0.016em;
+    margin-top: 24px;
+  }
+  #s4 .contact {
+    margin-top: 40px;
+    border-top: var(--hair) solid rgba(27,26,23,0.16);
+  }
+  #s4 .row {
+    display: flex;
+    align-items: baseline;
+    gap: 26px;
+    padding: 18px 2px;
+    border-bottom: var(--hair) solid rgba(27,26,23,0.16);
+  }
+  #s4 .label {
+    font-size: 13px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    width: 132px;
+    flex: none;
+  }
+  #s4 .value {
+    font-family: "Fraunces", serif;
+    font-size: 27px;
+    font-weight: 400;
+  }
+  #s4 .value small {
+    font-family: "Work Sans", sans-serif;
+    font-size: 17px;
+    color: var(--muted);
+    letter-spacing: 0.01em;
+  }
+  #s4 .sign {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+  #s4 .sign .mark { color: var(--ink); }
+</style>
+</head>
+<body>
+
+  <!-- 1 · CAPA -->
+  <section class="slide" id="s1">
+    <img class="photo" src="../../../../assets/img/massage-3.jpg" alt="Terezinha Ramos em atendimento de massoterapia" style="object-position: 62% 34%;">
+    <div class="scrim"></div>
+    <div class="frame"></div>
+    <div class="top">
+      <span class="mark">Terezinha Ramos</span>
+      <span class="idx">01 / 04</span>
+    </div>
+    <div class="bottom">
+      <p class="eyebrow">Massoterapia · Porto Alegre</p>
+      <h1>Chegue com dor.<span class="leve">Saia mais leve.</span></h1>
+      <div class="foot">
+        <span>Menino Deus</span>
+        <span class="rule"></span>
+        <span>Arraste →</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · TÉCNICAS -->
+  <section class="slide" id="s2">
+    <div class="frame frame--ink"></div>
+    <div class="inner">
+      <div class="runner" style="color: var(--muted); margin-bottom: 46px;">
+        <span class="mark" style="color: var(--ink);">Terezinha Ramos</span>
+        <span class="idx">02 / 04</span>
+      </div>
+      <p class="eyebrow">O que é atendido</p>
+      <h2>Para cada corpo,<br>uma técnica.</h2>
+      <div class="list">
+        <div class="item"><span class="num">01</span><span class="name">Massagem Relaxante</span></div>
+        <div class="item"><span class="num">02</span><span class="name">Massagem Terapêutica</span></div>
+        <div class="item"><span class="num">03</span><span class="name">Drenagem Linfática</span></div>
+        <div class="item"><span class="num">04</span><span class="name">Drenagem Pós-Operatória</span></div>
+        <div class="item"><span class="num">05</span><span class="name">Massagem Modeladora</span></div>
+        <div class="item"><span class="num">06</span><span class="name">Reflexologia Podal</span></div>
+        <div class="item"><span class="num">07</span><span class="name">Pedras Quentes</span></div>
+        <div class="item"><span class="num">08</span><span class="name">Ventosaterapia</span></div>
+        <div class="item"><span class="num">09</span><span class="name">Reiki</span></div>
+      </div>
+      <div class="note">
+        <span class="rule"></span>
+        <span>Sessão individual, montada a partir do que o seu corpo está pedindo.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · PROVA SOCIAL -->
+  <section class="slide" id="s3">
+    <div class="frame"></div>
+    <div class="runner" style="position:absolute; top:var(--pad); left:var(--pad); right:var(--pad); color: var(--sand); z-index:6;">
+      <span class="mark" style="color: var(--cream);">Terezinha Ramos</span>
+      <span class="idx">03 / 04</span>
+    </div>
+    <div class="inner">
+      <div class="stars">
+        <span class="score">5,0</span>
+        <span class="glyphs">★★★★★</span>
+      </div>
+      <p class="count">28 avaliações no Google</p>
+      <p class="quote"><span class="open">“</span>Se chegar lá com alguma dor no corpo, é só avisar que sairá aliviado.<span class="open">”</span></p>
+      <div class="by">
+        <span class="rule"></span>
+        <span>Sidnei Schneider · cliente</span>
+      </div>
+      <span class="corner">Clientes desde 2009</span>
+    </div>
+  </section>
+
+  <!-- 4 · CTA -->
+  <section class="slide" id="s4">
+    <div class="photo-wrap">
+      <img class="photo" src="../../../../assets/img/portrait-smile.jpg" alt="Terezinha Ramos no consultório">
+      <div class="photo-fade"></div>
+    </div>
+    <div class="frame frame--ink"></div>
+    <div class="inner">
+      <p class="eyebrow">Agende sua sessão</p>
+      <h2>Um tempo só seu,<br>sem pressa.</h2>
+      <div class="contact">
+        <div class="row">
+          <span class="label">WhatsApp</span>
+          <span class="value">(51) 98958-2730</span>
+        </div>
+        <div class="row">
+          <span class="label">Consultório</span>
+          <span class="value">R. José de Alencar, 658/306 <small>— Menino Deus, POA</small></span>
+        </div>
+        <div class="row">
+          <span class="label">Site</span>
+          <span class="value">terezinharamos.com.br</span>
+        </div>
+      </div>
+      <div class="sign">
+        <span class="mark">Terezinha Ramos</span>
+        <span>04 / 04</span>
+      </div>
+    </div>
+  </section>
+
+<script>
+  // O slide exibido vem da querystring (?slide=2), usada pelo render.sh.
+  const n = new URLSearchParams(location.search).get("slide") || "1";
+  document.body.dataset.slide = n;
+</script>
+</body>
+</html>
