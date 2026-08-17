@@ -19,6 +19,9 @@ Posts existentes:
 - `2026-08-chegue-com-dor/` — carrossel do feed, 7 imagens 4:5
 - `2026-08-stories-duvidas/` — stories de perguntas frequentes, 8 imagens 9:16
 
+Antes de montar um post novo, veja `instagram/_modelos/` — a biblioteca de
+layouts prontos (15 modelos) com o catálogo de quando usar cada um.
+
 ## Regerando as imagens
 
 Entre na pasta do post e rode:
