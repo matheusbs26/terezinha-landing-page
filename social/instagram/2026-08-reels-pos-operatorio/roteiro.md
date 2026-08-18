@@ -101,8 +101,10 @@ Traga as suas orientações e a gente conversa sobre o resto. 🤍
 
 ## Na hora de publicar
 
-- **Capa:** use *Adicionar capa → escolher da galeria* com o quadro da cena 1, ou
-  peça uma capa dedicada. No grid o Instagram recorta em 4:5.
+- **Capa:** pronta em `capa.png` (1080×1920). Na tela de publicação, toque em
+  *Editar capa → Da galeria* e selecione esse arquivo. Ela foi desenhada com o
+  bloco de texto centrado no eixo do recorte 4:5 que o Instagram aplica no grid
+  do perfil, então funciona tanto no player quanto na miniatura.
 - **Texto por cima no app:** não. O vídeo já traz tudo na tipografia da marca.
 - **Legenda automática:** não faz diferença aqui — o vídeo não tem fala.
 - **Adesivos:** se usar, prefira a caixa de perguntas ("tire sua dúvida sobre o
