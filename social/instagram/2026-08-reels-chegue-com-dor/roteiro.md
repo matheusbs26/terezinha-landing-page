@@ -55,7 +55,17 @@ python3 src/montar.py --narracao ~/Downloads/audio_voicebox.wav
 ```
 
 Se o `reels.mp4` já estiver montado, ele é reaproveitado — só a mixagem roda de
-novo. Use `--forcar` para remontar o vídeo do zero.
+novo, e nem é preciso ter a pasta `quadros/` (ela não vai para o repositório).
+Ou seja: em um clone recém-baixado, com o `reels.mp4` versionado, basta o
+comando acima. Use `--forcar` para remontar o vídeo do zero.
+
+**No Windows**, com o repositório clonado e o Python instalado:
+
+```powershell
+pip install imageio-ffmpeg
+cd social\instagram\2026-08-reels-chegue-com-dor
+python src\montar.py --narracao "$env:USERPROFILE\Downloads\Massoterapeuta Terezinha\Audios\audio_voicebox.wav"
+```
 
 Isso gera `reels-com-voz.mp4` — a locução entra por cima e a trilha cai para 25 %.
 

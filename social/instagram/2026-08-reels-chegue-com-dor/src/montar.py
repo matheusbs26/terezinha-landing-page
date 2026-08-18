@@ -38,6 +38,11 @@ CENAS = [
 ]
 
 
+def duracao_total() -> float:
+    """Duração final: a soma das cenas menos o que cada crossfade sobrepõe."""
+    return sum(d for d, _ in CENAS) - CROSS * (len(CENAS) - 1)
+
+
 def ffmpeg_bin() -> str:
     try:
         import imageio_ffmpeg
@@ -170,23 +175,24 @@ def main() -> None:
             )
 
     ff = ffmpeg_bin()
-    entradas, graf, duracao = filtro()
+    duracao = duracao_total()
     mudo = RAIZ / "reels.mp4"
 
     cenas = sorted(QUADROS.glob("cena-*.png"))
-    atualizado = (
-        mudo.exists() and cenas
-        and mudo.stat().st_mtime >= max(c.stat().st_mtime for c in cenas)
+    atualizado = mudo.exists() and (
+        not cenas or mudo.stat().st_mtime >= max(c.stat().st_mtime for c in cenas)
     )
     if atualizado and not args.forcar:
         print(f"\u2192 {mudo.name} já está atualizado (use --forcar para remontar)")
     else:
+        entradas, graf, duracao = filtro()
         montar_video(ff, entradas, graf, mudo, duracao)
 
     if args.sem_trilha and not voz:
         return
 
     wav = QUADROS / "trilha.wav"
+    QUADROS.mkdir(exist_ok=True)   # num clone novo a pasta ainda não existe
     trilha(wav, duracao)
     com_trilha = RAIZ / "reels-com-trilha.mp4"
     subprocess.run(
