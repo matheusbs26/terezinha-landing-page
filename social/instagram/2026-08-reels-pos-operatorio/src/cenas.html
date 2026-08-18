@@ -71,12 +71,22 @@
 
   .passos li {
     list-style: none;
-    display: flex; align-items: baseline; gap: 26px;
+    display: flex; align-items: baseline; gap: 16px;
     margin-bottom: 34px;
   }
+  /* Os algarismos da Poiret One têm larguras bem diferentes — o "1" é bem mais
+     estreito que o "0" —, então "01" ficava curto e a coluna saía torta. Cada
+     algarismo entra em uma caixa de largura fixa, o que iguala os dois lados da
+     numeração sem depender de figuras tabulares na fonte. */
   .passos .n {
     font-family: "Poiret One", sans-serif; font-size: 46px; color: var(--green-soft);
-    width: 58px; flex: none;
+    flex: none;
+  }
+  .passos .n i {
+    display: inline-block;
+    width: 0.76em;
+    text-align: center;
+    font-style: normal;
   }
   .passos p { font-weight: 300; font-size: 40px; line-height: 1.34; color: var(--ink); }
 
@@ -160,9 +170,9 @@
   <div class="texto centro">
     <p class="chapeu">Como funciona</p>
     <ul class="passos">
-      <li><span class="n">01</span><p>Você traz as orientações da equipe médica.</p></li>
-      <li><span class="n">02</span><p>O protocolo é combinado a partir delas.</p></li>
-      <li><span class="n">03</span><p>Uma série de sessões, mais frequentes no começo.</p></li>
+      <li><span class="n"><i>0</i><i>1</i></span><p>Você traz as orientações da equipe médica.</p></li>
+      <li><span class="n"><i>0</i><i>2</i></span><p>O protocolo é combinado a partir delas.</p></li>
+      <li><span class="n"><i>0</i><i>3</i></span><p>Uma série de sessões, mais frequentes no começo.</p></li>
     </ul>
   </div>
 </section>
