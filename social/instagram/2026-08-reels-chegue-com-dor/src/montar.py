@@ -133,6 +133,19 @@ def filtro() -> tuple[list[str], str, float]:
     return entradas, ";".join(partes), acumulado
 
 
+def montar_video(ff, entradas, graf, saida, duracao):
+    print(f"montando {duracao:.1f}s …")
+    subprocess.run(
+        [ff, "-y", "-hide_banner", "-loglevel", "error", *entradas,
+         "-filter_complex", graf, "-map", "[v]",
+         "-c:v", "libx264", "-profile:v", "high", "-crf", "19",
+         "-preset", "medium", "-pix_fmt", "yuv420p", "-r", str(FPS),
+         "-movflags", "+faststart", str(saida)],
+        check=True,
+    )
+    print(f"\u2192 {saida.name}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--sem-trilha", action="store_true",
@@ -140,27 +153,40 @@ def main() -> None:
     ap.add_argument("--narracao", metavar="ARQUIVO",
                     help="áudio de locução (wav/mp3) para entrar por cima da "
                          "trilha; gera reels-com-voz.mp4")
+    ap.add_argument("--forcar", action="store_true",
+                    help="remonta o mp4 mesmo que ele já esteja atualizado")
     args = ap.parse_args()
+
+    # O caminho da locução é conferido antes de qualquer render: montar o vídeo
+    # inteiro para só então descobrir que o arquivo não existe é tempo jogado.
+    voz = None
+    if args.narracao:
+        voz = Path(args.narracao).expanduser()
+        if not voz.exists():
+            sys.exit(
+                f"não achei o áudio: {voz}\n"
+                "Passe o caminho real do arquivo, por exemplo:\n"
+                "  python3 src/montar.py --narracao ~/Downloads/audio_voicebox.wav"
+            )
 
     ff = ffmpeg_bin()
     entradas, graf, duracao = filtro()
     mudo = RAIZ / "reels.mp4"
 
-    print(f"montando {duracao:.1f}s …")
-    subprocess.run(
-        [ff, "-y", "-hide_banner", "-loglevel", "error", *entradas,
-         "-filter_complex", graf, "-map", "[v]",
-         "-c:v", "libx264", "-profile:v", "high", "-crf", "19",
-         "-preset", "medium", "-pix_fmt", "yuv420p", "-r", str(FPS),
-         "-movflags", "+faststart", str(mudo)],
-        check=True,
+    cenas = sorted(QUADROS.glob("cena-*.png"))
+    atualizado = (
+        mudo.exists() and cenas
+        and mudo.stat().st_mtime >= max(c.stat().st_mtime for c in cenas)
     )
-    print(f"→ {mudo.name}")
+    if atualizado and not args.forcar:
+        print(f"\u2192 {mudo.name} já está atualizado (use --forcar para remontar)")
+    else:
+        montar_video(ff, entradas, graf, mudo, duracao)
 
-    if args.sem_trilha and not args.narracao:
+    if args.sem_trilha and not voz:
         return
 
-    wav = RAIZ / "quadros" / "trilha.wav"
+    wav = QUADROS / "trilha.wav"
     trilha(wav, duracao)
     com_trilha = RAIZ / "reels-com-trilha.mp4"
     subprocess.run(
@@ -170,12 +196,9 @@ def main() -> None:
          "-shortest", "-movflags", "+faststart", str(com_trilha)],
         check=True,
     )
-    print(f"→ {com_trilha.name}")
+    print(f"\u2192 {com_trilha.name}")
 
-    if args.narracao:
-        voz = Path(args.narracao)
-        if not voz.exists():
-            sys.exit(f"não achei {voz}")
+    if voz:
         com_voz = RAIZ / "reels-com-voz.mp4"
         # A locução manda: a trilha cai para 25% e some junto com o vídeo.
         subprocess.run(
@@ -191,7 +214,7 @@ def main() -> None:
              "-shortest", "-movflags", "+faststart", str(com_voz)],
             check=True,
         )
-        print(f"→ {com_voz.name}")
+        print(f"\u2192 {com_voz.name}")
 
 
 if __name__ == "__main__":

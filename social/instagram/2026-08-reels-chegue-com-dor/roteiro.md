@@ -47,11 +47,15 @@ use o áudio de voz já clonado que está no Drive
 >
 > (20–23 s) Chegue com dor. Saia mais leve. Me chama no WhatsApp.
 
-Para montar o vídeo já com a locução:
+Para montar o vídeo já com a locução, aponte para o arquivo de verdade
+(o `--narracao` é conferido antes de qualquer render):
 
 ```
-python3 src/montar.py --narracao caminho/do/audio.wav
+python3 src/montar.py --narracao ~/Downloads/audio_voicebox.wav
 ```
+
+Se o `reels.mp4` já estiver montado, ele é reaproveitado — só a mixagem roda de
+novo. Use `--forcar` para remontar o vídeo do zero.
 
 Isso gera `reels-com-voz.mp4` — a locução entra por cima e a trilha cai para 25 %.
 
