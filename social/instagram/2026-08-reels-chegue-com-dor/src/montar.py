@@ -25,18 +25,20 @@ FPS = 30
 CROSS = 0.45          # duração do crossfade entre cenas
 ZOOM_TOTAL = 0.09     # quanto a imagem avança em cada cena
 
-# (duração em segundos, sentido do zoom)
+# (duração em segundos, sentido do zoom) — os cortes caem nas pausas
+# da locução em audio_voicebox.wav; ver roteiro.md
 CENAS = [
-    (3.4, "in"),    # 1 · Chegue com dor.
-    (3.0, "out"),   # 2 · Saia mais leve.
-    (2.7, "in"),    # 3 · o ombro que trava
-    (2.7, "out"),   # 4 · a lombar que reclama
-    (3.8, "in"),    # 5 · a sessão começa com uma conversa
-    (3.6, "out"),   # 6 · as técnicas
-    (3.2, "in"),    # 7 · 5,0 no Google
-    (4.4, "out"),   # 8 · agende sua sessão
+    (6.07, "in"),     # 1 · Chegue com dor.
+    (4.03, "out"),    # 2 · Saia mais leve.
+    (5.79, "in"),     # 3 · o ombro que trava
+    (2.41, "out"),    # 4 · a lombar que reclama
+    (3.79, "in"),     # 5 · o pescoço que virou pedra
+    (4.88, "out"),    # 6 · a sessão começa com uma conversa
+    (5.9, "in"),      # 7 · as técnicas
+    (3.44, "out"),    # 8 · um tempo só seu
+    (5.12, "in"),     # 9 · 5,0 no Google
+    (4.65, "out"),    # 10 · agende sua sessão
 ]
-
 
 def duracao_total() -> float:
     """Duração final: a soma das cenas menos o que cada crossfade sobrepõe."""

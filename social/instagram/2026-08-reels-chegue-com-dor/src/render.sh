@@ -22,7 +22,7 @@ if [ -z "$CHROME" ]; then
 fi
 [ -n "$CHROME" ] || { echo "Chromium não encontrado. Defina CHROME=/caminho/do/chrome" >&2; exit 1; }
 
-CENAS="${CENAS:-8}"
+CENAS="${CENAS:-10}"
 
 for i in $(seq 1 "$CENAS"); do
   for camada in fundo texto; do
