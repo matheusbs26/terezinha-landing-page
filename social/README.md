@@ -19,7 +19,7 @@ Posts existentes:
 - `2026-08-chegue-com-dor/` — carrossel do feed, 7 imagens 4:5
 - `2026-08-stories-duvidas/` — stories de perguntas frequentes, 8 imagens 9:16
 - `2026-08-reels-chegue-com-dor/` — reels de 42 s com locução, 1080×1920
-- `2026-08-reels-pos-operatorio/` — reels de 34 s sobre drenagem pós-operatória
+- `2026-08-reels-pos-operatorio/` — reels de 28 s sobre drenagem pós-operatória (mudo)
 
 Antes de montar um post novo, veja `instagram/_modelos/` — a biblioteca de
 layouts prontos (15 modelos) com o catálogo de quando usar cada um.

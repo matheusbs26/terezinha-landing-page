@@ -22,21 +22,24 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 QUADROS = RAIZ / "quadros"
 FPS = 30
-CROSS = 0.45          # duração do crossfade entre cenas
-ZOOM_TOTAL = 0.09     # quanto a imagem avança em cada cena
+CROSS = 0.40          # duração do crossfade entre cenas
+ZOOM_TOTAL = 0.07     # quanto a imagem avança em cada cena (movimento discreto)
 
-# (duração em segundos, sentido do zoom)
+# (duração em segundos, sentido do zoom). A duração já inclui o crossfade que
+# a cena empresta para a seguinte — o tempo visível é este menos 0,40 s.
 CENAS = [
-    (4.40, "in"),     # 1 · Operou. E agora?
-    (3.20, "out"),    # 2 · o inchaço, o peso, o medo de encostar
-    (4.20, "in"),     # 3 · o corpo precisa de tempo e de cuidado
-    (3.60, "out"),    # 4 · a liberação do cirurgião
-    (4.00, "in"),     # 5 · toque leve, só nas regiões liberadas
-    (4.60, "out"),    # 6 · como funciona, em três passos
-    (4.80, "in"),     # 7 · depoimento da Taís
-    (3.60, "out"),    # 8 · leve as orientações médicas
-    (4.80, "in"),     # 9 · vamos combinar?
+    (3.60, "in"),     # 1 · 0,0–3,2 s · Operou. E agora?
+    (3.40, "out"),    # 2 · 3,2–6,2 s · inchaço, peso, medo de encostar
+    (4.40, "in"),     # 3 · 6,2–10,2 s · seu corpo precisa de tempo e cuidado
+    (3.60, "out"),    # 4 · 10,2–13,4 s · liberação do cirurgião
+    (3.00, "in"),     # 5 · 13,4–16,0 s · toque leve
+    (2.80, "out"),    # 6 · 16,0–18,4 s · cuidado individual
+    (4.20, "in"),     # 7 · 18,4–22,2 s · cada pós-operatório é único
+    (3.20, "out"),    # 8 · 22,2–25,0 s · depoimento
+    (3.00, "in"),     # 9 · 25,0–28,0 s · vamos conversar?
 ]
+
+
 def duracao_total() -> float:
     """Duração final: a soma das cenas menos o que cada crossfade sobrepõe."""
     return sum(d for d, _ in CENAS) - CROSS * (len(CENAS) - 1)
@@ -118,7 +121,10 @@ def filtro() -> tuple[list[str], str, float]:
             f"fade=t=in:st=0.25:d=0.55:alpha=1,"
             f"fade=t=out:st={saida_fade:.2f}:d=0.5:alpha=1,setsar=1[ov{i}]"
         )
-        partes.append(f"[bg{i}][ov{i}]overlay=0:0:format=auto,format=yuv420p[c{i}]")
+        partes.append(
+            f"[bg{i}][ov{i}]overlay=x=0:y='if(lt(t,0.9), 14*(1-t/0.9), 0)':"
+            f"format=auto,format=yuv420p[c{i}]"
+        )
 
     # Emenda das cenas por crossfade.
     atual = "c0"
