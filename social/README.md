@@ -21,6 +21,7 @@ Posts existentes:
 - `2026-08-reels-chegue-com-dor/` — reels de 42 s com locução, 1080×1920
 - `2026-08-reels-pos-operatorio/` — reels de 28 s sobre drenagem pós-operatória (mudo)
 - `2026-08-reflexologia-podal/` — carrossel do feed, 7 imagens 4:5, "Faz cócegas?"
+- `2026-08-ventosaterapia-marcas/` — post do feed, 1 imagem 4:5, "Aquelas marcas roxas?"
 
 Antes de montar um post novo, veja `instagram/_modelos/` — a biblioteca de
 layouts prontos (15 modelos) com o catálogo de quando usar cada um.

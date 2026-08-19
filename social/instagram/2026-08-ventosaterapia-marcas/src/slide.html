@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Post do feed — Aquelas marcas roxas?</title>
+<style>
+  @font-face {
+    font-family: "Poiret One";
+    src: url("fonts/poiretone.woff2") format("woff2");
+    font-weight: 400;
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/poppins-300.woff2") format("woff2");
+    font-weight: 300;
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/poppins-400.woff2") format("woff2");
+    font-weight: 400;
+    font-display: block;
+  }
+
+  :root {
+    --bg: #ded8cf;
+    --green: #4b5a39;
+    --green-soft: #6d7a5c;
+    --ink: #1f1f1c;
+    --hair: rgba(31, 31, 28, 0.55);
+    --pad: 88px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #4a4a4a; }
+  body {
+    font-family: "Poppins", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  /* Quadro único 1080×1350 (4:5) — post de imagem só, sem carrossel. */
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1350px;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .head {
+    position: absolute;
+    top: 168px;
+    left: var(--pad);
+    right: 700px;
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-weight: 300;
+    font-size: 25px;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    z-index: 4;
+  }
+  .head .line { flex: 1; height: 1px; background: var(--hair); }
+
+  .footrule {
+    position: absolute;
+    left: var(--pad);
+    right: 700px;
+    bottom: 148px;
+    height: 1px;
+    background: var(--hair);
+    z-index: 4;
+  }
+
+  .photo {
+    position: absolute;
+    left: -110px;
+    bottom: 0;
+    width: 660px;
+    height: 1080px;
+    object-fit: cover;
+    object-position: 52% 18%;
+    mix-blend-mode: multiply;
+    filter: saturate(0.72) contrast(1.02);
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    mask-composite: intersect;
+    z-index: 1;
+  }
+
+  /* Painel verde-oliva à direita, para o slide único precisar de mais peso. */
+  .panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 640px;
+    height: 1350px;
+    background: var(--green);
+    z-index: 2;
+  }
+  .panel .kicker {
+    font-weight: 300;
+    font-size: 24px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: #b9c2ac;
+  }
+  .panel h2 {
+    font-family: "Poiret One", "Poppins", sans-serif;
+    font-weight: 400;
+    color: #eae7df;
+    font-size: 82px;
+    line-height: 1.02;
+    margin-top: 26px;
+  }
+  .panel p {
+    font-weight: 300;
+    font-size: 29px;
+    line-height: 1.58;
+    color: #e3e0d6;
+    margin-top: 30px;
+  }
+  .panel p strong { font-weight: 400; color: #ffffff; }
+  .panel .inner {
+    position: absolute;
+    left: 64px;
+    right: 64px;
+    top: 280px;
+  }
+  .panel .contact {
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(234,231,223,0.3);
+    font-weight: 300;
+    font-size: 25px;
+    color: #eae7df;
+  }
+  .panel .contact small {
+    display: block;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #b9c2ac;
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+  <section class="slide">
+    <img class="photo" src="../../../../assets/img/massage-4.jpg" alt="Aplicação de ventosaterapia por Terezinha Ramos">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span></div>
+    <div class="panel">
+      <div class="inner">
+        <p class="kicker">Curiosidade</p>
+        <h2>Aquelas<br>marcas<br>roxas?</h2>
+        <p>É a <strong>ventosaterapia</strong>: os copos criam uma leve sucção na pele e é comum ficarem marcas arredondadas na região tratada. Não doem — e costumam sumir em poucos dias.</p>
+        <p>A sensação é de puxada, não de dor. Muito usada em costas e ombros, sozinha ou junto com a massagem terapêutica.</p>
+        <div class="contact">
+          <small>Agende</small>
+          WhatsApp (51) 98958-2730 — link na bio
+        </div>
+      </div>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+</body>
+</html>
