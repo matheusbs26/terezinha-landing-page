@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Post do feed — Faz cócegas? Reflexologia podal</title>
+<style>
+  /* Fontes servidas localmente para a renderização não depender da rede.
+     Poiret One (display, art déco fina) e Poppins (geométrica) reproduzem a
+     dupla do modelo de referência. */
+  @font-face {
+    font-family: "Poiret One";
+    src: url("fonts/poiretone.woff2") format("woff2");
+    font-weight: 400;
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/poppins-300.woff2") format("woff2");
+    font-weight: 300;
+    font-display: block;
+  }
+  @font-face {
+    font-family: "Poppins";
+    src: url("fonts/poppins-400.woff2") format("woff2");
+    font-weight: 400;
+    font-display: block;
+  }
+
+  :root {
+    --bg: #ded8cf;         /* greige quente do modelo */
+    --bg-warm: #e3ddd4;
+    --green: #4b5a39;      /* verde-oliva dos títulos */
+    --green-soft: #6d7a5c;
+    --ink: #1f1f1c;
+    --hair: rgba(31, 31, 28, 0.55);
+
+    --pad: 88px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #4a4a4a; }
+  body {
+    font-family: "Poppins", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  /* Cada slide é um quadro 1080×1350 (4:5); o render.sh captura um por vez. */
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1350px;
+    overflow: hidden;
+    background: var(--bg);
+    display: none;
+  }
+  body[data-slide="1"] #s1, body[data-slide="2"] #s2,
+  body[data-slide="3"] #s3, body[data-slide="4"] #s4,
+  body[data-slide="5"] #s5, body[data-slide="6"] #s6,
+  body[data-slide="7"] #s7 { display: block; }
+
+  /* ---- elementos comuns ---- */
+  .head {
+    position: absolute;
+    top: 168px;
+    left: var(--pad);
+    right: var(--pad);
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    font-weight: 300;
+    font-size: 25px;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    z-index: 4;
+  }
+  .head .line {
+    flex: 1;
+    height: 1px;
+    background: var(--hair);
+  }
+
+  .footrule {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    bottom: 148px;
+    height: 1px;
+    background: var(--hair);
+    z-index: 4;
+  }
+
+  h2 {
+    font-family: "Poiret One", "Poppins", sans-serif;
+    font-weight: 400;
+    color: var(--green);
+    font-size: 108px;
+    line-height: 0.94;
+    letter-spacing: -0.005em;
+  }
+  p.body {
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.56;
+    color: var(--ink);
+  }
+
+  .stage {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    z-index: 3;
+  }
+
+  /* Fotos entram em multiply: a parede clara do consultório vira o próprio
+     fundo da peça e só a Terezinha e a maca continuam visíveis. */
+  .photo {
+    position: absolute;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    filter: saturate(0.72) contrast(1.02) brightness(1.06);
+    z-index: 1;
+  }
+  .wash {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    z-index: 2;
+  }
+
+  /* ======================= 1 · CAPA ======================= */
+  #s1 .photo {
+    right: -50px;
+    bottom: 0;
+    width: 700px;
+    height: 1130px;
+    object-position: 44% 12%;
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    mask-composite: intersect;
+  }
+  #s1 .stage { top: 420px; right: 500px; }
+  #s1 h2 { font-size: 116px; }
+  #s1 p.body { margin-top: 40px; max-width: 460px; }
+
+  /* ==================== 2 · RESPOSTA ========================= */
+  #s2 .stage { top: 460px; }
+  #s2 h2 { font-size: 100px; }
+  #s2 p.body { margin-top: 34px; max-width: 760px; }
+  #s2 .leaf {
+    position: absolute;
+    right: -46px;
+    bottom: -18px;
+    width: 288px;
+    z-index: 2;
+    transform: scaleX(-1);
+  }
+
+  /* =================== 3 · A TÉCNICA ======================= */
+  #s3 .stage { top: 386px; right: 300px; }
+  #s3 h2 { font-size: 100px; }
+  #s3 p.body { margin-top: 34px; }
+  #s3 .curves-tr { position: absolute; top: -286px; right: -96px; width: 430px; z-index: 2; }
+  #s3 .curves-bl { position: absolute; left: -96px; bottom: -262px; width: 430px; z-index: 2; }
+
+  /* =================== 4 · INDICADA PARA (M13) =================== */
+  #s4 .stage { top: 340px; }
+  #s4 h2 { font-size: 88px; margin-bottom: 56px; }
+  #s4 .item { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 40px; }
+  #s4 .item .n {
+    flex: none; width: 62px; height: 62px; border-radius: 50%;
+    background: var(--green); color: #ece9e1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 300; font-size: 28px;
+  }
+  #s4 .item p { font-weight: 300; font-size: 30px; line-height: 1.45; color: var(--ink); padding-top: 8px; }
+  #s4 .item p b { font-weight: 400; color: var(--green); }
+
+  /* ================== 5 · DISCRETA ====================== */
+  #s5 .photo {
+    left: -80px;
+    bottom: 0;
+    width: 680px;
+    height: 1080px;
+    object-position: 50% 16%;
+    -webkit-mask-image:
+      linear-gradient(270deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(270deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    mask-composite: intersect;
+  }
+  #s5 .stage { top: 420px; left: 480px; }
+  #s5 h2 { font-size: 96px; }
+  #s5 p.body { margin-top: 34px; }
+
+  /* ==================== 6 · DEPOIMENTO ====================== */
+  #s6 .stage { top: 400px; }
+  #s6 .score {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    color: var(--green);
+  }
+  #s6 .score b {
+    font-family: "Poiret One", sans-serif;
+    font-weight: 400;
+    font-size: 96px;
+    line-height: 1;
+  }
+  #s6 .score i { font-style: normal; font-size: 30px; letter-spacing: 0.2em; }
+  #s6 .count {
+    margin-top: 12px;
+    font-weight: 300;
+    font-size: 24px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+  }
+  #s6 .quote {
+    font-family: "Poiret One", sans-serif;
+    color: var(--green);
+    font-size: 68px;
+    line-height: 1.1;
+    margin-top: 58px;
+  }
+  #s6 .by {
+    margin-top: 44px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-weight: 300;
+    font-size: 25px;
+    color: var(--ink);
+  }
+  #s6 .by .dash { width: 54px; height: 1px; background: var(--hair); }
+
+  /* ==================== 7 · AGENDE ======================== */
+  #s7 .photo {
+    right: -60px;
+    bottom: 0;
+    width: 680px;
+    height: 1080px;
+    object-position: 50% 14%;
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 46%),
+      linear-gradient(180deg, transparent 0%, #000 30%);
+    mask-composite: intersect;
+  }
+  #s7 .stage { top: 380px; right: 500px; }
+  #s7 h2 { font-size: 96px; }
+  #s7 .contact { margin-top: 46px; }
+  #s7 .contact div {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(31,31,28,0.22);
+    font-weight: 300;
+    font-size: 27px;
+    color: var(--ink);
+  }
+  #s7 .contact div small {
+    display: block;
+    font-size: 19px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-soft);
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- 1 · CAPA -->
+  <section class="slide" id="s1">
+    <img class="photo" src="../../../../assets/img/massage-1.jpg" alt="Atendimento de reflexologia podal com Terezinha Ramos">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <h2>Faz<br>cócegas?</h2>
+      <p class="body">A pergunta que mais ouvimos sobre a reflexologia podal. A resposta é no próximo slide.</p>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 2 · RESPOSTA -->
+  <section class="slide" id="s2">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <h2>Não. É pressão,<br>não cócega.</h2>
+      <p class="body">No começo pode incomodar um pouco, mas a pressão usada na reflexologia é firme e constante — bem diferente do toque leve, que é o que costuma provocar cócegas.</p>
+    </div>
+    <svg class="leaf" viewBox="0 0 320 520" fill="none" aria-hidden="true"></svg>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 3 · A TÉCNICA -->
+  <section class="slide" id="s3">
+    <svg class="curves-tr" viewBox="0 0 360 360" fill="none" aria-hidden="true"></svg>
+    <svg class="curves-bl" viewBox="0 0 360 360" fill="none" aria-hidden="true"></svg>
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <h2>Pressão firme,<br>ponto a ponto</h2>
+      <p class="body">A técnica parte da ideia de que os pés concentram pontos reflexos ligados a diferentes regiões do corpo. A sessão trabalha esses pontos dedo a dedo, dos dedos ao calcanhar.</p>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 4 · INDICADA PARA -->
+  <section class="slide" id="s4">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <h2>Quando vale<br>a pena marcar</h2>
+      <div class="item"><span class="n">1</span><p><b>Dia inteiro em pé:</b> pés cansados e pesados no fim da tarde.</p></div>
+      <div class="item"><span class="n">2</span><p><b>Vontade de relaxar</b> sem massagem no corpo todo.</p></div>
+      <div class="item"><span class="n">3</span><p><b>Pausa curta:</b> uma sessão restauradora que cabe na correria da semana.</p></div>
+      <div class="item"><span class="n">4</span><p><b>Sessão discreta:</b> não precisa tirar a roupa para relaxar de verdade.</p></div>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 5 · DISCRETA -->
+  <section class="slide" id="s5">
+    <img class="photo" src="../../../../assets/img/portrait-about.jpg" alt="Terezinha Ramos no consultório">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <h2>Só os pés<br>ficam livres</h2>
+      <p class="body">Uma das técnicas mais discretas do consultório: você fica confortavelmente acomodado, sem precisar tirar a roupa, e todo o trabalho acontece nos pés.</p>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 6 · DEPOIMENTO -->
+  <section class="slide" id="s6">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <div class="score"><b>5,0</b><i>★★★★★</i></div>
+      <p class="count">28 avaliações no Google</p>
+      <p class="quote">“Ambiente relaxante, acolhedor e terapêutico.”</p>
+      <div class="by"><span class="dash"></span><span>Raquel Louzada · avaliação no Google</span></div>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+  <!-- 7 · AGENDE -->
+  <section class="slide" id="s7">
+    <img class="photo" src="../../../../assets/img/portrait-laugh3.jpg" alt="Terezinha Ramos no consultório">
+    <div class="head"><span>terezinharamos.com.br</span><span class="line"></span><span>reflexologia podal</span></div>
+    <div class="stage">
+      <h2>Agende<br>sua sessão</h2>
+      <div class="contact">
+        <div><small>WhatsApp</small>(51) 98958-2730</div>
+        <div><small>Consultório</small>R. José de Alencar, 658/306<br>Menino Deus, Porto Alegre</div>
+        <div style="border-bottom-color: transparent;"><small>Site</small>terezinharamos.com.br</div>
+      </div>
+    </div>
+    <div class="footrule"></div>
+  </section>
+
+<script>
+  // ---- ornamentos de linha (desenhados por código, como no modelo) ----
+
+  // Ramo: haste curva e folíolos em pares, com o par diminuindo até a ponta.
+  function leaf(svg) {
+    const S = "stroke='#1f1f1c' stroke-width='2' fill='none' stroke-linecap='round'";
+    let d = `<path d="M40 512 C 60 380, 110 250, 205 60" ${S}/>`;
+    const pairs = 7;
+    for (let i = 0; i < pairs; i++) {
+      const t = i / (pairs - 1);
+      const p = (a, b, c, e) => {
+        const u = 1 - t;
+        return u*u*u*a + 3*u*u*t*b + 3*u*t*t*c + t*t*t*e;
+      };
+      const x = p(40, 60, 110, 205), y = p(512, 380, 250, 60);
+      const len = 168 * (1 - 0.62 * t);
+      const lift = 40 * (1 - 0.5 * t);
+      for (const s of [-1, 1]) {
+        const tipX = x + s * len * 0.92, tipY = y - lift - len * 0.16;
+        d += `<path d="M${x.toFixed(1)} ${y.toFixed(1)}
+          C ${(x + s*len*0.34).toFixed(1)} ${(y - lift - len*0.42).toFixed(1)},
+            ${(x + s*len*0.74).toFixed(1)} ${(tipY - len*0.18).toFixed(1)},
+            ${tipX.toFixed(1)} ${tipY.toFixed(1)}
+          C ${(x + s*len*0.7).toFixed(1)} ${(tipY + len*0.2).toFixed(1)},
+            ${(x + s*len*0.32).toFixed(1)} ${(y - lift + len*0.06).toFixed(1)},
+            ${x.toFixed(1)} ${y.toFixed(1)} Z" ${S}/>`;
+      }
+    }
+    svg.innerHTML = d;
+  }
+
+  // Feixe de arcos concêntricos, desenhados em leque a partir do canto.
+  function curves(svg, flip) {
+    const S = "stroke='#3d4a30' stroke-width='1.1' fill='none' opacity='0.75'";
+    let d = "";
+    for (let i = 0; i < 22; i++) {
+      const r = 46 + i * 15;
+      const k = 0.55 + i * 0.012;
+      d += `<path d="M0 ${r} C ${r*k} ${r}, ${r} ${r*k}, ${r} 0" ${S}/>`;
+    }
+    svg.innerHTML = d;
+    if (flip) svg.style.transform = "scale(-1,-1)";
+  }
+
+  const l = document.querySelector("#s2 .leaf");
+  if (l) leaf(l);
+  const c1 = document.querySelector("#s3 .curves-tr");
+  const c2 = document.querySelector("#s3 .curves-bl");
+  if (c1) { curves(c1, false); c1.style.transform = "scaleY(-1)"; }
+  if (c2) { curves(c2, false); c2.style.transform = "scaleX(-1)"; }
+
+  // O slide exibido vem da querystring (?slide=2), usada pelo render.sh.
+  document.body.dataset.slide = new URLSearchParams(location.search).get("slide") || "1";
+</script>
+</body>
+</html>
