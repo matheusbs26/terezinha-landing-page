@@ -17,19 +17,33 @@ as variáveis de `assets/css/style.css` e `assets/img/`.
 
 ## trapezio.jpg
 
-**Por que esse assunto.** Escolhido a partir de dados conectados, não de palpite:
+**Por que esse assunto.** Escolhido a partir do feed real de @terezinhamassoterapia
+(234 seguidores, 28 posts) e das 28 avaliações do Perfil da Empresa:
 
-- Nas 28 avaliações do Perfil da Empresa, a ventosaterapia aparece com um relato
-  concreto de resultado ("estava com dores no trapézio, fiz as ventosas,
-  liberação e saí novo"), e dor de coluna/ombro é o motivo mais citado para
-  procurar a Terezinha.
-- Nos termos de busca do Perfil da Empresa, o único acima do limiar de
-  divulgação é o nome dela. Tudo que é genérico — "massoterapeuta menino deus",
-  "massagem relaxante porto alegre" — fica abaixo. Ou seja: quem chega já a
-  conhece. O conteúdo precisa alcançar quem ainda não sabe o nome dela, e para
-  isso funciona melhor um post sobre um problema específico do que sobre a marca.
-- Ventosaterapia tem gancho de curiosidade ("por que isso funciona?"), que rende
-  salvamento e comentário, e não repete o assunto do reel.
+- Nos últimos dois anos o perfil publicou sobre drenagem estética, lipo enzimática,
+  tensão no pescoço e ombros, um panorama das nove técnicas e drenagem
+  pós-operatória. **Ventosaterapia nunca teve post próprio** — aparece só como
+  hashtag na lista.
+- Nas avaliações, é a única técnica com relato concreto de resultado ("estava com
+  dores no trapézio, fiz as ventosas, liberação e saí novo").
+- Tem gancho de curiosidade — "por que isso funciona?" —, que é o que rende
+  salvamento e comentário.
+
+O enquadramento inicial era "tensão no pescoço e ombro", mas o post de 10/08/2026
+já cobre exatamente isso (22 curtidas, 3 comentários). O kicker foi reescrito para
+o mecanismo da ventosa, que é o que há de novo.
+
+**O que os dados de busca não sustentam.** No Google Ads da Terezinha não há uma
+única busca por "ventosa" em 172 cliques de 6 meses. A demanda paga é genérica
+("massagem porto alegre" puxa 26 cliques e 4 das 13 conversões) e o específico que
+aparece é dor, não técnica: "dor nas costas", "tratamento nervo ciático",
+"liberação miofascial". Este post vale pelo feed e pelas avaliações, não por
+volume de busca — quem planejar a sequência deve lembrar que as pessoas procuram
+pela dor, não pelo nome da técnica.
+
+**Temas ainda descobertos no feed,** com respaldo nas avaliações ou nas buscas:
+dor lombar, nervo ciático, atendimento a quem treina (há duas avaliações de
+praticantes de musculação e Muay Thai), reflexologia podal, pedras quentes e reiki.
 
 **Legenda sugerida:**
 
