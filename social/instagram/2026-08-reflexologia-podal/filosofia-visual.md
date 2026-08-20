@@ -1,7 +1,7 @@
 # Botânica Serena — variação "curiosidade"
 
 Mesma filosofia do sistema visual da Terezinha (greige quente, verde-oliva de
-folha madura, Poiret One para títulos, Poppins Light para o corpo), aplicada
+folha madura, Italiana para títulos, Poppins Light para o corpo), aplicada
 a um post que abre com uma pergunta em vez de uma afirmação.
 
 ## O gancho
@@ -20,5 +20,5 @@ carrosséis anteriores.
   de modelos, com os círculos verde-oliva.
 - Os ornamentos (ramo e arcos concêntricos) são os mesmos desenhados em SVG
   por código, só reposicionados nos slides 2 e 3 deste post.
-- O depoimento do slide 6 segue o layout do M12, com a citação em Poiret One
+- O depoimento do slide 6 segue o layout do M12, com a citação em Italiana
   grande.
