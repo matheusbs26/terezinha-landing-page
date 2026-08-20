@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Reel — Terezinha Ramos Massoterapeuta</title>
+<!--
+  Cena do Reels (1080x1920). Toda a animacao e dirigida por window.__seek(t),
+  em segundos, para que o render.mjs consiga capturar quadro a quadro de forma
+  deterministica. Nada aqui depende de requestAnimationFrame nem de CSS
+  animations: se dependesse, cada captura cairia num ponto diferente da
+  animacao e o video sairia tremido.
+-->
+<style>
+@font-face{
+  font-family:'Fraunces';font-style:normal;font-weight:300 700;font-display:block;
+  src:url('fonts/fraunces.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Fraunces';font-style:italic;font-weight:300 700;font-display:block;
+  src:url('fonts/fraunces-italic.woff2') format('woff2');
+}
+@font-face{
+  font-family:'Work Sans';font-style:normal;font-weight:300 700;font-display:block;
+  src:url('fonts/worksans.woff2') format('woff2');
+}
+
+:root{
+  --ink:#1b1a17;
+  --ink-soft:#322f2a;
+  --cream:#f7f4ee;
+  --cream-alt:#efe9df;
+  --sand:#d9d0bf;
+  --gold:#a9895f;
+  --gold-deep:#8a6a3f;
+  --gold-light:#d9bd8e;
+  --whats:#25d366;
+  --display:'Fraunces',Georgia,serif;
+  --body:'Work Sans',system-ui,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#1b1a17}
+body{font-family:var(--body);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;isolation:isolate}
+
+.scene{position:absolute;inset:0;opacity:0;will-change:opacity,transform;transform-origin:50% 50%}
+
+/* ---------- utilitarios ---------- */
+.photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+.grade{position:absolute;inset:0}
+.kicker{
+  font-family:var(--body);font-weight:400;font-size:25px;letter-spacing:.34em;
+  text-transform:uppercase;white-space:nowrap;
+}
+.line{will-change:transform,opacity,filter}
+.mask{overflow:hidden;display:block;padding:18px 0;margin:-18px 0}
+.rule{height:2px;background:var(--gold);width:0}
+
+/* ---------- 1. HOOK ---------- */
+#hook .grade{
+  background:
+    radial-gradient(120% 78% at 50% 22%, rgba(27,26,23,0) 38%, rgba(27,26,23,.42) 100%),
+    linear-gradient(180deg, rgba(27,26,23,.58) 0%, rgba(27,26,23,.06) 28%, rgba(27,26,23,.12) 48%, rgba(27,26,23,.70) 76%, rgba(27,26,23,.92) 100%);
+}
+#hook .kicker{position:absolute;top:214px;left:0;right:0;text-align:center;color:rgba(247,244,238,.86)}
+#hook .head{position:absolute;left:0;right:0;bottom:470px;text-align:center;padding:0 80px}
+#hook .h1{font-family:var(--display);font-weight:300;font-size:100px;line-height:1.04;color:var(--cream);letter-spacing:-.015em}
+#hook .h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:116px;line-height:1.04;color:var(--gold-light);letter-spacing:-.02em;margin-top:10px}
+#hook .rule{margin:44px auto 0}
+#hook .sig{
+  margin-top:34px;font-size:24px;letter-spacing:.26em;text-transform:uppercase;
+  color:rgba(247,244,238,.72);font-weight:300;
+}
+
+/* ---------- 2. DOR ---------- */
+#pain{background:var(--cream)}
+#pain .glow{
+  position:absolute;width:1500px;height:1500px;left:-360px;top:220px;border-radius:50%;
+  background:radial-gradient(circle, rgba(169,137,95,.16) 0%, rgba(169,137,95,0) 62%);
+}
+#pain .ring{
+  position:absolute;width:940px;height:940px;right:-330px;top:820px;border-radius:50%;
+  border:1.5px solid rgba(169,137,95,.26);
+}
+#pain .kicker{position:absolute;top:404px;left:110px;color:var(--gold-deep)}
+#pain .lines{position:absolute;left:110px;top:534px;right:110px}
+#pain .row{display:flex;align-items:baseline;gap:34px;margin-bottom:34px}
+#pain .dot{width:0;height:2px;background:var(--gold);flex:none;position:relative;top:-24px}
+#pain .txt{font-family:var(--display);font-weight:300;font-size:86px;line-height:1.12;color:var(--ink);letter-spacing:-.018em}
+#pain .rule{margin:66px 0 0 0}
+#pain .solve{
+  font-family:var(--display);font-style:italic;font-weight:400;font-size:82px;
+  color:var(--gold-deep);margin-top:46px;letter-spacing:-.015em;
+}
+
+/* ---------- 3. QUEM ---------- */
+#who{background:var(--cream-alt)}
+#who .glow{
+  position:absolute;inset:0;
+  background:radial-gradient(90% 60% at 50% 18%, rgba(255,255,255,.85) 0%, rgba(239,233,223,0) 70%);
+}
+#who .kicker{position:absolute;top:150px;left:0;right:0;text-align:center;color:var(--gold-deep)}
+#who .card{
+  position:absolute;left:150px;top:214px;width:780px;height:1140px;border-radius:26px;
+  overflow:hidden;box-shadow:0 46px 90px -40px rgba(27,26,23,.55);will-change:transform,opacity;
+}
+#who .card .scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(27,26,23,0) 42%, rgba(27,26,23,.20) 62%, rgba(27,26,23,.86) 100%);
+}
+#who .cap{position:absolute;left:52px;right:52px;bottom:52px}
+#who .name{font-family:var(--display);font-weight:300;font-size:78px;color:var(--cream);letter-spacing:-.02em;line-height:1.05}
+#who .role{margin-top:14px;font-size:27px;letter-spacing:.16em;text-transform:uppercase;color:rgba(247,244,238,.82);font-weight:300}
+#who .pills{position:absolute;left:0;right:0;top:1404px;display:flex;justify-content:center;gap:22px}
+#who .pill{
+  border:1.5px solid rgba(169,137,95,.55);border-radius:999px;padding:18px 34px;
+  font-size:29px;letter-spacing:.03em;color:var(--ink-soft);background:rgba(255,255,255,.55);
+  white-space:nowrap;will-change:transform,opacity;
+}
+#who .pill b{font-weight:600;color:var(--gold-deep)}
+
+/* ---------- 4. SERVICOS ---------- */
+#serv{background:var(--cream)}
+#serv .glow{
+  position:absolute;inset:0;
+  background:radial-gradient(78% 46% at 50% 8%, rgba(217,208,191,.55) 0%, rgba(247,244,238,0) 68%);
+}
+#serv .kicker{position:absolute;top:308px;left:0;right:0;text-align:center;color:var(--gold-deep)}
+#serv .title{
+  position:absolute;top:386px;left:96px;right:96px;text-align:center;
+  font-family:var(--display);font-weight:300;font-size:82px;line-height:1.1;color:var(--ink);letter-spacing:-.02em;
+}
+#serv .title i{font-style:italic;color:var(--gold-deep)}
+#serv .chips{
+  position:absolute;top:672px;left:84px;right:84px;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:20px;
+}
+#serv .chip{
+  border:1.5px solid var(--sand);background:rgba(255,255,255,.66);border-radius:999px;
+  padding:21px 38px;font-size:35px;font-weight:400;color:var(--ink);letter-spacing:-.005em;
+  white-space:nowrap;will-change:transform,opacity;
+}
+#serv .foot{
+  position:absolute;left:96px;right:96px;top:1288px;text-align:center;
+  font-family:var(--display);font-style:italic;font-weight:300;font-size:56px;color:var(--gold-deep);
+  line-height:1.2;
+}
+#serv .rule{margin:0 auto 38px}
+
+/* ---------- 5. PROVA ---------- */
+#proof{background:#14130f}
+#proof .grade{
+  background:
+    radial-gradient(105% 66% at 50% 40%, rgba(20,19,15,.30) 0%, rgba(20,19,15,.86) 100%),
+    linear-gradient(180deg, rgba(20,19,15,.80) 0%, rgba(20,19,15,.46) 38%, rgba(20,19,15,.90) 100%);
+}
+#proof .wrap{position:absolute;left:96px;right:96px;top:442px;text-align:center}
+#proof .score{
+  font-family:var(--display);font-weight:300;font-size:216px;line-height:.9;color:var(--gold-light);
+  letter-spacing:-.03em;
+}
+#proof .stars{margin-top:26px;display:flex;justify-content:center;gap:16px}
+#proof .star{width:52px;height:52px;will-change:transform,opacity}
+#proof .src{margin-top:28px;font-size:26px;letter-spacing:.28em;text-transform:uppercase;color:rgba(247,244,238,.74);font-weight:300}
+#proof .quote{
+  margin:76px auto 0;max-width:840px;
+  font-family:var(--display);font-style:italic;font-weight:300;font-size:56px;line-height:1.34;
+  color:var(--cream);letter-spacing:-.01em;
+}
+#proof .who{margin-top:38px;font-size:25px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-light);font-weight:300}
+
+/* ---------- 6. CTA ---------- */
+#cta{background:linear-gradient(178deg, var(--cream) 0%, var(--cream-alt) 58%, #e6ddcf 100%)}
+#cta .glow{
+  position:absolute;inset:0;
+  background:radial-gradient(64% 40% at 50% 26%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 70%);
+}
+#cta .mark{
+  position:absolute;left:50%;top:250px;width:264px;height:230px;margin-left:-132px;
+  background-color:var(--gold);will-change:transform,opacity;
+  -webkit-mask:url('../../assets/img/logo-mark.png') center/contain no-repeat;
+          mask:url('../../assets/img/logo-mark.png') center/contain no-repeat;
+}
+#cta .head{position:absolute;left:90px;right:90px;top:576px;text-align:center}
+#cta .h1{font-family:var(--display);font-weight:300;font-size:92px;line-height:1.06;color:var(--ink);letter-spacing:-.025em}
+#cta .h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:76px;color:var(--gold-deep);margin-top:10px;letter-spacing:-.02em}
+#cta .btn{
+  position:absolute;left:50%;top:906px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:22px;
+  background:var(--whats);color:#fff;border-radius:999px;padding:30px 60px;
+  box-shadow:0 26px 48px -22px rgba(37,211,102,.85);will-change:transform,opacity;
+}
+#cta .btn svg{width:52px;height:52px;flex:none}
+#cta .btn span{font-size:44px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+#cta .phone{
+  position:absolute;left:0;right:0;top:1078px;text-align:center;
+  font-family:var(--display);font-weight:300;font-size:70px;color:var(--ink);letter-spacing:.01em;
+}
+#cta .addr{
+  position:absolute;left:120px;right:120px;top:1196px;text-align:center;
+  font-size:28px;line-height:1.5;color:#6b6558;font-weight:300;letter-spacing:.02em;
+}
+#cta .site{
+  position:absolute;left:0;right:0;top:1318px;text-align:center;
+  font-size:26px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep);font-weight:400;
+}
+#cta .rule{margin:0 auto;position:absolute;left:50%;top:1404px;transform:translateX(-50%)}
+
+/* ---------- acabamento global ---------- */
+#grain{
+  position:absolute;inset:0;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+  background-size:220px 220px;
+}
+#vignette{
+  position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(78% 60% at 50% 46%, rgba(0,0,0,0) 58%, rgba(0,0,0,.17) 100%);
+}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. GANCHO -->
+  <section class="scene" id="hook">
+    <img class="photo" id="hookImg" src="../../assets/img/massage-5.jpg" alt="" style="filter:brightness(1.09) saturate(1.06) contrast(1.03)">
+    <div class="grade"></div>
+    <div class="kicker" data-el="hook-kicker">Massoterapia em Porto Alegre</div>
+    <div class="head">
+      <div class="mask"><div class="h1 line" data-el="hook-h1">Chegue com dor.</div></div>
+      <div class="mask"><div class="h2 line" data-el="hook-h2">Saia mais leve.</div></div>
+      <div class="rule" data-el="hook-rule"></div>
+      <div class="sig line" data-el="hook-sig">Terezinha Ramos &middot; clientes desde 2009</div>
+    </div>
+  </section>
+
+  <!-- 2. A DOR -->
+  <section class="scene" id="pain">
+    <div class="glow" data-el="pain-glow"></div>
+    <div class="ring" data-el="pain-ring"></div>
+    <div class="kicker" data-el="pain-kicker">Se voc&ecirc; se reconhece aqui</div>
+    <div class="lines">
+      <div class="row"><i class="dot" data-el="pain-dot-0"></i><div class="txt line" data-el="pain-txt-0">Dor no pesco&ccedil;o</div></div>
+      <div class="row"><i class="dot" data-el="pain-dot-1"></i><div class="txt line" data-el="pain-txt-1">Tens&atilde;o nos ombros</div></div>
+      <div class="row"><i class="dot" data-el="pain-dot-2"></i><div class="txt line" data-el="pain-txt-2">Noites mal dormidas</div></div>
+      <div class="rule" data-el="pain-rule"></div>
+      <div class="solve line" data-el="pain-solve">Isso tem tratamento.</div>
+    </div>
+  </section>
+
+  <!-- 3. QUEM CUIDA -->
+  <section class="scene" id="who">
+    <div class="glow"></div>
+    <div class="kicker" data-el="who-kicker">Quem vai cuidar de voc&ecirc;</div>
+    <div class="card" data-el="who-card">
+      <img class="photo" id="whoImg" src="../../assets/img/portrait-smile.jpg" alt="">
+      <div class="scrim"></div>
+      <div class="cap">
+        <div class="name line" data-el="who-name">Terezinha Ramos</div>
+        <div class="role line" data-el="who-role">Massoterapeuta &middot; Menino Deus, POA</div>
+      </div>
+    </div>
+    <div class="pills">
+      <div class="pill" data-el="who-pill-0">Atendimento <b>individualizado</b></div>
+      <div class="pill" data-el="who-pill-1"><b>5,0</b> no Google</div>
+    </div>
+  </section>
+
+  <!-- 4. SERVICOS -->
+  <section class="scene" id="serv">
+    <div class="glow"></div>
+    <div class="kicker" data-el="serv-kicker">Massoterapia sob medida</div>
+    <div class="title line" data-el="serv-title">Uma t&eacute;cnica<br><i>para cada corpo.</i></div>
+    <div class="chips">
+      <div class="chip" data-el="serv-chip-0">Relaxante</div>
+      <div class="chip" data-el="serv-chip-1">Terap&ecirc;utica</div>
+      <div class="chip" data-el="serv-chip-2">Drenagem Linf&aacute;tica</div>
+      <div class="chip" data-el="serv-chip-3">P&oacute;s-Operat&oacute;ria</div>
+      <div class="chip" data-el="serv-chip-4">Modeladora</div>
+      <div class="chip" data-el="serv-chip-5">Reflexologia Podal</div>
+      <div class="chip" data-el="serv-chip-6">Pedras Quentes</div>
+      <div class="chip" data-el="serv-chip-7">Ventosaterapia</div>
+      <div class="chip" data-el="serv-chip-8">Reiki</div>
+    </div>
+    <div class="foot">
+      <div class="rule" data-el="serv-rule"></div>
+      <div class="line" data-el="serv-foot">N&atilde;o sabe qual escolher?<br>A Terezinha indica.</div>
+    </div>
+  </section>
+
+  <!-- 5. PROVA SOCIAL -->
+  <section class="scene" id="proof">
+    <img class="photo" id="proofImg" src="../../assets/img/massage-1.jpg" alt="">
+    <div class="grade"></div>
+    <div class="wrap">
+      <div class="score line" data-el="proof-score">0,0</div>
+      <div class="stars">
+        <svg class="star" data-el="proof-star-0" viewBox="0 0 24 24" fill="#d9bd8e"><path d="M12 1.8l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.56l-6.18 3.25L7 13.94l-5-4.87 6.91-1z"/></svg>
+        <svg class="star" data-el="proof-star-1" viewBox="0 0 24 24" fill="#d9bd8e"><path d="M12 1.8l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.56l-6.18 3.25L7 13.94l-5-4.87 6.91-1z"/></svg>
+        <svg class="star" data-el="proof-star-2" viewBox="0 0 24 24" fill="#d9bd8e"><path d="M12 1.8l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.56l-6.18 3.25L7 13.94l-5-4.87 6.91-1z"/></svg>
+        <svg class="star" data-el="proof-star-3" viewBox="0 0 24 24" fill="#d9bd8e"><path d="M12 1.8l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.56l-6.18 3.25L7 13.94l-5-4.87 6.91-1z"/></svg>
+        <svg class="star" data-el="proof-star-4" viewBox="0 0 24 24" fill="#d9bd8e"><path d="M12 1.8l3.09 6.26 6.91 1-5 4.87 1.18 6.87L12 17.56l-6.18 3.25L7 13.94l-5-4.87 6.91-1z"/></svg>
+      </div>
+      <div class="src line" data-el="proof-src">28 avalia&ccedil;&otilde;es no Google</div>
+      <div class="quote line" data-el="proof-quote">&ldquo;Fazer massagem com a Terezinha te deixa novo em folha, relaxado e pronto para as batalhas cotidianas da vida.&rdquo;</div>
+      <div class="who line" data-el="proof-who">Sidnei Schneider</div>
+    </div>
+  </section>
+
+  <!-- 6. CHAMADA -->
+  <section class="scene" id="cta">
+    <div class="glow"></div>
+    <div class="mark" id="ctaMark" role="img" aria-label="Marca Terezinha Ramos Massoterapeuta"></div>
+    <div class="head">
+      <div class="h1 line" data-el="cta-h1">Agende a sua sess&atilde;o.</div>
+      <div class="h2 line" data-el="cta-h2">Seu corpo agradece.</div>
+    </div>
+    <div class="btn" data-el="cta-btn">
+      <svg viewBox="0 0 32 32" fill="#fff" aria-hidden="true"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.5 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.6c-2 0-3.9-.5-5.5-1.5l-.4-.2-4 1.1 1.1-3.9-.3-.4c-1.1-1.7-1.6-3.7-1.6-5.7C5.3 10.1 10.1 5.3 16 5.3S26.7 10.1 26.7 16 21.9 26.6 16 26.6zm5.9-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3s0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.5s0-.4 0-.6-.7-1.7-1-2.3c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.2 1.4 3.5c.2.2 2.4 3.7 5.9 5.2.8.4 1.5.6 2 .7.8.3 1.6.2 2.2.1.7-.1 2.1-.8 2.4-1.7.3-.8.3-1.5.2-1.7-.1-.1-.3-.2-.6-.4z"/></svg>
+      <span>Chamar no WhatsApp</span>
+    </div>
+    <div class="phone line" data-el="cta-phone">(51) 98958-2730</div>
+    <div class="addr line" data-el="cta-addr">R. Jos&eacute; de Alencar, 658/306<br>Menino Deus &middot; Porto Alegre &ndash; RS</div>
+    <div class="site line" data-el="cta-site">terezinharamos.com.br</div>
+    <div class="rule" data-el="cta-rule"></div>
+  </section>
+
+  <div id="vignette"></div>
+  <div id="grain"></div>
+</div>
+<script>
+(() => {
+  'use strict';
+
+  const FPS = 30;
+  const XF  = 0.38;            // duracao do crossfade entre cenas
+
+  const SCENES = [
+    { id:'hook',  t0: 0.0,  t1: 4.4,  ken:true  },
+    { id:'pain',  t0: 4.4,  t1: 9.3               },
+    { id:'who',   t0: 9.3,  t1:13.4               },
+    { id:'serv',  t0:13.4,  t1:18.1               },
+    { id:'proof', t0:18.1,  t1:22.3, ken:true  },
+    { id:'cta',   t0:22.3,  t1:27.4               },
+  ];
+  const DUR = SCENES[SCENES.length - 1].t1;
+
+  /* ---------- utilidades ---------- */
+  const clamp  = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
+  const eOut   = p => 1 - Math.pow(1 - p, 3);
+  const eOutQ  = p => 1 - Math.pow(1 - p, 5);
+  const seg    = (t, start, dur) => clamp((t - start) / dur);
+  const mix    = (a, b, p) => a + (b - a) * p;
+
+  const el = {};
+  document.querySelectorAll('[data-el]').forEach(n => { el[n.dataset.el] = n; });
+  const scenes = {};
+  SCENES.forEach(s => { scenes[s.id] = document.getElementById(s.id); });
+
+  // Sobe o elemento para o lugar com desfoque saindo: p=0 escondido, p=1 no lugar.
+  function up(node, p, dist = 40, blur = 8) {
+    node.style.opacity   = p;
+    node.style.transform = 'translate3d(0,' + ((1 - p) * dist).toFixed(2) + 'px,0)';
+    node.style.filter    = blur ? 'blur(' + ((1 - p) * blur).toFixed(2) + 'px)' : 'none';
+  }
+
+  // Revelacao por mascara: o texto sobe de dentro de um bloco com overflow hidden.
+  function unmask(node, p, dist) {
+    node.style.opacity   = clamp(p * 2.2);
+    node.style.transform = 'translate3d(0,' + ((1 - p) * dist).toFixed(2) + 'px,0)';
+  }
+
+  function track(node, p, from, to) {
+    node.style.opacity      = p;
+    node.style.letterSpacing = mix(from, to, p).toFixed(4) + 'em';
+    node.style.transform     = 'translate3d(0,' + ((1 - p) * 12).toFixed(2) + 'px,0)';
+  }
+
+  function alphaOf(t, s) {
+    if (t < s.t0 - XF || t > s.t1) return 0;
+    let a = 1;
+    if (s.t0 > 0)   a = Math.min(a, clamp((t - (s.t0 - XF)) / XF));
+    if (s.t1 < DUR) a = Math.min(a, clamp((s.t1 - t) / XF));
+    return a;
+  }
+
+  /* ---------- cenas ---------- */
+
+  function hook(rel, dur) {
+    const pp = clamp(rel / dur);
+    document.getElementById('hookImg').style.transform =
+      'scale(' + (1.15 + 0.10 * pp).toFixed(4) + ') translate3d(0,' + (-24 * pp).toFixed(2) + 'px,0)';
+
+    track(el['hook-kicker'], eOut(seg(rel, 0.20, 1.05)), 0.52, 0.34);
+    unmask(el['hook-h1'], eOutQ(seg(rel, 0.62, 1.05)), 150);
+    unmask(el['hook-h2'], eOutQ(seg(rel, 1.42, 1.05)), 172);
+
+    const r = eOut(seg(rel, 2.32, 0.85));
+    el['hook-rule'].style.width   = (210 * r).toFixed(1) + 'px';
+    el['hook-rule'].style.opacity = r;
+
+    up(el['hook-sig'], eOut(seg(rel, 2.70, 0.95)), 22, 5);
+  }
+
+  function pain(rel, dur) {
+    const pp = clamp(rel / dur);
+    el['pain-glow'].style.transform = 'translate3d(0,' + (-46 * pp).toFixed(1) + 'px,0)';
+    const rg = eOut(seg(rel, 0.10, 1.6));
+    el['pain-ring'].style.opacity   = (rg * 0.9).toFixed(3);
+    el['pain-ring'].style.transform =
+      'translate3d(0,' + (-58 * pp).toFixed(1) + 'px,0) scale(' + (0.94 + 0.08 * rg).toFixed(4) + ')';
+
+    track(el['pain-kicker'], eOut(seg(rel, 0.12, 0.9)), 0.50, 0.34);
+
+    for (let i = 0; i < 3; i++) {
+      const p = eOutQ(seg(rel, 0.50 + i * 0.60, 0.95));
+      el['pain-dot-' + i].style.width   = (58 * p).toFixed(1) + 'px';
+      el['pain-dot-' + i].style.opacity = p;
+      up(el['pain-txt-' + i], p, 44, 9);
+    }
+
+    const r = eOut(seg(rel, 2.55, 0.80));
+    el['pain-rule'].style.width   = (470 * r).toFixed(1) + 'px';
+    el['pain-rule'].style.opacity = r;
+
+    up(el['pain-solve'], eOutQ(seg(rel, 2.90, 1.05)), 48, 11);
+  }
+
+  function who(rel, dur) {
+    const pp = clamp(rel / dur);
+    track(el['who-kicker'], eOut(seg(rel, 0.12, 0.85)), 0.50, 0.34);
+
+    const c = eOutQ(seg(rel, 0.22, 1.15));
+    el['who-card'].style.opacity   = clamp(c * 1.6);
+    el['who-card'].style.transform =
+      'translate3d(0,' + ((1 - c) * 44).toFixed(2) + 'px,0) scale(' + (0.962 + 0.038 * c).toFixed(4) + ')';
+    el['who-card'].style.clipPath  = 'inset(0% 0% ' + ((1 - c) * 100).toFixed(2) + '% 0% round 26px)';
+
+    document.getElementById('whoImg').style.transform =
+      'scale(' + (1.05 + 0.08 * pp).toFixed(4) + ') translate3d(0,' + (-12 * pp).toFixed(2) + 'px,0)';
+
+    up(el['who-name'], eOutQ(seg(rel, 1.00, 0.95)), 40, 8);
+    up(el['who-role'], eOut(seg(rel, 1.24, 0.95)), 28, 6);
+
+    for (let i = 0; i < 2; i++) {
+      const p = eOutQ(seg(rel, 1.70 + i * 0.18, 0.85));
+      el['who-pill-' + i].style.opacity   = p;
+      el['who-pill-' + i].style.transform =
+        'translate3d(0,' + ((1 - p) * 24).toFixed(2) + 'px,0) scale(' + (0.94 + 0.06 * p).toFixed(4) + ')';
+    }
+  }
+
+  function serv(rel) {
+    track(el['serv-kicker'], eOut(seg(rel, 0.12, 0.85)), 0.50, 0.34);
+    up(el['serv-title'], eOutQ(seg(rel, 0.32, 1.05)), 46, 10);
+
+    for (let i = 0; i < 9; i++) {
+      const p = eOutQ(seg(rel, 0.95 + i * 0.085, 0.75));
+      el['serv-chip-' + i].style.opacity   = p;
+      el['serv-chip-' + i].style.transform =
+        'translate3d(0,' + ((1 - p) * 26).toFixed(2) + 'px,0) scale(' + (0.93 + 0.07 * p).toFixed(4) + ')';
+    }
+
+    const r = eOut(seg(rel, 2.55, 0.70));
+    el['serv-rule'].style.width   = (190 * r).toFixed(1) + 'px';
+    el['serv-rule'].style.opacity = r;
+
+    up(el['serv-foot'], eOut(seg(rel, 2.78, 0.95)), 34, 8);
+  }
+
+  function proof(rel, dur) {
+    const pp = clamp(rel / dur);
+    const img = document.getElementById('proofImg');
+    img.style.transform = 'scale(' + (1.12 + 0.09 * pp).toFixed(4) + ') translate3d(0,' + (-20 * pp).toFixed(2) + 'px,0)';
+    img.style.filter    = 'saturate(.78) blur(7px) brightness(1.05)';
+
+    const n  = eOut(seg(rel, 0.22, 1.05));
+    const pv = eOut(seg(rel, 0.12, 0.70));
+    el['proof-score'].textContent = (5 * n).toFixed(1).replace('.', ',');
+    el['proof-score'].style.opacity   = pv;
+    el['proof-score'].style.transform =
+      'translate3d(0,' + ((1 - pv) * 22).toFixed(2) + 'px,0) scale(' + (0.9 + 0.1 * pv).toFixed(4) + ')';
+
+    for (let i = 0; i < 5; i++) {
+      const p = eOutQ(seg(rel, 0.92 + i * 0.09, 0.55));
+      el['proof-star-' + i].style.opacity   = p;
+      el['proof-star-' + i].style.transform =
+        'scale(' + (0.45 + 0.55 * p).toFixed(4) + ') rotate(' + ((1 - p) * -32).toFixed(2) + 'deg)';
+    }
+
+    up(el['proof-src'],   eOut(seg(rel, 1.52, 0.85)), 20, 4);
+    up(el['proof-quote'], eOutQ(seg(rel, 1.90, 1.10)), 48, 10);
+    up(el['proof-who'],   eOut(seg(rel, 2.52, 0.90)), 24, 6);
+  }
+
+  function cta(rel) {
+    const m = eOutQ(seg(rel, 0.18, 1.05));
+    const mark = document.getElementById('ctaMark');
+    mark.style.opacity   = m;
+    mark.style.transform = 'translate3d(0,' + ((1 - m) * -18).toFixed(2) + 'px,0) scale(' + (0.86 + 0.14 * m).toFixed(4) + ')';
+
+    up(el['cta-h1'], eOutQ(seg(rel, 0.62, 1.00)), 48, 10);
+    up(el['cta-h2'], eOutQ(seg(rel, 0.90, 1.00)), 48, 10);
+
+    const b = eOutQ(seg(rel, 1.40, 0.80));
+    // depois da entrada o botao respira devagar, para o olho voltar nele
+    const pulse = b >= 1 ? 0.030 * Math.sin((rel - 2.20) * Math.PI * 2 / 1.7) : 0;
+    el['cta-btn'].style.opacity   = b;
+    el['cta-btn'].style.transform =
+      'translateX(-50%) translate3d(0,' + ((1 - b) * 26).toFixed(2) + 'px,0) scale(' + (0.90 + 0.10 * b + pulse).toFixed(4) + ')';
+
+    up(el['cta-phone'], eOutQ(seg(rel, 1.80, 0.95)), 30, 6);
+    up(el['cta-addr'],  eOut(seg(rel, 2.10, 0.95)), 26, 5);
+    up(el['cta-site'],  eOut(seg(rel, 2.40, 0.95)), 22, 4);
+
+    const r = eOut(seg(rel, 2.70, 0.80));
+    el['cta-rule'].style.width   = (130 * r).toFixed(1) + 'px';
+    el['cta-rule'].style.opacity = (r * 0.75).toFixed(3);
+  }
+
+  const RUN = { hook, pain, who, serv, proof, cta };
+
+  /* ---------- laco principal ---------- */
+  function seek(t) {
+    t = clamp(t, 0, DUR);
+    for (const s of SCENES) {
+      const node = scenes[s.id];
+      const a    = alphaOf(t, s);
+      node.style.opacity    = a;
+      node.style.visibility = a > 0 ? 'visible' : 'hidden';
+      if (a <= 0) continue;
+
+      // O conteudo comeca a entrar junto com o crossfade, nao depois dele:
+      // sem esse adiantamento sobra meio segundo de fundo vazio a cada troca.
+      const rel = t - s.t0 + (s.t0 > 0 ? XF : 0);
+      if (!s.ken) {
+        // cenas de fundo chapado ganham um leve empurrao de escala na entrada
+        const e = eOut(clamp(rel / 1.25));
+        node.style.transform = 'scale(' + (1.028 - 0.028 * e).toFixed(4) + ')';
+      }
+      RUN[s.id](rel, s.t1 - s.t0);
+    }
+  }
+
+  window.__meta = { fps: FPS, duration: DUR, frames: Math.round(DUR * FPS), width: 1080, height: 1920 };
+  window.__seek = seek;
+
+  /* ---------- pronto para capturar ---------- */
+  (async () => {
+    const imgs = [...document.images];
+    await Promise.all(imgs.map(i => (i.complete ? Promise.resolve() : i.decode().catch(() => {}))));
+    await Promise.all(imgs.map(i => i.decode().catch(() => {})));
+    await document.fonts.load('300 100px Fraunces');
+    await document.fonts.load('italic 400 100px Fraunces');
+    await document.fonts.load('400 40px "Work Sans"');
+    await document.fonts.load('600 40px "Work Sans"');
+    await document.fonts.ready;
+    seek(0);
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    window.__ready = true;
+  })();
+})();
+</script>
+</body>
+</html>
