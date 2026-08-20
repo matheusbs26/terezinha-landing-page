@@ -27,12 +27,12 @@
   }
 
   :root {
-    --bg: #ded8cf;         /* greige quente do modelo */
-    --bg-warm: #e3ddd4;
-    --green: #4b5a39;      /* verde-oliva dos títulos */
-    --green-soft: #6d7a5c;
-    --ink: #1f1f1c;
-    --hair: rgba(31, 31, 28, 0.55);
+    --bg: #ddd7cd;         /* greige quente do modelo */
+    --bg-warm: #e2dcd2;
+    --green: #475438;      /* verde-oliva dos títulos */
+    --green-soft: #69745b;
+    --ink: #1d1d1b;
+    --hair: rgba(29, 29, 27, 0.55);
 
     --pad: 88px;
   }
@@ -192,7 +192,7 @@
     align-items: baseline;
     gap: 18px;
     padding: 17px 0;
-    border-bottom: 1px solid rgba(31,31,28,0.22);
+    border-bottom: 1px solid rgba(29, 29, 27,0.22);
     font-weight: 300;
     font-size: 27px;
     color: var(--ink);
@@ -267,7 +267,7 @@
   #s7 .contact { margin-top: 46px; }
   #s7 .contact div {
     padding: 16px 0;
-    border-bottom: 1px solid rgba(31,31,28,0.22);
+    border-bottom: 1px solid rgba(29, 29, 27,0.22);
     font-weight: 300;
     font-size: 27px;
     color: var(--ink);
@@ -383,7 +383,7 @@
 
   // Ramo: haste curva e folíolos em pares, com o par diminuindo até a ponta.
   function leaf(svg) {
-    const S = "stroke='#1f1f1c' stroke-width='2' fill='none' stroke-linecap='round'";
+    const S = "stroke='#1d1d1b' stroke-width='2' fill='none' stroke-linecap='round'";
     let d = `<path d="M40 512 C 60 380, 110 250, 205 60" ${S}/>`;
     const pairs = 7;
     for (let i = 0; i < pairs; i++) {

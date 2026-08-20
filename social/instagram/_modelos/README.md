@@ -41,9 +41,9 @@ rótulo é só da prévia, some quando o bloco é copiado para um post (a linha
 
 ## Sistema visual
 
-- **Fundo:** greige `#ded8cf`; variação clara `#f0eeea` para peças mais arejadas.
-- **Verde-oliva:** `#4b5a39` (títulos e painéis), `#6d7a5c` para apoios.
-- **Texto:** `#1f1f1c`, sempre Poppins Light.
+- **Fundo:** greige `#ddd7cd`; variação clara `#efede8` para peças mais arejadas.
+- **Verde-oliva:** `#475438` (títulos e painéis), `#69745b` para apoios.
+- **Texto:** `#1d1d1b`, sempre Poppins Light.
 - **Títulos:** Poiret One, entrelinha fechada (0,96).
 - **Assinatura:** `@mtekaramos` à esquerda, filete, tema à direita.
 - **Fotos:** entram em `multiply` com máscara em degradê, para a parede clara do
