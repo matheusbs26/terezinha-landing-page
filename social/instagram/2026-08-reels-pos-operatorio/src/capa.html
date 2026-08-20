@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Capa do reels — pós-operatório</title>
+<style>
+  /* Capa 1080×1920 para o player do Reels. No grid do perfil o Instagram
+     recorta em 4:5 pelo centro (y 285 → 1635), então todo o conteúdo essencial
+     vive dentro dessa faixa — e ainda dentro do quadrado central, caso o
+     recorte mude. */
+
+  @font-face { font-family: "Italiana"; src: url("fonts/italiana.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-300.woff2") format("woff2"); font-weight: 300; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+  :root {
+    --bg: #ddd7cd;
+    --green: #45542f;
+    --ink: #1a1a17;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Poppins", sans-serif; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+  .capa { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+
+  .capa img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: 52% 24%;
+    mix-blend-mode: multiply;
+    filter: saturate(0.72) contrast(1.02) brightness(1.05);
+  }
+  /* Véu em dois tempos: limpa a faixa do texto e ainda deixa a imagem viva. */
+  .veu {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(0deg, rgba(222,216,207,0.99) 34%, rgba(222,216,207,0.55) 58%, rgba(222,216,207,0) 82%),
+      linear-gradient(180deg, rgba(222,216,207,0.75) 0%, rgba(222,216,207,0) 24%);
+  }
+
+  /* Bloco de texto centrado no eixo do recorte 4:5. */
+  .texto {
+    position: absolute;
+    left: 112px; right: 112px;
+    top: 1020px;
+  }
+  h1 {
+    font-family: "Italiana", sans-serif; font-weight: 400; color: var(--green);
+    font-size: 138px; line-height: 0.98; letter-spacing: -0.01em;
+  }
+  .selo {
+    display: inline-block; margin-top: 44px;
+    border: 1.5px solid var(--green); border-radius: 999px;
+    padding: 22px 44px;
+    font-weight: 400; font-size: 36px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--green);
+  }
+  .assinatura {
+    position: absolute; left: 112px; right: 112px; bottom: 300px;
+    font-weight: 400; font-size: 36px; line-height: 1.5; color: var(--ink);
+  }
+  .assinatura span { font-weight: 300; font-size: 32px; opacity: 0.78; }
+</style>
+</head>
+<body>
+  <div class="capa">
+    <img src="../../../../assets/img/massage-2.jpg" alt="">
+    <div class="veu"></div>
+    <div class="texto">
+      <h1>Operou.<br>E agora?</h1>
+      <span class="selo">Drenagem pós-operatória</span>
+    </div>
+    <p class="assinatura">Maria Terezinha Ramos<br><span>Massoterapeuta · Porto Alegre</span></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Reels — drenagem pós-operatória</title>
+<style>
+  /* Duas camadas por cena:
+       ?cena=N&camada=fundo    → a imagem (recebe o zoom no ffmpeg)
+       ?cena=N&camada=texto    → só a tipografia, em PNG transparente
+
+     Versão 2: menos texto por tela, corpo maior, contraste mais alto e margem
+     lateral mais larga — o Instagram cobre as bordas com os botões da interface. */
+
+  @font-face { font-family: "Italiana"; src: url("fonts/italiana.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-300.woff2") format("woff2"); font-weight: 300; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+  :root {
+    --bg: #ddd7cd;
+    --green: #45542f;        /* um tom mais fechado que a v1, para ganhar contraste */
+    --green-soft: #5c6a4a;   /* o antigo apoio era claro demais em tela pequena */
+    --ink: #1a1a17;
+    --pad: 112px;            /* margem lateral maior: os botões do app comem a borda */
+    --safe-top: 320px;
+    --safe-bottom: 520px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Poppins", sans-serif; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+  .cena { position: relative; width: 1080px; height: 1920px; overflow: hidden; display: none; }
+  body.mostra .cena.ativa { display: block; }
+
+  .fundo { position: absolute; inset: 0; background: var(--bg); }
+  .fundo img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    filter: saturate(0.72) contrast(1.02) brightness(1.04);
+  }
+  .fundo .veu { position: absolute; inset: 0; }
+  .veu.baixo { background: linear-gradient(0deg, rgba(222,216,207,0.99) 42%, rgba(222,216,207,0.62) 64%, rgba(222,216,207,0) 100%); }
+  .veu.alto  { background: linear-gradient(180deg, rgba(222,216,207,0.99) 36%, rgba(222,216,207,0.55) 64%, rgba(222,216,207,0) 100%); }
+  .veu.cheio { background: rgba(222,216,207,0.74); }
+
+  .texto { position: absolute; left: var(--pad); right: var(--pad); }
+  .texto.centro { top: 50%; transform: translateY(-50%); }
+  .texto.baixo  { bottom: var(--safe-bottom); }
+  .texto.alto   { top: var(--safe-top); }
+
+  h1 {
+    font-family: "Italiana", sans-serif; font-weight: 400; color: var(--green);
+    font-size: 136px; line-height: 0.98; letter-spacing: -0.01em;
+  }
+  h1.menor { font-size: 112px; }
+
+  /* Texto de leitura: subiu de 44 para 50 px e ficou mais escuro. */
+  p.apoio { font-weight: 300; font-size: 50px; line-height: 1.36; color: var(--ink); }
+  p.apoio strong { font-weight: 400; color: var(--green); }
+  p.apoio + p.apoio { margin-top: 30px; }
+
+  .chapeu {
+    font-weight: 400; font-size: 34px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--green); margin-bottom: 30px;
+  }
+
+  /* Selo: usado no gancho e na regra do cirurgião. */
+  .selo {
+    display: inline-block;
+    border: 1.5px solid var(--green);
+    border-radius: 999px;
+    padding: 20px 42px;
+    font-weight: 400; font-size: 34px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--green);
+  }
+
+  /* Três sensações, uma embaixo da outra, cada uma com peso próprio. */
+  .sensacoes span {
+    display: block;
+    font-family: "Italiana", sans-serif; font-weight: 400;
+    font-size: 128px; line-height: 1.06; color: var(--green);
+  }
+
+  .aspas {
+    font-family: "Italiana", sans-serif; color: var(--green);
+    font-size: 96px; line-height: 1.08;
+  }
+  .assina {
+    margin-top: 40px; display: flex; align-items: center; gap: 22px;
+    font-weight: 300; font-size: 34px; color: var(--ink);
+  }
+  .assina .traco { width: 56px; height: 1px; background: rgba(26,26,23,0.6); }
+
+  /* Fecho: nome e função em destaque, endereço discreto, WhatsApp em selo. */
+  .nome {
+    font-weight: 400; font-size: 46px; color: var(--ink); margin-top: 44px;
+  }
+  .funcao {
+    font-weight: 300; font-size: 36px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--green); margin-top: 10px;
+  }
+  .local {
+    font-weight: 300; font-size: 32px; color: var(--ink); opacity: 0.75; margin-top: 22px;
+  }
+  .zap {
+    display: inline-block; margin-top: 40px;
+    border: 1.5px solid var(--green); border-radius: 999px;
+    padding: 22px 44px;
+    font-weight: 300; font-size: 34px; color: var(--green);
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 · 0–3,2 s · gancho -->
+<section class="cena" data-cena="1">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-2.jpg" alt="" style="object-position: 50% 26%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <h1>Operou.<br>E agora?</h1>
+    <p style="margin-top: 40px;"><span class="selo">Drenagem pós-operatória</span></p>
+  </div>
+</section>
+
+<!-- 2 · 3,2–6,2 s · identificação -->
+<section class="cena" data-cena="2">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <p class="sensacoes">
+      <span>Inchaço.</span>
+      <span>Peso.</span>
+      <span>Medo de encostar.</span>
+    </p>
+  </div>
+</section>
+
+<!-- 3 · 6,2–10,2 s · acolhimento -->
+<section class="cena" data-cena="3">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-5.jpg" alt="" style="object-position: 50% 44%;">
+    <div class="veu alto"></div>
+  </div>
+  <div class="texto alto">
+    <h1 class="menor" style="font-size: 92px;">Seu corpo<br>precisa de tempo<br>e cuidado.</h1>
+  </div>
+</section>
+
+<!-- 4 · 10,2–13,4 s · segurança profissional -->
+<section class="cena" data-cena="4">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <p style="margin-bottom: 44px;"><span class="selo">Primeiro</span></p>
+    <h1 class="menor">Liberação e<br>orientação do<br>seu cirurgião.</h1>
+  </div>
+</section>
+
+<!-- 5 · 13,4–16,0 s · atendimento (as mãos) -->
+<section class="cena" data-cena="5">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-2.jpg" alt="" style="object-position: 58% 66%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <p class="apoio" style="font-size: 56px; line-height: 1.28;"><strong>Toque leve</strong>, respeitando as regiões liberadas.</p>
+  </div>
+</section>
+
+<!-- 6 · 16,0–18,4 s · atendimento (o cuidado) -->
+<section class="cena" data-cena="6">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-1.jpg" alt="" style="object-position: 50% 38%;">
+    <div class="veu alto"></div>
+  </div>
+  <div class="texto alto">
+    <p class="apoio" style="font-size: 56px; line-height: 1.28;">Cuidado individual, em cada fase da recuperação.</p>
+  </div>
+</section>
+
+<!-- 7 · 18,4–22,2 s · personalização -->
+<section class="cena" data-cena="7">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <h1 class="menor">Cada pós-<br>operatório<br>é único.</h1>
+    <p class="apoio" style="margin-top: 46px; font-size: 42px;">O protocolo e o número de sessões são definidos individualmente.</p>
+  </div>
+</section>
+
+<!-- 8 · 22,2–25,0 s · prova social -->
+<section class="cena" data-cena="8">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-4.jpg" alt="" style="object-position: 50% 45%;">
+    <div class="veu cheio"></div>
+  </div>
+  <div class="texto centro">
+    <p class="aspas">“Melhor profissional<br>que conheço.”</p>
+    <div class="assina"><span class="traco"></span><span>Taís Fagundes · cliente desde 2011</span></div>
+  </div>
+</section>
+
+<!-- 9 · 25,0–28,0 s · fecho -->
+<section class="cena" data-cena="9">
+  <div class="fundo">
+    <img src="../../../../assets/img/portrait-smile.jpg" alt="" style="object-position: 50% 10%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <h1 class="menor" style="font-size: 116px;">Vamos<br>conversar?</h1>
+    <p class="nome">Maria Terezinha Ramos</p>
+    <p class="funcao">Massoterapeuta</p>
+    <p class="local">Menino Deus • Porto Alegre</p>
+    <p><span class="zap">Agende ou tire dúvidas pelo WhatsApp</span></p>
+  </div>
+</section>
+
+<script>
+  const q = new URLSearchParams(location.search);
+  const cena = document.querySelector(`.cena[data-cena="${q.get("cena") || "1"}"]`);
+  cena.classList.add("ativa");
+  document.body.classList.add("mostra");
+
+  if ((q.get("camada") || "fundo") === "texto") {
+    cena.querySelectorAll(".fundo").forEach(el => el.remove());
+    document.documentElement.style.background = "transparent";
+    document.body.style.background = "transparent";
+  } else {
+    cena.querySelectorAll(".texto").forEach(el => el.remove());
+  }
+</script>
+</body>
+</html>

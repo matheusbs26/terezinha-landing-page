@@ -30,6 +30,8 @@ docs/
 tools/
   services.js     # conteúdo dos serviços (fonte única de verdade)
   build.js        # gera as páginas a partir de services.js
+social/
+  instagram/      # posts do feed: imagens prontas, legenda e fonte (ver social/README.md)
 sitemap.xml
 robots.txt
 site.webmanifest
