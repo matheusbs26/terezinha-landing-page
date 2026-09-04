@@ -143,6 +143,25 @@ function validate() {
     if (!fs.existsSync(img)) problems.push(`${s.slug}: imagem não encontrada — ${s.image}`);
   });
 
+  /* A página de agendamento também vira sitelink, e vale para ela o mesmo
+     limite de caracteres do Google Ads. */
+  if (SCHEDULING.sitelink.text.length > LIMITS.text) {
+    problems.push(
+      `agendar: sitelink.text tem ${SCHEDULING.sitelink.text.length} caracteres (máx. ${LIMITS.text}) — "${SCHEDULING.sitelink.text}"`
+    );
+  }
+  ["desc1", "desc2"].forEach((key) => {
+    const value = SCHEDULING.sitelink[key];
+    if (value.length > LIMITS.desc) {
+      problems.push(
+        `agendar: sitelink.${key} tem ${value.length} caracteres (máx. ${LIMITS.desc}) — "${value}"`
+      );
+    }
+  });
+  if (!fs.existsSync(path.join(ROOT, SCHEDULING.image))) {
+    problems.push(`agendar: imagem não encontrada — ${SCHEDULING.image}`);
+  }
+
   if (problems.length) {
     console.error("Erros de conteúdo:\n  " + problems.join("\n  "));
     process.exit(1);
@@ -219,6 +238,7 @@ const footer = (currentSlug) => `<footer class="site-footer">
       <a href="/#servicos">Serviços</a>
       <a href="/#galeria">Galeria</a>
       <a href="/#localizacao">Localização</a>
+      <a href="/agendar/">Agendar</a>
     </nav>
     <nav class="footer-nav footer-services">
       <p class="footer-title">Massagens</p>
@@ -699,6 +719,324 @@ ${footer(service.slug)}
 }
 
 /* ========================================================================== */
+/* Página de agendamento (/agendar/)                                           */
+/* ========================================================================== */
+
+/**
+ * Página curta de agendamento, usada como destino dos anúncios e do sitelink
+ * "Agendar pelo WhatsApp".
+ *
+ * Por que ela existe: o sitelink apontava direto para o link wa.me. O Google
+ * reprovou por "Destino não correspondente" — o domínio do anúncio
+ * (terezinharamos.com.br) não batia com o domínio onde a pessoa terminava
+ * (wa.me/whatsapp.com). A regra vale para qualquer destino fora do domínio
+ * anunciado, inclusive redirecionamento automático. Aqui o clique cai numa
+ * página do próprio site e é a pessoa que decide abrir o WhatsApp — sem
+ * redirect automático, que cairia na mesma política.
+ *
+ * Por isso também a página tem conteúdo próprio (como funciona, técnicas,
+ * endereço, horário, dúvidas): uma página só com um botão é "conteúdo pouco
+ * original" para a política de experiência da página de destino e derruba o
+ * Índice de qualidade.
+ */
+const SCHEDULING = {
+  slug: "agendar",
+  title: "Agendar sessão de massagem em Porto Alegre | Terezinha Ramos",
+  description:
+    "Agende sua sessão de massoterapia no Menino Deus, Porto Alegre. Fale com a Terezinha pelo WhatsApp ou por telefone e combine técnica e horário.",
+  image: "assets/img/portrait-smile.jpg",
+  imageAlt: "Terezinha Ramos, massoterapeuta em Porto Alegre",
+  sitelink: {
+    text: "Agendar pelo WhatsApp",
+    desc1: "Atendimento rápido",
+    desc2: "Clique e agende"
+  }
+};
+
+const SCHEDULING_NAME = "Agendamento";
+
+/* Mesmas perguntas na página e no JSON-LD: o texto visível e o dado estruturado
+   não podem divergir, é o que a política de dados estruturados exige. */
+function schedulingFaq() {
+  const cheapest = Math.min.apply(null, SERVICES.map((s) => s.price.single));
+  return [
+    {
+      q: "Preciso agendar com antecedência?",
+      a: "A agenda é combinada por mensagem. Quanto antes você chamar, mais opções de horário encontra — principalmente no fim da tarde e aos sábados."
+    },
+    {
+      q: "Quanto custa a sessão?",
+      a: `Cada técnica tem o valor na própria página, a partir de ${brl(cheapest)} a sessão avulsa. Há pacotes de 4 e 8 sessões com desconto.`
+    },
+    {
+      q: "Não sei qual massagem escolher. Tem problema?",
+      a: "Nenhum. Descreva o que está sentindo no primeiro contato: a escolha da técnica é feita junto com a Terezinha."
+    },
+    {
+      q: "Prefiro ligar em vez de mandar mensagem.",
+      a: `Também pode: o telefone é ${SITE.phoneLabel}, o mesmo número do WhatsApp.`
+    }
+  ];
+}
+
+function schedulingJsonLd() {
+  const url = `${SITE.url}/${SCHEDULING.slug}/`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      business,
+      {
+        "@type": "WebPage",
+        "@id": url,
+        url: url,
+        name: SCHEDULING.title,
+        description: SCHEDULING.description,
+        isPartOf: { "@id": `${SITE.url}/#business` },
+        about: { "@id": `${SITE.url}/#business` }
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: `${SITE.url}/` },
+          { "@type": "ListItem", position: 2, name: "Agendar", item: url }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: schedulingFaq().map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a }
+        }))
+      }
+    ]
+  };
+}
+
+/** Cards das técnicas, para a pessoa já dizer o que procura ao chamar. */
+function schedulingServiceCards() {
+  return SERVICES.map(
+    (s) => `        <a class="related-card" href="/${s.slug}/">
+          <span class="related-name">${esc(s.name)}</span>
+          <span class="related-text">${esc(s.price.duration)} · ${brl(s.price.single)} a sessão avulsa</span>
+        </a>`
+  ).join("\n");
+}
+
+function schedulingPage() {
+  const url = `${SITE.url}/${SCHEDULING.slug}/`;
+  const waHref = wa(WA_DEFAULT);
+  const heroImage = webpFor(SCHEDULING.image) || SCHEDULING.image;
+  const steps = [
+    {
+      title: "Você chama no WhatsApp",
+      text: "O botão abre uma conversa com a mensagem já escrita. Conte como você está se sentindo ou o que procura."
+    },
+    {
+      title: "Combinam técnica e horário",
+      text: "A Terezinha responde pessoalmente, ajuda a escolher a técnica mais indicada e mostra os horários livres."
+    },
+    {
+      title: "Sessão confirmada",
+      text: "Confirmado o horário, é só chegar no consultório do Menino Deus. Sessão individual, sem pressa."
+    }
+  ];
+
+  const faq = schedulingFaq();
+
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+${GTAG}
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+${GTAG_GT}
+
+<title>${esc(SCHEDULING.title)}</title>
+<meta name="description" content="${esc(SCHEDULING.description)}">
+<link rel="canonical" href="${url}">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="${url}">
+<meta property="og:title" content="${esc(SCHEDULING.title)}">
+<meta property="og:description" content="${esc(SCHEDULING.description)}">
+<meta property="og:image" content="${SITE.url}/${SCHEDULING.image}">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#1b1a17">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+<noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+
+<link rel="preload" as="image" href="/${heroImage}" fetchpriority="high">
+
+${jsonLdTag(schedulingJsonLd())}
+</head>
+<body data-service="${SCHEDULING_NAME}">
+
+<a class="skip-link" href="#inicio">Pular para o conteúdo</a>
+
+${header()}
+
+<main id="inicio">
+
+  <!-- HERO -->
+  <section class="hero hero-service">
+    <div class="hero-text">
+      <p class="eyebrow">Massoterapia em ${SITE.city}</p>
+      <h1>Agendar sua sessão de massagem</h1>
+      <p class="hero-sub">Atendimento individual no Menino Deus, com hora marcada. Chame a Terezinha no WhatsApp e combinem a técnica e o melhor horário.</p>
+      <div class="hero-actions">
+        <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-large" data-service="${SCHEDULING_NAME}">
+          ${WA_ICON}
+          <span>Agendar no WhatsApp</span>
+        </a>
+        <a href="${TEL}" class="btn btn-ghost btn-large" data-service="${SCHEDULING_NAME}">
+          ${PHONE_ICON}
+          <span>Ligar ${SITE.phoneLabel}</span>
+        </a>
+        <a href="#tecnicas" class="hero-secondary">Ver as técnicas</a>
+      </div>
+      <ul class="hero-trust">
+        <li class="trust-rating">
+          <span class="trust-score">5,0</span>
+          <span class="trust-stars" aria-hidden="true">★★★★★</span>
+          <span class="trust-count">em 28 avaliações no Google</span>
+        </li>
+        <li>Clientes desde 2009</li>
+        <li class="trust-hours">${hoursInline()}</li>
+      </ul>
+    </div>
+    <div class="hero-image">
+      ${picture(SCHEDULING.image, SCHEDULING.imageAlt, 'loading="eager" fetchpriority="high"')}
+    </div>
+  </section>
+
+  <nav class="breadcrumb" aria-label="Você está em">
+    <div class="container">
+      <a href="/">Início</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">Agendar</span>
+    </div>
+  </nav>
+
+  <!-- COMO AGENDAR -->
+  <section class="section" id="como-agendar">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">Como funciona</p>
+        <h2>Três passos até a sua sessão</h2>
+      </div>
+      <ol class="steps steps-stack">
+${steps
+  .map(
+    (s, i) => `        <li class="reveal">
+          <span class="step-number">${i + 1}</span>
+          <div>
+            <h3>${esc(s.title)}</h3>
+            <p>${esc(s.text)}</p>
+          </div>
+        </li>`
+  )
+  .join("\n")}
+      </ol>
+      <p class="note-box">Quem atende é a própria Terezinha, entre um atendimento e outro. Se a resposta demorar alguns minutos, é porque ela está com uma cliente na maca.</p>
+    </div>
+  </section>
+
+  <!-- TÉCNICAS -->
+  <section class="section section-alt" id="tecnicas">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">O que você pode agendar</p>
+        <h2>Escolha a técnica (ou decida junto no contato)</h2>
+      </div>
+      <div class="related-grid reveal">
+${schedulingServiceCards()}
+      </div>
+      <p class="service-note reveal">Pacotes de 4 e 8 sessões têm desconto — os valores estão na página de cada técnica.</p>
+    </div>
+  </section>
+
+  <!-- ONDE E QUANDO -->
+  <section class="section">
+    <div class="container location-strip reveal">
+      <div>
+        <p class="eyebrow">Onde é o atendimento</p>
+        <h2>Consultório no ${SITE.district}</h2>
+        <address>
+          ${SITE.street}<br>
+          ${SITE.district}, ${SITE.city} - ${SITE.state}<br>
+          CEP ${SITE.zip}
+        </address>
+        <p class="hours-title">Horário de atendimento</p>
+        ${hoursList()}
+      </div>
+      <div class="location-actions">
+        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(
+          `${SITE.street.replace("/306", "")}, ${SITE.district}, ${SITE.city} - ${SITE.state}, ${SITE.zip}`
+        )}" target="_blank" rel="noopener" class="btn btn-dark">Como chegar</a>
+        <a href="${TEL}" class="btn btn-outline" data-service="${SCHEDULING_NAME}">
+          ${PHONE_ICON}
+          <span>Ligar</span>
+        </a>
+        <a href="/#localizacao" class="btn btn-outline">Ver no mapa</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DÚVIDAS -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">Dúvidas</p>
+        <h2>Antes de agendar</h2>
+      </div>
+      <div class="faq-list reveal">
+${faq
+  .map(
+    (item, i) => `        <details class="faq-item"${i === 0 ? " open" : ""}>
+          <summary>${esc(item.q)}</summary>
+          <p>${esc(item.a)}</p>
+        </details>`
+  )
+  .join("\n")}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final">
+    <div class="container reveal">
+      <h2>Vamos agendar a sua sessão?</h2>
+      <p>Chame a Terezinha no WhatsApp, conte como você está se sentindo e combinem juntos o melhor horário.</p>
+      <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-large" data-service="${SCHEDULING_NAME}">
+        ${WA_ICON}
+        <span>Agendar no WhatsApp</span>
+      </a>
+      <p class="cta-call">Prefere falar por telefone? <a href="${TEL}" data-service="${SCHEDULING_NAME}">${SITE.phoneLabel}</a></p>
+    </div>
+  </section>
+
+</main>
+
+${footer(null)}
+</body>
+</html>
+`;
+}
+
+/* ========================================================================== */
 /* Blocos injetados na home                                                    */
 /* ========================================================================== */
 
@@ -765,7 +1103,9 @@ function injectBlock(source, name, content, file) {
 /* ========================================================================== */
 
 function sitemap() {
-  const urls = [`${SITE.url}/`].concat(SERVICES.map((s) => `${SITE.url}/${s.slug}/`));
+  const urls = [`${SITE.url}/`]
+    .concat(SERVICES.map((s) => `${SITE.url}/${s.slug}/`))
+    .concat([`${SITE.url}/${SCHEDULING.slug}/`]);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls
@@ -787,10 +1127,21 @@ Sitemap: ${SITE.url}/sitemap.xml
 `;
 
 function sitelinksDoc() {
-  const rows = SERVICES.map(
-    (s) =>
-      `| ${s.sitelink.text} | ${s.sitelink.desc1} | ${s.sitelink.desc2} | \`${SITE.url}/${s.slug}/\` |`
-  ).join("\n");
+  const sitelinks = [
+    {
+      sitelink: SCHEDULING.sitelink,
+      url: `${SITE.url}/${SCHEDULING.slug}/`
+    }
+  ].concat(
+    SERVICES.map((s) => ({ sitelink: s.sitelink, url: `${SITE.url}/${s.slug}/` }))
+  );
+
+  const rows = sitelinks
+    .map(
+      (s) =>
+        `| ${s.sitelink.text} | ${s.sitelink.desc1} | ${s.sitelink.desc2} | \`${s.url}\` |`
+    )
+    .join("\n");
 
   return `# Sitelinks da campanha no Google Ads
 
@@ -812,6 +1163,45 @@ build falha se algum passar.
 | --- | --- | --- | --- |
 ${rows}
 
+## O sitelink "Agendar pelo WhatsApp" (reprovação por destino não correspondente)
+
+O sitelink de agendamento apontava direto para o link do WhatsApp
+(\`wa.me/...\`) e foi reprovado com **"Destino não correspondente"**: o Google
+compara o domínio do anúncio (\`${SITE.url.replace("https://", "")}\`) com o
+domínio onde a pessoa termina depois do clique, e \`wa.me\` / \`whatsapp.com\`
+é outro domínio. Não existe forma de contestar isso mantendo o link direto —
+inclusive um redirecionamento automático do site para o WhatsApp cai na mesma
+política.
+
+A correção é o que este repositório passou a gerar: a página
+\`${SITE.url}/${SCHEDULING.slug}/\`, no próprio domínio, com um botão em que a
+pessoa clica para abrir a conversa. O destino do anúncio passa a ser o site; o
+WhatsApp abre só depois de uma ação da pessoa.
+
+Como aplicar no Google Ads:
+
+1. **Recursos** → filtro **Sitelink** → abra o sitelink "Agendar pelo WhatsApp"
+   (existe uma cópia no nível da conta e outra no nível da campanha; as duas
+   precisam ser corrigidas).
+2. Troque a **URL final** pelo endereço acima. Não preencha URL final para
+   dispositivos móveis com o link do WhatsApp: o aviso citava justamente o URL
+   final para celular apontando para outro domínio — se houver um cadastrado,
+   apague ou use a mesma URL do site.
+3. Salve. A revisão costuma sair em até um dia útil; o status volta para
+   "Qualificada" sozinho, sem precisar contestar.
+
+A segunda reprovação do mesmo recurso, **"Conteúdo inadequado"**, costuma cair
+junto quando o destino é corrigido — ela vem do mesmo par texto+destino que o
+sistema não conseguiu verificar. Se persistir depois da nova revisão, aí sim
+vale **Contestar**, explicando que se trata de massoterapia (terapia manual e
+bem-estar), com atendimento em consultório e conteúdo profissional na página de
+destino.
+
+A página de agendamento tem conteúdo próprio de propósito (como funciona, as
+técnicas com preço, endereço, horário e dúvidas). Uma página só com um botão
+seria classificada como conteúdo de pouco valor pela política de experiência da
+página de destino e derrubaria o Índice de qualidade.
+
 ## Como cadastrar
 
 1. Google Ads → **Recursos** → botão **+** → **Sitelink**.
@@ -832,10 +1222,11 @@ traduzidos.
 Os sitelinks aparecem em número limitado (normalmente de 2 a 6). Vale começar
 pelos serviços de maior procura e intenção de compra:
 
-1. Massagem Relaxante
-2. Massagem Terapêutica
-3. Drenagem Linfática
-4. Drenagem Pós-Operatória
+1. Agendar pelo WhatsApp
+2. Massagem Relaxante
+3. Massagem Terapêutica
+4. Drenagem Linfática
+5. Drenagem Pós-Operatória
 
 E rodar os demais em teste depois de acumular dados de cliques.
 
@@ -862,11 +1253,23 @@ sendo a melhor opção para anúncios.
 
 function sitelinksCsv() {
   const header = "Sitelink text,Description line 1,Description line 2,Final URL";
-  const rows = SERVICES.map((s) =>
-    [s.sitelink.text, s.sitelink.desc1, s.sitelink.desc2, `${SITE.url}/${s.slug}/`]
-      .map((v) => `"${v.replace(/"/g, '""')}"`)
-      .join(",")
-  );
+  const rows = [
+    [
+      SCHEDULING.sitelink.text,
+      SCHEDULING.sitelink.desc1,
+      SCHEDULING.sitelink.desc2,
+      `${SITE.url}/${SCHEDULING.slug}/`
+    ]
+  ]
+    .concat(
+      SERVICES.map((s) => [
+        s.sitelink.text,
+        s.sitelink.desc1,
+        s.sitelink.desc2,
+        `${SITE.url}/${s.slug}/`
+      ])
+    )
+    .map((cells) => cells.map((v) => `"${v.replace(/"/g, '""')}"`).join(","));
   return [header].concat(rows).join("\n") + "\n";
 }
 
@@ -885,6 +1288,9 @@ validate();
 
 console.log("Páginas de serviço:");
 SERVICES.forEach((s) => write(path.join(s.slug, "index.html"), servicePage(s)));
+
+console.log("Agendamento:");
+write(path.join(SCHEDULING.slug, "index.html"), schedulingPage());
 
 console.log("Home:");
 const indexPath = path.join(ROOT, "index.html");

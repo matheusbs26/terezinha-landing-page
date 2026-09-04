@@ -40,4 +40,8 @@
     <loc>https://terezinharamos.com.br/reiki/</loc>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://terezinharamos.com.br/agendar/</loc>
+    <priority>0.8</priority>
+  </url>
 </urlset>
