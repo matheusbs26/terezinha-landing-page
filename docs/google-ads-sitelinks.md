@@ -16,6 +16,7 @@ build falha se algum passar.
 
 | Texto do sitelink | Descrição 1 | Descrição 2 | URL final |
 | --- | --- | --- | --- |
+| Agendar pelo WhatsApp | Atendimento rápido | Clique e agende | `https://terezinharamos.com.br/agendar/` |
 | Massagem Relaxante | Alívio do estresse do dia a dia | Sessão individual, sem pressa | `https://terezinharamos.com.br/massagem-relaxante/` |
 | Massagem Terapêutica | Foco nos pontos de dor e tensão | Técnica ajustada à sua queixa | `https://terezinharamos.com.br/massagem-terapeutica/` |
 | Drenagem Linfática | Ajuda a reduzir o inchaço | Toque suave e ritmo constante | `https://terezinharamos.com.br/drenagem-linfatica/` |
@@ -25,6 +26,45 @@ build falha se algum passar.
 | Pedras Quentes | Calor e toque terapêutico | Relaxamento muscular profundo | `https://terezinharamos.com.br/massagem-pedras-quentes/` |
 | Ventosaterapia | Ventosas soltam a musculatura | Alívio de tensão nas costas | `https://terezinharamos.com.br/ventosaterapia/` |
 | Reiki | Terapia complementar de pausa | Equilíbrio físico e emocional | `https://terezinharamos.com.br/reiki/` |
+
+## O sitelink "Agendar pelo WhatsApp" (reprovação por destino não correspondente)
+
+O sitelink de agendamento apontava direto para o link do WhatsApp
+(`wa.me/...`) e foi reprovado com **"Destino não correspondente"**: o Google
+compara o domínio do anúncio (`terezinharamos.com.br`) com o
+domínio onde a pessoa termina depois do clique, e `wa.me` / `whatsapp.com`
+é outro domínio. Não existe forma de contestar isso mantendo o link direto —
+inclusive um redirecionamento automático do site para o WhatsApp cai na mesma
+política.
+
+A correção é o que este repositório passou a gerar: a página
+`https://terezinharamos.com.br/agendar/`, no próprio domínio, com um botão em que a
+pessoa clica para abrir a conversa. O destino do anúncio passa a ser o site; o
+WhatsApp abre só depois de uma ação da pessoa.
+
+Como aplicar no Google Ads:
+
+1. **Recursos** → filtro **Sitelink** → abra o sitelink "Agendar pelo WhatsApp"
+   (existe uma cópia no nível da conta e outra no nível da campanha; as duas
+   precisam ser corrigidas).
+2. Troque a **URL final** pelo endereço acima. Não preencha URL final para
+   dispositivos móveis com o link do WhatsApp: o aviso citava justamente o URL
+   final para celular apontando para outro domínio — se houver um cadastrado,
+   apague ou use a mesma URL do site.
+3. Salve. A revisão costuma sair em até um dia útil; o status volta para
+   "Qualificada" sozinho, sem precisar contestar.
+
+A segunda reprovação do mesmo recurso, **"Conteúdo inadequado"**, costuma cair
+junto quando o destino é corrigido — ela vem do mesmo par texto+destino que o
+sistema não conseguiu verificar. Se persistir depois da nova revisão, aí sim
+vale **Contestar**, explicando que se trata de massoterapia (terapia manual e
+bem-estar), com atendimento em consultório e conteúdo profissional na página de
+destino.
+
+A página de agendamento tem conteúdo próprio de propósito (como funciona, as
+técnicas com preço, endereço, horário e dúvidas). Uma página só com um botão
+seria classificada como conteúdo de pouco valor pela política de experiência da
+página de destino e derrubaria o Índice de qualidade.
 
 ## Como cadastrar
 
@@ -46,10 +86,11 @@ traduzidos.
 Os sitelinks aparecem em número limitado (normalmente de 2 a 6). Vale começar
 pelos serviços de maior procura e intenção de compra:
 
-1. Massagem Relaxante
-2. Massagem Terapêutica
-3. Drenagem Linfática
-4. Drenagem Pós-Operatória
+1. Agendar pelo WhatsApp
+2. Massagem Relaxante
+3. Massagem Terapêutica
+4. Drenagem Linfática
+5. Drenagem Pós-Operatória
 
 E rodar os demais em teste depois de acumular dados de cliques.
 
