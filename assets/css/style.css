@@ -51,6 +51,12 @@ body {
 
 img { max-width: 100%; display: block; }
 
+/* As fotos são servidas como <picture> (WebP com o JPEG de reserva). O wrapper
+   não pode virar uma caixa a mais entre o contêiner e a imagem: com
+   display:contents ele some do layout e as regras que posicionam a foto —
+   .hero-image img, .gallery-item img — continuam valendo como antes. */
+picture { display: contents; }
+
 .container {
   width: 100%;
   max-width: var(--container-w);
@@ -805,6 +811,11 @@ address { font-style: normal; }
 }
 .cta-final h2 { color: #fff; }
 .cta-final p { color: rgba(247,244,238,0.78); max-width: 480px; margin: 0 auto 32px; }
+
+/* Alternativa por telefone, logo abaixo do botão principal: discreta para não
+   disputar atenção com o CTA verde, mas presente para quem prefere ligar. */
+.cta-final .cta-call { margin: 24px auto 0; font-size: 0.95rem; }
+.cta-final .cta-call a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
 
 /* ========== Footer ========== */
 .site-footer { background: var(--ink); color: rgba(247,244,238,0.75); padding-top: 60px; }
