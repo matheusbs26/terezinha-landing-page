@@ -18,7 +18,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { SITE, SERVICES } = require("./services");
+const { SITE, SERVICES, SPECIALS } = require("./services");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -288,6 +288,65 @@ ${SITE.hours
    manda mensagem ou volta para a busca. */
 const hoursInline = () => SITE.hours.map((h) => esc(h.short)).join(" · ");
 
+/* ========================================================================== */
+/* Preços                                                                      */
+/* ========================================================================== */
+
+/** "1290" -> "R$ 1.290". Separador de milhar como se escreve em português. */
+const brl = (value) => `R$ ${value.toLocaleString("pt-BR")}`;
+
+/** Quanto o pacote economiza em relação a comprar as sessões avulsas. */
+const savings = (price, sessions) => price.single * sessions - price["pack" + sessions];
+
+/**
+ * Cartão de valores: duração, sessão avulsa e os dois pacotes.
+ *
+ * O site inteiro dizia "valores sob consulta" e mandava a pessoa perguntar no
+ * WhatsApp. Em busca paga isso é o filtro mais caro que existe: boa parte de
+ * quem clica quer saber quanto custa antes de puxar conversa, não encontra e
+ * volta para o anúncio seguinte. Com o preço na página, quem chama já chama
+ * decidido.
+ */
+function priceCard(price, waHref, serviceName) {
+  const packs = [4, 8]
+    .map(
+      (n) => `            <li>
+              <span class="pack-label">Pacote ${n} sessões</span>
+              <span class="pack-value">${brl(price["pack" + n])} <small>economia de ${brl(savings(price, n))}</small></span>
+            </li>`
+    )
+    .join("\n");
+
+  return `<div class="price-card">
+          <p class="price-duration">Sessão de ${esc(price.duration)}</p>
+          <p class="price-single"><span class="price-value">${brl(price.single)}</span> <span class="price-unit">avulsa</span></p>
+          <ul class="price-packs">
+${packs}
+          </ul>
+          <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp price-cta" data-service="${esc(serviceName)}">
+            ${WA_ICON}
+            <span>Agendar no WhatsApp</span>
+          </a>
+        </div>`;
+}
+
+/** Offers do schema.org — os mesmos números que aparecem na página. */
+function priceOffers(price, url) {
+  const offer = (name, value) => ({
+    "@type": "Offer",
+    name: name,
+    price: value.toFixed(2),
+    priceCurrency: "BRL",
+    availability: "https://schema.org/InStock",
+    url: url
+  });
+  return [
+    offer("Sessão avulsa", price.single),
+    offer("Pacote 4 sessões", price.pack4),
+    offer("Pacote 8 sessões", price.pack8)
+  ];
+}
+
 function serviceJsonLd(service) {
   return {
     "@context": "https://schema.org",
@@ -301,7 +360,8 @@ function serviceJsonLd(service) {
         url: `${SITE.url}/${service.slug}/`,
         image: `${SITE.url}/${service.image}`,
         provider: { "@id": `${SITE.url}/#business` },
-        areaServed: { "@type": "City", name: SITE.city }
+        areaServed: { "@type": "City", name: SITE.city },
+        offers: priceOffers(service.price, `${SITE.url}/${service.slug}/`)
       },
       {
         "@type": "BreadcrumbList",
@@ -343,6 +403,8 @@ function homeJsonLd() {
           name: "Serviços de massoterapia",
           itemListElement: SERVICES.map((s) => ({
             "@type": "Offer",
+            price: s.price.single.toFixed(2),
+            priceCurrency: "BRL",
             itemOffered: {
               "@type": "Service",
               name: s.name,
@@ -485,6 +547,7 @@ ${service.intro.map((p) => `        <p>${esc(p)}</p>`).join("\n")}
         <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-dark" data-service="${esc(service.name)}">Tirar dúvidas no WhatsApp</a>
       </div>
       <div class="info-aside reveal">
+        ${priceCard(service.price, waHref, service.name)}
         <h3>Indicada para</h3>
         <ul class="check-list">
 ${service.indications.map((i) => `          <li>${esc(i)}</li>`).join("\n")}
@@ -643,6 +706,7 @@ function homeServiceCards() {
   return SERVICES.map(
     (s) => `        <article class="service-card reveal" id="${s.slug}">
           <h3><a href="/${s.slug}/">${esc(s.name)}</a></h3>
+          <p class="card-price">${esc(s.price.duration)} · <strong>${brl(s.price.single)}</strong> a sessão</p>
           <p>${esc(s.cardText)}</p>
           <div class="service-actions">
             <a href="/${s.slug}/" class="service-cta">Ver detalhes →</a>
@@ -651,6 +715,25 @@ function homeServiceCards() {
               <span>WhatsApp</span>
             </a>
           </div>
+        </article>`
+  ).join("\n\n");
+}
+
+/** Cards dos protocolos combinados, na seção própria da home. */
+function homeSpecialCards() {
+  return SPECIALS.map(
+    (s) => `        <article class="special-card reveal">
+          <h3>${esc(s.name)}</h3>
+          <p>${esc(s.text)}</p>
+          <p class="card-price">${esc(s.price.duration)} · <strong>${brl(s.price.single)}</strong> a sessão</p>
+          <ul class="special-packs">
+            <li>4 sessões <strong>${brl(s.price.pack4)}</strong></li>
+            <li>8 sessões <strong>${brl(s.price.pack8)}</strong></li>
+          </ul>
+          <a href="${wa(s.waMessage)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-small" data-service="${esc(s.name)}">
+            ${WA_ICON}
+            <span>Tenho interesse</span>
+          </a>
         </article>`
   ).join("\n\n");
 }
@@ -807,6 +890,7 @@ console.log("Home:");
 const indexPath = path.join(ROOT, "index.html");
 let index = fs.readFileSync(indexPath, "utf8");
 index = injectBlock(index, "services", homeServiceCards(), "index.html");
+index = injectBlock(index, "specials", homeSpecialCards(), "index.html");
 index = injectBlock(index, "footer-services", footerServices(null), "index.html");
 index = injectBlock(index, "jsonld", jsonLdTag(homeJsonLd()), "index.html");
 fs.writeFileSync(indexPath, index);

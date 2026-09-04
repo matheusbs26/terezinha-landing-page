@@ -593,6 +593,83 @@ address { font-style: normal; }
   margin: 18px 0 28px;
   line-height: 1.7;
 }
+/* ========== Preços ========== */
+/* O valor é a informação que a pessoa veio buscar: entra grande, no topo do
+   cartão, antes das indicações da técnica. */
+.price-card {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: var(--radius);
+  padding: 24px 26px 26px;
+  margin-bottom: 30px;
+}
+.price-duration {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.price-single { margin: 6px 0 18px; display: flex; align-items: baseline; gap: 8px; }
+.price-value {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 40, "wght" 600;
+  font-size: 2.1rem;
+  line-height: 1;
+}
+.price-unit { color: var(--ink-soft); font-size: 0.95rem; }
+
+.price-packs { list-style: none; padding: 0; margin: 0 0 22px; }
+.price-packs li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 11px 0;
+  border-top: 1px solid rgba(27, 26, 23, 0.09);
+}
+.pack-label { color: var(--ink-soft); font-size: 0.95rem; }
+.pack-value { font-weight: 600; text-align: right; white-space: nowrap; }
+/* A economia é o argumento do pacote — visível, mas sem competir com o valor. */
+.pack-value small { display: block; font-weight: 400; font-size: 0.78rem; color: var(--ink-soft); }
+.price-cta { width: 100%; justify-content: center; }
+
+/* Preço no card da home: quem está comparando técnicas decide na grade, sem
+   precisar abrir cada página. */
+.card-price { color: var(--ink-soft); font-size: 0.92rem; margin: 0 0 10px; }
+.card-price strong { color: var(--ink); font-weight: 600; }
+
+/* ========== Atendimentos especiais ========== */
+.special-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.special-card {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: var(--radius);
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+}
+.special-card h3 { margin: 0 0 10px; font-size: 1.18rem; }
+.special-card > p { color: var(--ink-soft); font-size: 0.95rem; margin: 0 0 14px; }
+.special-packs { list-style: none; padding: 0; margin: 0 0 22px; }
+.special-packs li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(27, 26, 23, 0.09);
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+.special-packs strong { color: var(--ink); }
+/* Empurra o botão para a base: com textos de alturas diferentes, os CTAs dos
+   três cartões ficam alinhados na mesma linha. */
+.special-card .btn { margin-top: auto; align-self: flex-start; }
+
 /* ========== Horário de atendimento ========== */
 .hours-title {
   font-family: var(--font-display);

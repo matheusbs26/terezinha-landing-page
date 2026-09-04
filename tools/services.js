@@ -98,6 +98,12 @@ const REVIEWS = {
 const SERVICES = [
   {
     slug: "massagem-relaxante",
+    price: {
+      duration: "60 min",
+      single: 180,
+      pack4: 680,
+      pack8: 1290
+    },
     name: "Massagem Relaxante",
     shortName: "Relaxante",
     h1: "Massagem Relaxante em Porto Alegre",
@@ -157,7 +163,7 @@ const SERVICES = [
       },
       {
         q: "Quanto custa a sessão?",
-        a: "Os valores variam conforme a técnica e o protocolo combinado. É só chamar no WhatsApp que a Terezinha passa o valor certinho, sem compromisso."
+        a: "A sessão avulsa de 60 minutos custa R$ 180. Também há pacotes com desconto: 4 sessões por R$ 680 e 8 sessões por R$ 1.290. Na dúvida sobre qual faz mais sentido para o seu caso, é só chamar no WhatsApp."
       },
       {
         q: "Preciso levar alguma coisa?",
@@ -174,6 +180,12 @@ const SERVICES = [
 
   {
     slug: "massagem-terapeutica",
+    price: {
+      duration: "60 min",
+      single: 190,
+      pack4: 720,
+      pack8: 1370
+    },
     name: "Massagem Terapêutica",
     shortName: "Terapêutica",
     h1: "Massagem Terapêutica em Porto Alegre",
@@ -251,6 +263,12 @@ const SERVICES = [
 
   {
     slug: "drenagem-linfatica",
+    price: {
+      duration: "60 min",
+      single: 180,
+      pack4: 680,
+      pack8: 1290
+    },
     name: "Drenagem Linfática",
     shortName: "Drenagem Linfática",
     h1: "Drenagem Linfática em Porto Alegre",
@@ -326,6 +344,12 @@ const SERVICES = [
 
   {
     slug: "drenagem-pos-operatoria",
+    price: {
+      duration: "60 min",
+      single: 220,
+      pack4: 840,
+      pack8: 1580
+    },
     name: "Drenagem Pós-Operatória",
     shortName: "Pós-Operatória",
     h1: "Drenagem Pós-Operatória em Porto Alegre",
@@ -403,6 +427,12 @@ const SERVICES = [
 
   {
     slug: "massagem-modeladora",
+    price: {
+      duration: "60 min",
+      single: 190,
+      pack4: 720,
+      pack8: 1370
+    },
     name: "Massagem Modeladora",
     shortName: "Modeladora",
     h1: "Massagem Modeladora em Porto Alegre",
@@ -479,6 +509,12 @@ const SERVICES = [
 
   {
     slug: "reflexologia-podal",
+    price: {
+      duration: "40 min",
+      single: 120,
+      pack4: 460,
+      pack8: 860
+    },
     name: "Reflexologia Podal",
     shortName: "Reflexologia",
     h1: "Reflexologia Podal em Porto Alegre",
@@ -553,6 +589,12 @@ const SERVICES = [
 
   {
     slug: "massagem-pedras-quentes",
+    price: {
+      duration: "70 min",
+      single: 220,
+      pack4: 840,
+      pack8: 1580
+    },
     name: "Massagem com Pedras Quentes",
     shortName: "Pedras Quentes",
     h1: "Massagem com Pedras Quentes em Porto Alegre",
@@ -628,6 +670,12 @@ const SERVICES = [
 
   {
     slug: "ventosaterapia",
+    price: {
+      duration: "60 min",
+      single: 180,
+      pack4: 680,
+      pack8: 1290
+    },
     name: "Ventosaterapia",
     shortName: "Ventosaterapia",
     h1: "Ventosaterapia em Porto Alegre",
@@ -705,6 +753,12 @@ const SERVICES = [
 
   {
     slug: "reiki",
+    price: {
+      duration: "60 min",
+      single: 160,
+      pack4: 610,
+      pack8: 1150
+    },
     name: "Reiki",
     shortName: "Reiki",
     h1: "Reiki em Porto Alegre",
@@ -780,4 +834,35 @@ const SERVICES = [
   }
 ];
 
-module.exports = { SITE, SERVICES };
+/**
+ * Protocolos combinados, vendidos como atendimento próprio.
+ *
+ * Não têm página nem sitelink: entram numa seção da home, logo abaixo do grid
+ * de técnicas. São o degrau de cima da tabela — quem chegou procurando uma
+ * técnica isolada vê aqui que existe uma versão mais completa dela.
+ */
+const SPECIALS = [
+  {
+    name: "Terezinha Terapêutica Premium",
+    text: "Avaliação + massagem terapêutica + técnicas complementares conforme a necessidade.",
+    waMessage:
+      "Olá, Terezinha! Vim pelo site e tenho interesse no atendimento Terezinha Terapêutica Premium.",
+    price: { duration: "1h10min", single: 220, pack4: 840, pack8: 1600 }
+  },
+  {
+    name: "Relaxamento Profundo",
+    text: "Massagem relaxante + pedras quentes, na mesma sessão.",
+    waMessage:
+      "Olá, Terezinha! Vim pelo site e tenho interesse no atendimento Relaxamento Profundo.",
+    price: { duration: "1h10min", single: 240, pack4: 910, pack8: 1730 }
+  },
+  {
+    name: "Alívio de Tensões",
+    text: "Massagem terapêutica + ventosaterapia localizada nos pontos de tensão.",
+    waMessage:
+      "Olá, Terezinha! Vim pelo site e tenho interesse no atendimento Alívio de Tensões.",
+    price: { duration: "1h10min", single: 230, pack4: 870, pack8: 1650 }
+  }
+];
+
+module.exports = { SITE, SERVICES, SPECIALS };
