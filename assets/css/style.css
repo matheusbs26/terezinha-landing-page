@@ -593,6 +593,30 @@ address { font-style: normal; }
   margin: 18px 0 28px;
   line-height: 1.7;
 }
+/* ========== Horário de atendimento ========== */
+.hours-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  margin: 26px 0 10px;
+}
+.hours-list { list-style: none; padding: 0; margin: 0 0 24px; max-width: 320px; }
+.hours-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(27, 26, 23, 0.09);
+}
+.hours-list li:last-child { border-bottom: 0; }
+.hours-day { color: var(--ink-soft); }
+.hours-time { font-weight: 600; white-space: nowrap; }
+
+/* No hero (painel escuro) o horário entra na mesma linha de confiança das
+   avaliações — é a resposta para "posso chamar agora?" sem precisar rolar. */
+.hero-trust .trust-hours { color: rgba(247, 244, 238, 0.82); }
+
+.footer-hours { color: rgba(247, 244, 238, 0.6); font-size: 0.88rem; margin: 4px 0 0; }
+
 .location-actions { display: flex; flex-wrap: wrap; gap: 14px; }
 .location-map {
   border-radius: var(--radius);

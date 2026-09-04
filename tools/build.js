@@ -231,6 +231,7 @@ ${footerServices(currentSlug)}
       <a href="${TEL}">${SITE.phoneLabel}</a>
       <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>
       <address>${SITE.street} — ${SITE.district}, ${SITE.city} - ${SITE.state}</address>
+      <p class="footer-hours">${SITE.hours.map((h) => `${esc(h.label)}, ${esc(h.time)}`).join("<br>")}</p>
     </div>
   </div>
   <div class="container footer-bottom">
@@ -263,8 +264,29 @@ const business = {
     postalCode: SITE.zip,
     addressCountry: "BR"
   },
-  areaServed: { "@type": "City", name: SITE.city }
+  areaServed: { "@type": "City", name: SITE.city },
+  openingHoursSpecification: SITE.hours.map((h) => ({
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: h.days,
+    opens: h.opens,
+    closes: h.closes
+  }))
 };
+
+/** Horário de atendimento, na mesma marcação em todas as páginas. */
+const hoursList = () => `<ul class="hours-list">
+${SITE.hours
+  .map(
+    (h) =>
+      `          <li><span class="hours-day">${esc(h.label)}</span><span class="hours-time">${esc(h.time)}</span></li>`
+  )
+  .join("\n")}
+        </ul>`;
+
+/* Versão curta, para a linha de confiança do hero: é a primeira tela que quem
+   vem do anúncio vê, e "estão abertos agora?" é a dúvida que decide se a pessoa
+   manda mensagem ou volta para a busca. */
+const hoursInline = () => SITE.hours.map((h) => esc(h.short)).join(" · ");
 
 function serviceJsonLd(service) {
   return {
@@ -435,6 +457,7 @@ ${header()}
           <span class="trust-count">em 28 avaliações no Google</span>
         </li>
         <li>Clientes desde 2009</li>
+        <li class="trust-hours">${hoursInline()}</li>
       </ul>
     </div>
     <div class="hero-image">
@@ -575,6 +598,8 @@ ${relatedCards(service)}
           ${SITE.district}, ${SITE.city} - ${SITE.state}<br>
           CEP ${SITE.zip}
         </address>
+        <p class="hours-title">Horário de atendimento</p>
+        ${hoursList()}
       </div>
       <div class="location-actions">
         <a href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(

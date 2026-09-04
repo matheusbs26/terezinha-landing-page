@@ -22,7 +22,31 @@ const SITE = {
   district: "Menino Deus",
   city: "Porto Alegre",
   state: "RS",
-  zip: "90880-480"
+  zip: "90880-480",
+
+  /* Horário de atendimento. Fonte única: alimenta o texto visível nas páginas e
+     o openingHoursSpecification do JSON-LD — é dele que o Google tira o horário
+     que mostra na busca. Quem chega pelo anúncio e não encontra horário nenhum
+     não sabe se vale a pena mandar mensagem agora.
+     Domingo fica fora da lista, o que no schema significa fechado. */
+  hours: [
+    {
+      label: "Segunda a sexta",
+      time: "8h às 20h",
+      short: "Seg a sex, 8h–20h",
+      days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "08:00",
+      closes: "20:00"
+    },
+    {
+      label: "Sábado",
+      time: "8h às 18h",
+      short: "Sáb, 8h–18h",
+      days: ["Saturday"],
+      opens: "08:00",
+      closes: "18:00"
+    }
+  ]
 };
 
 /** Depoimentos reais do perfil da Terezinha no Google (5,0 ★ · 28 avaliações). */
