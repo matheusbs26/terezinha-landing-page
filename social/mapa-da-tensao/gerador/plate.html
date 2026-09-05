@@ -27,11 +27,11 @@
 
   .mono{
     font-family:WorkSans,sans-serif;font-weight:500;
-    text-transform:uppercase;letter-spacing:.28em;
-    font-size:13px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.18em;
+    font-size:26px;color:#7C7565;
   }
   .mono.g{color:var(--gold-deep)}
-  .mono.s{font-size:11.5px;letter-spacing:.34em;color:#A79E8C}
+  .mono.s{font-size:22px;letter-spacing:.18em;color:#8C8474}
   .disp{font-family:Fraunces,serif;color:var(--ink);font-weight:500;letter-spacing:-.015em}
   .it{font-family:Fraunces,serif;font-style:italic;font-weight:400;color:var(--ink-soft)}
   .abs{position:absolute}
@@ -287,124 +287,123 @@ function T(cls, style, html){
    ============================================================ */
 function slide1(){
   frame();
-  hair(96,196,W-96,.9);
-  ticks(196,96,W-96,24,6);
+  hair(96,212,W-96,.9);
+  ticks(212,96,W-96,24,7);
 
-  drawFigure(540, 772, 1.12, HOT, {iv:4.8, step:2.0, outer:4});
+  drawFigure(540, 782, 1.10, HOT, {iv:4.8, step:2.0, outer:4});
 
-  hair(96,1152,W-96,.9);
+  hair(96,1150,W-96,.9);
 
-  T('mono','left:96px;top:172px', 'Atlas do corpo');
-  T('mono g','right:96px;top:172px;text-align:right', 'Prancha&nbsp;I');
+  T('mono','left:96px;top:166px', 'Atlas do corpo');
+  T('mono g','right:96px;top:166px;text-align:right', 'Prancha&nbsp;I');
 
-  T('disp','left:96px;top:248px;font-size:92px;line-height:.98;width:900px',
+  T('disp','left:96px;top:258px;font-size:92px;line-height:.98;width:900px',
     'O mapa da tensão');
-  T('mono s','left:99px;top:378px','Levantamento das zonas de acúmulo · vista posterior');
+  T('mono s','left:99px;top:394px','Zonas de acúmulo · vista posterior');
 
-  T('mono s','left:96px;top:1186px','Terezinha Ramos · Massoterapia');
-  T('mono s','right:96px;top:1186px;text-align:right','Porto Alegre · 51° 13′ S');
-  T('it','left:0;right:0;top:1234px;text-align:center;font-size:27px;color:#8C8474',
+  T('mono s','left:96px;top:1178px','Terezinha Ramos · Massoterapia');
+  T('mono s','right:96px;top:1178px;text-align:right','Porto Alegre');
+  T('it','left:0;right:0;top:1228px;text-align:center;font-size:36px;color:#7C7565',
     'o que não se vê, se mapeia');
 }
 
 function slide2(){
   frame();
-  hair(96,196,W-96,.9);
+  hair(96,212,W-96,.9);
 
-  const FX=762, FY=700, FS=1.15;
+  const FX=800, FY=720, FS=1.0;
   drawFigure(FX, FY, FS, HOT, {iv:5.0, step:2.0, outer:3});
 
   const toStage=(lx,ly)=>[FX+(lx-300)*FS, FY+(ly-307)*FS];
 
   const zonas=[
-    {n:'I',   nome:'Trapézio',  frase:'o peso das horas na tela',     lx:246, ly:216, ty:512},
-    {n:'II',  nome:'Escápulas', frase:'a respiração que ficou curta', lx:254, ly:302, ty:692},
-    {n:'III', nome:'Lombar',    frase:'a cadeira que não se levanta', lx:300, ly:408, ty:872}
+    {n:'I',   nome:'Trapézio',  frase:'o peso das horas na tela',     lx:246, ly:216, ty:470},
+    {n:'II',  nome:'Escápulas', frase:'a respiração que ficou curta', lx:254, ly:302, ty:668},
+    {n:'III', nome:'Lombar',    frase:'a cadeira que não se levanta', lx:300, ly:408, ty:866}
   ];
 
   zonas.forEach(z=>{
     const [hx,hy]=toStage(z.lx,z.ly);
-    const ly0=z.ty+54;
-    hair(96,ly0,436,.95,C.sand);
+    const ly0=z.ty+68;
+    hair(96,ly0,560,.95,C.sand);
     ctx.save();
     ctx.lineCap='butt';
-    ctx.strokeStyle=C.cream;ctx.globalAlpha=1;ctx.lineWidth=5;
-    ctx.beginPath();ctx.moveTo(436,Math.round(ly0)+.5);ctx.lineTo(hx-14,hy);ctx.stroke();
-    ctx.strokeStyle=C.goldDeep;ctx.globalAlpha=.62;ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(436,Math.round(ly0)+.5);ctx.lineTo(hx-14,hy);ctx.stroke();
+    ctx.strokeStyle=C.cream;ctx.globalAlpha=1;ctx.lineWidth=6;
+    ctx.beginPath();ctx.moveTo(572,Math.round(ly0)+.5);ctx.lineTo(hx-15,hy);ctx.stroke();
+    ctx.strokeStyle=C.goldDeep;ctx.globalAlpha=.62;ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(572,Math.round(ly0)+.5);ctx.lineTo(hx-15,hy);ctx.stroke();
     ctx.restore();
-    ctx.save();ctx.fillStyle=C.cream;ctx.beginPath();ctx.arc(hx,hy,10,0,7);ctx.fill();ctx.restore();
-    ring(hx,hy,10,C.goldDeep,1.3); dot(hx,hy,2.1);
+    ctx.save();ctx.fillStyle=C.cream;ctx.beginPath();ctx.arc(hx,hy,11,0,7);ctx.fill();ctx.restore();
+    ring(hx,hy,11,C.goldDeep,1.5); dot(hx,hy,2.4);
 
-    T('mono g','left:96px;top:'+(z.ty+2)+'px;font-size:12px', z.n);
-    T('disp','left:132px;top:'+(z.ty-14)+'px;font-size:42px', z.nome);
-    T('it','left:96px;top:'+(z.ty+70)+'px;width:330px;font-size:23px;line-height:1.32;color:#6B6558',
+    T('mono g','left:96px;top:'+(z.ty+10)+'px;font-size:22px', z.n);
+    T('disp','left:160px;top:'+(z.ty-18)+'px;font-size:56px', z.nome);
+    T('it','left:96px;top:'+(z.ty+84)+'px;width:470px;font-size:34px;line-height:1.3;color:#6B6558',
       z.frase);
   });
 
-  T('mono','left:96px;top:172px','Prancha II');
-  T('mono g','right:96px;top:172px;text-align:right','Três zonas');
-  T('disp','left:96px;top:240px;font-size:70px;line-height:1.02;width:600px','Onde a semana se acumula');
-  T('mono s','left:99px;top:402px','Equidistância constante · 5 mm por curva');
+  T('mono','left:96px;top:166px','Prancha II');
+  T('mono g','right:96px;top:166px;text-align:right','Três zonas');
+  T('disp','left:96px;top:250px;font-size:70px;line-height:1.02;width:600px','Onde a semana se acumula');
 
-  hair(96,1152,W-96,.9);
-  T('mono s','left:96px;top:1186px','Terezinha Ramos · Massoterapia');
-  T('mono s','right:96px;top:1186px;text-align:right','Fig. 2');
+  hair(96,1150,W-96,.9);
+  T('mono s','left:96px;top:1178px','Equidistância constante · 5 mm por curva');
+  T('mono s','right:96px;top:1178px;text-align:right','Fig. 2');
 }
 
 function slide3(){
   frame();
-  hair(96,196,W-96,.9);
+  hair(96,212,W-96,.9);
 
-  const ys=706, xs=[262,540,818];
+  const ys=712, xs=[262,540,818];
   const gains=[1,0.46,0.16];
   const labels=['0 min','30 min','60 min'];
   const marks=['I','II','III'];
 
   xs.forEach((x,i)=>{
     drawFigure(x, ys, 0.56, HOT, {gain:gains[i], iv:5.0, step:1.8, outer:3, lw:0.95, noise:3.4+2.6*gains[i]});
-    T('mono g','left:'+(x-140)+'px;width:280px;top:906px;text-align:center;font-size:12px', marks[i]);
-    T('disp','left:'+(x-140)+'px;width:280px;top:930px;text-align:center;font-size:36px', labels[i]);
+    T('mono g','left:'+(x-140)+'px;width:280px;top:900px;text-align:center;font-size:22px', marks[i]);
+    T('disp','left:'+(x-140)+'px;width:280px;top:928px;text-align:center;font-size:52px', labels[i]);
   });
 
-  hair(216,1022,864,.9);
-  xs.forEach((x,i)=>{ dot(x,1022.5,i===2?4.6:3.2, i===2?C.goldDeep:C.sand); });
+  hair(216,1042,864,.9);
+  xs.forEach((x,i)=>{ dot(x,1042.5,i===2?5:3.4, i===2?C.goldDeep:C.sand); });
 
-  T('mono','left:96px;top:172px','Prancha III');
-  T('mono g','right:96px;top:172px;text-align:right','Uma sessão');
-  T('disp','left:96px;top:240px;font-size:70px;line-height:1.02;width:640px','O mesmo corpo, outro relevo');
-  T('mono s','left:99px;top:402px','Mesma escala · mesma equidistância · leitura em três tempos');
+  T('mono','left:96px;top:166px','Prancha III');
+  T('mono g','right:96px;top:166px;text-align:right','Uma sessão');
+  T('disp','left:96px;top:250px;font-size:70px;line-height:1.02;width:640px','O mesmo corpo, outro relevo');
+  T('mono s','left:99px;top:426px','Mesma escala · três tempos');
 
-  hair(96,1152,W-96,.9);
-  T('it','left:96px;top:1180px;width:600px;font-size:27px;line-height:1.34',
+  hair(96,1150,W-96,.9);
+  T('it','left:96px;top:1176px;width:700px;font-size:34px;line-height:1.34',
     'A tensão não cede porque foi ignorada.<br>Ela cede porque foi encontrada.');
-  T('mono s','right:96px;top:1250px;text-align:right','Fig. 3');
+  T('mono s','right:96px;top:1186px;text-align:right','Fig. 3');
 }
 
 function slide4(){
   frame();
-  hair(96,196,W-96,.9);
+  hair(96,212,W-96,.9);
 
-  drawRosette(540, 484, 190);
+  drawRosette(540, 442, 168);
 
-  T('mono','left:96px;top:172px','Colofão');
-  T('mono g','right:96px;top:172px;text-align:right','Prancha IV');
+  T('mono','left:96px;top:166px','Colofão');
+  T('mono g','right:96px;top:166px;text-align:right','Prancha IV');
 
-  T('disp','left:0;right:0;top:790px;text-align:center;font-size:76px;line-height:1.14',
+  T('disp','left:0;right:0;top:718px;text-align:center;font-size:78px;line-height:1.14',
     'Chegue com dor.<br>Saia mais leve.');
 
-  hair(420,996,660,.95);
+  hair(430,948,650,.95);
 
-  T('disp','left:0;right:0;top:1026px;text-align:center;font-size:35px;letter-spacing:.01em',
+  T('disp','left:0;right:0;top:974px;text-align:center;font-size:52px;letter-spacing:.01em',
     'Terezinha Ramos');
-  T('mono s','left:0;right:0;top:1080px;text-align:center','Massoterapia desde 2009 · 5,0 em 28 avaliações no Google');
+  T('mono s','left:0;right:0;top:1052px;text-align:center','Massoterapia · desde 2009');
 
-  T('mono s','left:96px;top:1156px;line-height:2.15;letter-spacing:.26em;font-size:12px',
+  T('mono s','left:96px;top:1116px;line-height:2;font-size:22px',
     'R. José de Alencar, 658/306<br>Menino Deus · Porto Alegre');
-  T('mono s','right:96px;top:1156px;text-align:right;line-height:2.15;letter-spacing:.26em;font-size:12px',
+  T('mono s','right:96px;top:1116px;text-align:right;line-height:2;font-size:22px',
     'Seg a sex · 8h às 20h<br>Sábado · 8h às 18h');
 
-  T('mono g','left:0;right:0;top:1252px;text-align:center;font-size:12px;letter-spacing:.3em',
+  T('mono g','left:0;right:0;top:1238px;text-align:center;font-size:24px',
     '(51) 98958-2730 · terezinharamos.com.br');
 }
 
