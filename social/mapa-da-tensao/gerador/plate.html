@@ -1,0 +1,432 @@
+<meta charset="utf-8">
+<title>Cartografia Silenciosa</title>
+<style>
+  @font-face{font-family:Fraunces;src:url(Fraunces-400.ttf);font-weight:400}
+  @font-face{font-family:Fraunces;src:url(Fraunces-500.ttf);font-weight:500}
+  @font-face{font-family:Fraunces;src:url(Fraunces-600.ttf);font-weight:600}
+  @font-face{font-family:Fraunces;src:url(Fraunces-italic.ttf);font-weight:400;font-style:italic}
+  @font-face{font-family:WorkSans;src:url(WorkSans-300.ttf);font-weight:300}
+  @font-face{font-family:WorkSans;src:url(WorkSans-400.ttf);font-weight:400}
+  @font-face{font-family:WorkSans;src:url(WorkSans-500.ttf);font-weight:500}
+  @font-face{font-family:WorkSans;src:url(WorkSans-600.ttf);font-weight:600}
+
+  :root{
+    --cream:#F7F4EE; --cream-2:#F2EDE4;
+    --ink:#1B1A17; --ink-soft:#3A3630;
+    --gold:#A9895F; --gold-deep:#8A6A3F;
+    --sand:#D9D0BF; --muted:#8C8474;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#555}
+  #stage{
+    position:relative;width:1080px;height:1350px;overflow:hidden;
+    background:var(--cream);
+  }
+  canvas{position:absolute;inset:0;width:1080px;height:1350px}
+  #ui{position:absolute;inset:0}
+
+  .mono{
+    font-family:WorkSans,sans-serif;font-weight:500;
+    text-transform:uppercase;letter-spacing:.28em;
+    font-size:13px;color:var(--muted);
+  }
+  .mono.g{color:var(--gold-deep)}
+  .mono.s{font-size:11.5px;letter-spacing:.34em;color:#A79E8C}
+  .disp{font-family:Fraunces,serif;color:var(--ink);font-weight:500;letter-spacing:-.015em}
+  .it{font-family:Fraunces,serif;font-style:italic;font-weight:400;color:var(--ink-soft)}
+  .abs{position:absolute}
+</style>
+<div id="stage">
+  <canvas id="art"></canvas>
+  <canvas id="grain"></canvas>
+  <div id="ui"></div>
+</div>
+<script>
+/* ============================================================
+   CARTOGRAFIA SILENCIOSA — motor de curvas de nível
+   ============================================================ */
+const Q = new URLSearchParams(location.search);
+const SLIDE = parseInt(Q.get('slide')||'1',10);
+const DPR   = parseFloat(Q.get('dpr')||'2');
+const W=1080, H=1350;
+
+const C = {
+  cream:'#F7F4EE', ink:'#1B1A17', inkSoft:'#3A3630',
+  gold:'#A9895F', goldDeep:'#8A6A3F', sand:'#D9D0BF', muted:'#8C8474'
+};
+
+const cv = document.getElementById('art');
+cv.width=W*DPR; cv.height=H*DPR;
+const ctx = cv.getContext('2d');
+ctx.scale(DPR,DPR);
+ctx.lineCap='round'; ctx.lineJoin='round';
+
+/* ---------- SDF primitivas ---------- */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+function sdCircle(x,y,cx,cy,r){const dx=x-cx,dy=y-cy;return Math.sqrt(dx*dx+dy*dy)-r;}
+function sdCapsule(x,y,ax,ay,bx,by,r){
+  const pax=x-ax,pay=y-ay,bax=bx-ax,bay=by-ay;
+  const h=clamp((pax*bax+pay*bay)/(bax*bax+bay*bay),0,1);
+  const dx=pax-bax*h, dy=pay-bay*h;
+  return Math.sqrt(dx*dx+dy*dy)-r;
+}
+function smin(a,b,k){const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*0.25;}
+
+/* ---------- corpo (vista posterior), coords locais ---------- */
+function bodySDF(x,y){
+  // tronco
+  let t = sdCapsule(x,y,236,222,364,222,46);              // cintura escapular
+  t = smin(t, sdCapsule(x,y,244,302,356,302,46), 34);     // caixa torácica
+  t = smin(t, sdCapsule(x,y,256,392,344,392,41), 34);     // cintura
+  t = smin(t, sdCapsule(x,y,250,470,350,470,47), 34);     // pelve
+  t = smin(t, sdCapsule(x,y,272,518,328,518,41), 32);
+  // cabeça e pescoço
+  let n = sdCapsule(x,y,300,128,300,166,24);
+  n = smin(n, sdCircle(x,y,300,84,50), 16);
+  t = smin(t, n, 22);
+  // braços — união firme: a axila precisa aparecer
+  let aL = sdCapsule(x,y,196,232,168,392,22);
+  aL = smin(aL, sdCapsule(x,y,168,392,182,522,19), 12);
+  let aR = sdCapsule(x,y,404,232,432,392,22);
+  aR = smin(aR, sdCapsule(x,y,432,392,418,522,19), 12);
+  t = smin(t, aL, 9);
+  t = smin(t, aR, 9);
+  return t;
+}
+
+/* ruído suave determinístico — quebra a perfeição sintética das curvas */
+function hash(i,j){const s=Math.sin(i*127.1+j*311.7)*43758.5453;return s-Math.floor(s);}
+function vnoise(x,y){
+  const xi=Math.floor(x), yi=Math.floor(y), xf=x-xi, yf=y-yi;
+  const u=xf*xf*(3-2*xf), v=yf*yf*(3-2*yf);
+  const a=hash(xi,yi),b=hash(xi+1,yi),c=hash(xi,yi+1),d=hash(xi+1,yi+1);
+  return (a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v;
+}
+function fbm(x,y){
+  return vnoise(x,y)*0.6 + vnoise(x*2.03,y*2.03)*0.28 + vnoise(x*4.11,y*4.11)*0.12;
+}
+
+/* ---------- campo escalar: relevo = tensão ---------- */
+function makeField(hotspots, gain=1, noiseAmp=6){
+  return (x,y)=>{
+    const s = bodySDF(x,y);
+    let f = -s*0.5;   // a anatomia sussurra
+    for(const h of hotspots){
+      const dx=x-h.x, dy=y-h.y;
+      const sx=h.sx||h.s, sy=h.sy||h.s;
+      f += gain*h.a*Math.exp(-(dx*dx/(2*sx*sx) + dy*dy/(2*sy*sy)));
+    }
+    // o ruído se apaga junto à silhueta: o traço mestre fica limpo,
+    // o relevo interno respira.
+    const w = 1 - Math.exp(-(s*s)/(2*20*20));
+    f += (fbm(x/56, y/56)-0.5)*noiseAmp*w;
+    return f;
+  };
+}
+
+const HOT = [
+  {x:301,y:211,a:44,sx:66,sy:25},                      // crista do trapézio
+  {x:250,y:309,a:25,sx:31,sy:26},                      // escápula
+  {x:351,y:299,a:20,sx:27,sy:23},                      // escápula
+  {x:297,y:411,a:48,sx:49,sy:41}                       // lombar
+];
+
+/* ---------- marching squares ---------- */
+function sampleGrid(field, x0,y0,x1,y1, step){
+  const nx=Math.ceil((x1-x0)/step)+1, ny=Math.ceil((y1-y0)/step)+1;
+  const g=new Float32Array(nx*ny);
+  for(let j=0;j<ny;j++){const y=y0+j*step;
+    for(let i=0;i<nx;i++){g[j*nx+i]=field(x0+i*step,y);}}
+  return {g,nx,ny,x0,y0,step};
+}
+function contour(G, level, out){
+  const {g,nx,ny,x0,y0,step}=G;
+  for(let j=0;j<ny-1;j++){
+    for(let i=0;i<nx-1;i++){
+      const a=g[j*nx+i], b=g[j*nx+i+1], c=g[(j+1)*nx+i+1], d=g[(j+1)*nx+i];
+      let ci=0;
+      if(a>level)ci|=8; if(b>level)ci|=4; if(c>level)ci|=2; if(d>level)ci|=1;
+      if(ci===0||ci===15)continue;
+      const px=x0+i*step, py=y0+j*step;
+      const T=()=>[px+step*(level-a)/(b-a),py];
+      const R=()=>[px+step,py+step*(level-b)/(c-b)];
+      const B=()=>[px+step*(level-d)/(c-d),py+step];
+      const L=()=>[px,py+step*(level-a)/(d-a)];
+      switch(ci){
+        case 1: case 14: out.push(L(),B()); break;
+        case 2: case 13: out.push(B(),R()); break;
+        case 3: case 12: out.push(L(),R()); break;
+        case 4: case 11: out.push(T(),R()); break;
+        case 6: case  9: out.push(T(),B()); break;
+        case 7: case  8: out.push(L(),T()); break;
+        case 5: out.push(L(),T(),B(),R()); break;
+        case 10:out.push(L(),B(),T(),R()); break;
+      }
+    }
+  }
+  return out;
+}
+function strokeSegs(segs, color, width, alpha){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.lineWidth=width; ctx.globalAlpha=alpha;
+  ctx.beginPath();
+  for(let k=0;k<segs.length;k+=2){
+    ctx.moveTo(segs[k][0],segs[k][1]);
+    ctx.lineTo(segs[k+1][0],segs[k+1][1]);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ---------- desenha a figura topográfica ---------- */
+function drawFigure(cx, cy, scale, hotspots, opt={}){
+  const gain = opt.gain!==undefined?opt.gain:1;
+  const step  = opt.step  || 2.4;
+  const iv    = opt.iv    || 4.8;              // equidistância entre curvas
+  const outer = opt.outer!==undefined?opt.outer:5;
+  const lw    = opt.lw    || 1;
+  const field = makeField(hotspots, gain, opt.noise!==undefined?opt.noise:5.5);
+
+  ctx.save();
+  ctx.translate(cx,cy); ctx.scale(scale,scale); ctx.translate(-300,-307);
+  ctx.lineWidth = lw/scale;
+
+  const G = sampleGrid(field, 92,-26, 508, 646, step);
+
+  // curvas externas — o "mar" ao redor da ilha
+  for(let k=1;k<=outer;k++){
+    const lvl=-k*(iv*1.35);
+    const segs=contour(G,lvl,[]);
+    strokeSegs(segs, C.sand, (lw*0.85)/scale, 0.55 - k*0.075);
+  }
+
+  // curvas internas — o relevo
+  let lvl=iv, k=0, guard=0;
+  while(guard++<200){
+    const segs=contour(G,lvl,[]);
+    if(!segs.length && lvl>40) break;
+    const t=Math.min(1, lvl/70);
+    strokeSegs(segs, k%5===4?C.goldDeep:C.gold, (lw*(0.9+t*0.5))/scale, 0.38+t*0.5);
+    lvl+=iv; k++;
+  }
+
+  // silhueta — nível 0, o traço mestre
+  strokeSegs(contour(G,0,[]), C.ink, (lw*1.62)/scale, 0.88);
+  ctx.restore();
+}
+
+/* ---------- roseta do colofão ---------- */
+function drawRosette(cx,cy,R){
+  const field=(x,y)=>{
+    const dx=x-300, dy=y-318;
+    const r=Math.sqrt(dx*dx+dy*dy);
+    return 120 - r + (fbm(x/78,y/78)-0.5)*21;
+  };
+  ctx.save();
+  ctx.translate(cx,cy); ctx.scale(R/120,R/120); ctx.translate(-300,-307);
+  const G=sampleGrid(field,132,150,468,486,2.0);
+  for(let k=1;k<=5;k++){
+    strokeSegs(contour(G,-k*10,[]), C.sand, (120/R)*0.85, 0.46-k*0.072);
+  }
+  strokeSegs(contour(G,0,[]), C.goldDeep, (120/R)*1.55, 0.8);
+  let lvl=5.2,k=0;
+  while(lvl<124){
+    const t=lvl/124;
+    strokeSegs(contour(G,lvl,[]), k%5===4?C.goldDeep:C.gold, (120/R)*(0.9+t*0.5), 0.34+t*0.5);
+    lvl+=5.2; k++;
+  }
+  ctx.restore();
+}
+
+/* ---------- aparato: moldura, réguas, marcadores ---------- */
+function frame(){
+  ctx.save();
+  ctx.strokeStyle=C.sand; ctx.globalAlpha=.9; ctx.lineWidth=1;
+  ctx.strokeRect(56.5,56.5,W-113,H-113);
+  // cantos
+  ctx.strokeStyle=C.goldDeep; ctx.globalAlpha=.75; ctx.lineWidth=1.4;
+  const m=56.5, L=26;
+  [[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]].forEach(([x,y,sx,sy])=>{
+    ctx.beginPath();
+    ctx.moveTo(x+sx*L,y); ctx.lineTo(x,y); ctx.lineTo(x,y+sy*L);
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+function ticks(y, x0, x1, n, len=7){
+  ctx.save();
+  ctx.strokeStyle=C.sand; ctx.lineWidth=1; ctx.globalAlpha=.95;
+  ctx.beginPath();
+  for(let i=0;i<=n;i++){
+    const x=x0+(x1-x0)*i/n, l=(i%5===0)?len*1.9:len;
+    ctx.moveTo(Math.round(x)+.5,y); ctx.lineTo(Math.round(x)+.5,y+l);
+  }
+  ctx.stroke(); ctx.restore();
+}
+function hair(x0,y,x1,alpha=.85,color=C.sand){
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=alpha;
+  ctx.beginPath();ctx.moveTo(x0,Math.round(y)+.5);ctx.lineTo(x1,Math.round(y)+.5);ctx.stroke();ctx.restore();
+}
+function dot(x,y,r,color=C.goldDeep){
+  ctx.save();ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.restore();
+}
+function ring(x,y,r,color=C.goldDeep,w=1.3){
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=w;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.stroke();ctx.restore();
+}
+
+/* ---------- tipografia via DOM ---------- */
+const ui=document.getElementById('ui');
+function T(cls, style, html){
+  const el=document.createElement('div');
+  el.className='abs '+cls; el.style.cssText=style; el.innerHTML=html;
+  ui.appendChild(el); return el;
+}
+
+/* ============================================================
+   PRANCHAS
+   ============================================================ */
+function slide1(){
+  frame();
+  hair(96,196,W-96,.9);
+  ticks(196,96,W-96,24,6);
+
+  drawFigure(540, 772, 1.12, HOT, {iv:4.8, step:2.0, outer:4});
+
+  hair(96,1152,W-96,.9);
+
+  T('mono','left:96px;top:172px', 'Atlas do corpo');
+  T('mono g','right:96px;top:172px;text-align:right', 'Prancha&nbsp;I');
+
+  T('disp','left:96px;top:248px;font-size:92px;line-height:.98;width:900px',
+    'O mapa da tensão');
+  T('mono s','left:99px;top:378px','Levantamento das zonas de acúmulo · vista posterior');
+
+  T('mono s','left:96px;top:1186px','Terezinha Ramos · Massoterapia');
+  T('mono s','right:96px;top:1186px;text-align:right','Porto Alegre · 51° 13′ S');
+  T('it','left:0;right:0;top:1234px;text-align:center;font-size:27px;color:#8C8474',
+    'o que não se vê, se mapeia');
+}
+
+function slide2(){
+  frame();
+  hair(96,196,W-96,.9);
+
+  const FX=762, FY=700, FS=1.15;
+  drawFigure(FX, FY, FS, HOT, {iv:5.0, step:2.0, outer:3});
+
+  const toStage=(lx,ly)=>[FX+(lx-300)*FS, FY+(ly-307)*FS];
+
+  const zonas=[
+    {n:'I',   nome:'Trapézio',  frase:'o peso das horas na tela',     lx:246, ly:216, ty:512},
+    {n:'II',  nome:'Escápulas', frase:'a respiração que ficou curta', lx:254, ly:302, ty:692},
+    {n:'III', nome:'Lombar',    frase:'a cadeira que não se levanta', lx:300, ly:408, ty:872}
+  ];
+
+  zonas.forEach(z=>{
+    const [hx,hy]=toStage(z.lx,z.ly);
+    const ly0=z.ty+54;
+    hair(96,ly0,436,.95,C.sand);
+    ctx.save();
+    ctx.lineCap='butt';
+    ctx.strokeStyle=C.cream;ctx.globalAlpha=1;ctx.lineWidth=5;
+    ctx.beginPath();ctx.moveTo(436,Math.round(ly0)+.5);ctx.lineTo(hx-14,hy);ctx.stroke();
+    ctx.strokeStyle=C.goldDeep;ctx.globalAlpha=.62;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(436,Math.round(ly0)+.5);ctx.lineTo(hx-14,hy);ctx.stroke();
+    ctx.restore();
+    ctx.save();ctx.fillStyle=C.cream;ctx.beginPath();ctx.arc(hx,hy,10,0,7);ctx.fill();ctx.restore();
+    ring(hx,hy,10,C.goldDeep,1.3); dot(hx,hy,2.1);
+
+    T('mono g','left:96px;top:'+(z.ty+2)+'px;font-size:12px', z.n);
+    T('disp','left:132px;top:'+(z.ty-14)+'px;font-size:42px', z.nome);
+    T('it','left:96px;top:'+(z.ty+70)+'px;width:330px;font-size:23px;line-height:1.32;color:#6B6558',
+      z.frase);
+  });
+
+  T('mono','left:96px;top:172px','Prancha II');
+  T('mono g','right:96px;top:172px;text-align:right','Três zonas');
+  T('disp','left:96px;top:240px;font-size:70px;line-height:1.02;width:600px','Onde a semana se acumula');
+  T('mono s','left:99px;top:402px','Equidistância constante · 5 mm por curva');
+
+  hair(96,1152,W-96,.9);
+  T('mono s','left:96px;top:1186px','Terezinha Ramos · Massoterapia');
+  T('mono s','right:96px;top:1186px;text-align:right','Fig. 2');
+}
+
+function slide3(){
+  frame();
+  hair(96,196,W-96,.9);
+
+  const ys=706, xs=[262,540,818];
+  const gains=[1,0.46,0.16];
+  const labels=['0 min','30 min','60 min'];
+  const marks=['I','II','III'];
+
+  xs.forEach((x,i)=>{
+    drawFigure(x, ys, 0.56, HOT, {gain:gains[i], iv:5.0, step:1.8, outer:3, lw:0.95, noise:3.4+2.6*gains[i]});
+    T('mono g','left:'+(x-140)+'px;width:280px;top:906px;text-align:center;font-size:12px', marks[i]);
+    T('disp','left:'+(x-140)+'px;width:280px;top:930px;text-align:center;font-size:36px', labels[i]);
+  });
+
+  hair(216,1022,864,.9);
+  xs.forEach((x,i)=>{ dot(x,1022.5,i===2?4.6:3.2, i===2?C.goldDeep:C.sand); });
+
+  T('mono','left:96px;top:172px','Prancha III');
+  T('mono g','right:96px;top:172px;text-align:right','Uma sessão');
+  T('disp','left:96px;top:240px;font-size:70px;line-height:1.02;width:640px','O mesmo corpo, outro relevo');
+  T('mono s','left:99px;top:402px','Mesma escala · mesma equidistância · leitura em três tempos');
+
+  hair(96,1152,W-96,.9);
+  T('it','left:96px;top:1180px;width:600px;font-size:27px;line-height:1.34',
+    'A tensão não cede porque foi ignorada.<br>Ela cede porque foi encontrada.');
+  T('mono s','right:96px;top:1250px;text-align:right','Fig. 3');
+}
+
+function slide4(){
+  frame();
+  hair(96,196,W-96,.9);
+
+  drawRosette(540, 484, 190);
+
+  T('mono','left:96px;top:172px','Colofão');
+  T('mono g','right:96px;top:172px;text-align:right','Prancha IV');
+
+  T('disp','left:0;right:0;top:790px;text-align:center;font-size:76px;line-height:1.14',
+    'Chegue com dor.<br>Saia mais leve.');
+
+  hair(420,996,660,.95);
+
+  T('disp','left:0;right:0;top:1026px;text-align:center;font-size:35px;letter-spacing:.01em',
+    'Terezinha Ramos');
+  T('mono s','left:0;right:0;top:1080px;text-align:center','Massoterapia desde 2009 · 5,0 em 28 avaliações no Google');
+
+  T('mono s','left:96px;top:1156px;line-height:2.15;letter-spacing:.26em;font-size:12px',
+    'R. José de Alencar, 658/306<br>Menino Deus · Porto Alegre');
+  T('mono s','right:96px;top:1156px;text-align:right;line-height:2.15;letter-spacing:.26em;font-size:12px',
+    'Seg a sex · 8h às 20h<br>Sábado · 8h às 18h');
+
+  T('mono g','left:0;right:0;top:1252px;text-align:center;font-size:12px;letter-spacing:.3em',
+    '(51) 98958-2730 · terezinharamos.com.br');
+}
+
+({1:slide1,2:slide2,3:slide3,4:slide4})[SLIDE]();
+
+/* ---------- grão de papel ---------- */
+(function grain(){
+  const g=document.getElementById('grain');
+  g.width=W; g.height=H;
+  const gx=g.getContext('2d');
+  const img=gx.createImageData(W,H);
+  const d=img.data;
+  for(let i=0;i<d.length;i+=4){
+    const v=Math.random();
+    const dark=v<0.5;
+    d[i]=dark?27:255; d[i+1]=dark?26:255; d[i+2]=dark?23:255;
+    d[i+3]=Math.random()*12;
+  }
+  gx.putImageData(img,0,0);
+  g.style.opacity='0.5';
+  g.style.mixBlendMode='multiply';
+})();
+
+document.title='ready';
+</script>
