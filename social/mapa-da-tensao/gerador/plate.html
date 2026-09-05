@@ -48,12 +48,18 @@
 const Q = new URLSearchParams(location.search);
 const SLIDE = parseInt(Q.get('slide')||'1',10);
 const DPR   = parseFloat(Q.get('dpr')||'2');
-const W=1080, H=1350;
+const W=1080, H=parseInt(Q.get('h')||'1350',10);
 
 const C = {
   cream:'#F7F4EE', ink:'#1B1A17', inkSoft:'#3A3630',
   gold:'#A9895F', goldDeep:'#8A6A3F', sand:'#D9D0BF', muted:'#8C8474'
 };
+
+const stage = document.getElementById('stage');
+stage.style.width = W+'px'; stage.style.height = H+'px';
+for(const c of document.querySelectorAll('canvas')){
+  c.style.width = W+'px'; c.style.height = H+'px';
+}
 
 const cv = document.getElementById('art');
 cv.width=W*DPR; cv.height=H*DPR;
@@ -407,7 +413,26 @@ function slide4(){
     '(51) 98958-2730 · terezinharamos.com.br');
 }
 
-({1:slide1,2:slide2,3:slide3,4:slide4})[SLIDE]();
+function story(){
+  frame();
+  hair(96,456,W-96,.9);
+  ticks(456,96,W-96,24,7);
+
+  drawFigure(540, 1110, 1.24, HOT, {iv:4.8, step:2.0, outer:4});
+
+  T('mono','left:96px;top:410px','Terezinha Ramos');
+  T('mono g','right:96px;top:410px;text-align:right','Massoterapia');
+
+  T('disp','left:96px;top:516px;font-size:92px;line-height:.98;width:900px',
+    'O mapa da tensão');
+  T('mono s','left:99px;top:648px','Zonas de acúmulo · vista posterior');
+
+  hair(96,1548,W-96,.9);
+  T('it','left:0;right:0;top:1582px;text-align:center;font-size:44px;color:#3A3630',
+    'o carrossel completo está no perfil');
+}
+
+({1:slide1,2:slide2,3:slide3,4:slide4,5:story})[SLIDE]();
 
 /* ---------- grão de papel ---------- */
 (function grain(){

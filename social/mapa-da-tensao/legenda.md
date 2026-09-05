@@ -1,6 +1,10 @@
-# O mapa da tensão — carrossel de Instagram
+# O mapa da tensão — carrossel e story
 
-Post único, 4 pranchas, formato 4:5 (1080 × 1350). Publicar na ordem 1 → 2 → 3 → 4.
+Carrossel: post único, 4 pranchas, formato 4:5 (1080 × 1350). Publicar na
+ordem 1 → 2 → 3 → 4.
+
+Story: `story.png`, formato 9:16 (1080 × 1920). Publicar junto com o carrossel,
+apontando para ele.
 
 ---
 
@@ -68,3 +72,39 @@ mais linhas juntas, mais alta a "elevação". Aqui a elevação é a tensão.
 - Os arquivos `@2x` (2160 × 2700) tendem a sair mais nítidos depois da
   compressão do Instagram do que os de 1080 px. Use-os quando o aplicativo
   aceitar.
+
+
+---
+
+## Story
+
+`story.png` é a versão vertical da capa. O texto todo fica entre 410 px e
+1640 px de altura, fora das duas faixas que a interface do Instagram cobre: o
+topo, onde aparecem a foto e o nome do perfil, e o rodapé, onde fica a barra de
+resposta.
+
+A faixa vazia embaixo do desenho é proposital. É onde entra o adesivo de
+link ou de menção, sem cobrir nada da arte.
+
+O que colocar por cima, no app:
+
+- Adesivo de **link** para `terezinharamos.com.br` ou direto para o WhatsApp.
+- Ou adesivo de **menção do próprio post**, que leva quem toca direto para o
+  carrossel. Costuma converter melhor do que pedir para a pessoa ir ao perfil.
+- Uma **enquete** também funciona bem com esse tema: "onde a sua semana pesa
+  mais?" com as opções "ombros" e "lombar".
+
+---
+
+## Música
+
+A música não vai no arquivo. Ela é escolhida dentro do app, na tela de
+publicação.
+
+- Combina com a peça: piano solo, neoclássico, ambient, cordas lentas. Buscar
+  por *calm piano*, *ambient*, *neoclassical*, *spa*.
+- Não combina: pop animado em alta. Briga com o silêncio do desenho e faz o
+  post parecer anúncio.
+- A conta é profissional, então a biblioteca disponível é a de uso comercial
+  licenciado, mais restrita. Várias faixas populares não vão aparecer, e isso é
+  esperado.
