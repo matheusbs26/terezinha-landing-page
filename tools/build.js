@@ -172,10 +172,12 @@ function validate() {
 /* Blocos compartilhados                                                       */
 /* ========================================================================== */
 
-/* Mesmos snippets da home, copiados sem alteração: são eles que já registram
-   as conversões em produção, e as páginas de serviço são destino de anúncio. */
+/* Mesmo bloco da home: um único carregamento do gtag.js, com os dois destinos
+   configurados (o Google tag GT-5DFB7B74 e o Google Ads AW-18025240124, que é
+   quem registra a conversão "Contato - whats"). As páginas de serviço são
+   destino de anúncio, então precisam da mesma medição. */
 const GTAG = `<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18025240124"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=GT-5DFB7B74"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
 
@@ -184,16 +186,9 @@ const GTAG = `<!-- Google tag (gtag.js) -->
   }
 
   gtag('js', new Date());
-  gtag('config', 'AW-18025240124');
-</script>`;
 
-const GTAG_GT = `<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=GT-5DFB7B74"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
   gtag('config', 'GT-5DFB7B74');
+  gtag('config', 'AW-18025240124');
 </script>`;
 
 const header = () => `<header class="site-header" id="topo">
@@ -476,8 +471,6 @@ ${GTAG}
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-${GTAG_GT}
 
 <title>${esc(service.title)}</title>
 <meta name="description" content="${esc(service.description)}">
@@ -851,8 +844,6 @@ ${GTAG}
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-${GTAG_GT}
 
 <title>${esc(SCHEDULING.title)}</title>
 <meta name="description" content="${esc(SCHEDULING.description)}">
