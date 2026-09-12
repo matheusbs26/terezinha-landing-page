@@ -61,6 +61,18 @@
       document.body.getAttribute("data-service") ||
       "(geral)";
 
+    // Preço da sessão avulsa da técnica de origem do clique, quando conhecido
+    // (data-price vem do build.js, gerado a partir de tools/services.js). Sem
+    // isso todo clique valia o mesmo 1.0 fixo, fazendo o Reflexologia Podal
+    // (R$120) pesar igual à Drenagem Pós-Operatória (R$220) nos relatórios e
+    // numa eventual estratégia de lance por valor. Sem preço conhecido (ex.:
+    // botão do cabeçalho, página /agendar/), mantém 1.0 só para marcar a
+    // conversão.
+    var price = parseFloat(
+      link.getAttribute("data-price") || document.body.getAttribute("data-price")
+    );
+    var value = isNaN(price) ? 1.0 : price;
+
     // Read in the Google tag / GA4 reports: which button people actually use.
     gtag("event", isPhone ? "phone_click" : "whatsapp_click", {
       service: service,
@@ -73,7 +85,7 @@
 
     gtag("event", "conversion", {
       send_to: "AW-18025240124/C6WGCKnPhqQcELysjZND",
-      value: 1.0,
+      value: value,
       currency: "BRL"
     });
   });
