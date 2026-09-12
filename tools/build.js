@@ -338,7 +338,7 @@ function priceCard(price, waHref, serviceName) {
           <ul class="price-packs">
 ${packs}
           </ul>
-          <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp price-cta" data-service="${esc(serviceName)}">
+          <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp price-cta" data-service="${esc(serviceName)}" data-price="${price.single}">
             ${WA_ICON}
             <span>Agendar no WhatsApp</span>
           </a>
@@ -500,7 +500,7 @@ ${heroPreload}
 
 ${jsonLdTag(serviceJsonLd(service))}
 </head>
-<body data-service="${esc(service.name)}">
+<body data-service="${esc(service.name)}" data-price="${service.price.single}">
 
 <a class="skip-link" href="#inicio">Pular para o conteúdo</a>
 
@@ -1039,7 +1039,7 @@ function homeServiceCards() {
           <p>${esc(s.cardText)}</p>
           <div class="service-actions">
             <a href="/${s.slug}/" class="service-cta">Ver detalhes →</a>
-            <a href="${wa(s.waMessage)}" target="_blank" rel="noopener" class="service-wa" data-service="${esc(s.name)}">
+            <a href="${wa(s.waMessage)}" target="_blank" rel="noopener" class="service-wa" data-service="${esc(s.name)}" data-price="${s.price.single}">
               ${WA_ICON}
               <span>WhatsApp</span>
             </a>
@@ -1059,7 +1059,7 @@ function homeSpecialCards() {
             <li>4 sessões <strong>${brl(s.price.pack4)}</strong></li>
             <li>8 sessões <strong>${brl(s.price.pack8)}</strong></li>
           </ul>
-          <a href="${wa(s.waMessage)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-small" data-service="${esc(s.name)}">
+          <a href="${wa(s.waMessage)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-small" data-service="${esc(s.name)}" data-price="${s.price.single}">
             ${WA_ICON}
             <span>Tenho interesse</span>
           </a>
