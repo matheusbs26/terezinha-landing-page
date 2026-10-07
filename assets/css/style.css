@@ -49,7 +49,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-img { max-width: 100%; display: block; }
+/* height:auto é obrigatório: os atributos width/height do HTML (que existem
+   para reservar espaço e evitar salto de layout) viram height:1800px no CSS.
+   Sem isto, uma foto com width:100% mantinha os 1800px de altura, ignorava o
+   aspect-ratio e esticava a seção "Sobre" até ~2000px. Quem precisa preencher
+   a caixa (hero, galeria) declara height:100% explicitamente. */
+img { max-width: 100%; height: auto; display: block; }
 
 /* As fotos são servidas como <picture> (WebP com o JPEG de reserva). O wrapper
    não pode virar uma caixa a mais entre o contêiner e a imagem: com
@@ -379,11 +384,15 @@ address { font-style: normal; }
   gap: 64px;
   align-items: center;
 }
+/* O retrato original tem ~18% de parede acima da cabeça. Em 5/6, ancorado na
+   base, o corte sai todo de cima: a cabeça fica perto do topo e as mãos
+   continuam no quadro. */
 .about-media img {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  aspect-ratio: 4/5;
+  aspect-ratio: 5/6;
   object-fit: cover;
+  object-position: 50% 100%;
   width: 100%;
 }
 .about-content h2 { margin-bottom: 0.3em; }
@@ -537,6 +546,16 @@ address { font-style: normal; }
   transition: transform 0.5s ease;
 }
 .gallery-item:hover img { transform: scale(1.06); }
+
+/* A primeira foto é a de destaque (rosto e mãos em atendimento): ocupa 2×2 e
+   as outras cinco completam uma grade 3×3 sem buraco. */
+.gallery-item.is-featured { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+/* Retratos com muita parede acima da cabeça: o corte sai de cima. */
+.gallery-item.is-portrait img { object-position: 50% 85%; }
+@media (prefers-reduced-motion: reduce) {
+  .gallery-item img { transition: none; }
+  .gallery-item:hover img { transform: none; }
+}
 
 /* ========== Reviews ========== */
 .google-mark { width: 40px; height: 40px; margin: 0 auto 16px; }
@@ -984,8 +1003,8 @@ address { font-style: normal; }
 /* ========== Reveal on scroll ========== */
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
@@ -998,6 +1017,11 @@ address { font-style: normal; }
 @media (max-width: 980px) {
   .about-grid, .location-grid, .info-grid { grid-template-columns: 1fr; }
   .about-media { order: -1; }
+  /* Em coluna única a foto ocupava a largura toda em retrato (mais de 1000px
+     de altura no tablet) e empurrava o texto para longe. Na horizontal ela
+     mostra rosto e ombros e o texto aparece logo abaixo. */
+  .about-grid { gap: 36px; }
+  .about-media img { aspect-ratio: 4/3; object-position: 50% 25%; }
   .benefit-grid, .benefit-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
   .service-grid, .review-grid { grid-template-columns: repeat(2, 1fr); }
   .related-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1055,6 +1079,11 @@ address { font-style: normal; }
 
   .benefit-grid, .service-grid, .gallery-grid, .review-grid { grid-template-columns: 1fr 1fr; }
   .gallery-grid { gap: 12px; }
+  /* Duas colunas: o destaque ocupa a linha toda, quatro fotos em 2×2 e a
+     última também na largura toda — cinco fotos não fecham em duas colunas. */
+  .gallery-item.is-featured { grid-row: auto; aspect-ratio: 4/5; }
+  .gallery-item:last-child { grid-column: span 2; aspect-ratio: 4/3; }
+  .gallery-item.is-portrait:last-child img { object-position: 50% 30%; }
 
   .info-aside { padding: 26px 24px; }
   .location-strip { padding: 32px 26px; }
@@ -1075,6 +1104,7 @@ address { font-style: normal; }
 
 @media (max-width: 480px) {
   .benefit-grid, .benefit-grid.cols-3, .service-grid, .review-grid { grid-template-columns: 1fr; }
+  .about-media img { aspect-ratio: 1/1; object-position: 50% 40%; }
   .related-grid { grid-template-columns: 1fr; }
   .hero-actions { flex-direction: column; align-items: stretch; gap: 18px; }
   .hero-actions .btn { justify-content: center; }

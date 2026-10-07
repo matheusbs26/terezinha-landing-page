@@ -101,7 +101,11 @@
           }
         });
       },
-      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+      // threshold 0.15 esperava 15% do bloco estar na tela: num bloco alto
+      // (ou ao lado de uma foto alta) o texto ficava invisível enquanto a
+      // pessoa já estava olhando para ele. Agora entra assim que a borda
+      // aparece, com uma pequena folga abaixo da dobra.
+      { threshold: 0, rootMargin: "0px 0px 60px 0px" }
     );
     revealEls.forEach(function (el) { observer.observe(el); });
   } else {
