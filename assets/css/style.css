@@ -932,11 +932,6 @@ address { font-style: normal; }
 .cta-final h2 { color: #fff; }
 .cta-final p { color: rgba(247,244,238,0.78); max-width: 480px; margin: 0 auto 32px; }
 
-/* Alternativa por telefone, logo abaixo do botão principal: discreta para não
-   disputar atenção com o CTA verde, mas presente para quem prefere ligar. */
-.cta-final .cta-call { margin: 24px auto 0; font-size: 0.95rem; }
-.cta-final .cta-call a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
-
 /* ========== Footer ========== */
 .site-footer { background: var(--ink); color: rgba(247,244,238,0.75); padding-top: 60px; }
 .footer-inner {

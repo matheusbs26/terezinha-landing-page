@@ -38,16 +38,8 @@ const esc = (s) =>
 const wa = (message) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
 
-/* Segundo caminho de contato. Nem todo mundo que chega pelo anúncio quer abrir
-   uma conversa de texto: parte do público prefere ligar, e sem um link tel:
-   esse lead simplesmente ia embora. O clique também é medido (ver script.js). */
-const TEL = `tel:${SITE.phone}`;
-
 const WA_ICON =
   '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.38 4 15c0 2.36.68 4.56 1.86 6.42L4 29l7.77-1.83A11.9 11.9 0 0 0 16.02 27C22.63 27 28 21.62 28 15S22.63 3 16.02 3Zm0 21.6c-2.02 0-3.9-.57-5.5-1.56l-.4-.24-4.6 1.08 1.1-4.48-.26-.42A9.53 9.53 0 0 1 6.4 15c0-5.3 4.32-9.6 9.62-9.6 5.3 0 9.6 4.3 9.6 9.6 0 5.3-4.3 9.6-9.6 9.6Zm5.27-7.19c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.14-.19.29-.75.93-.92 1.12-.17.19-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.12-.59.13-.13.29-.34.44-.5.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.65-1.56-.89-2.14-.23-.56-.47-.48-.65-.49h-.55c-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.02 2.76 1.16 2.95.14.19 2 3.05 4.85 4.28.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.34Z"/></svg>';
-
-const PHONE_ICON =
-  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11.05 5.2c.5-.14 1.03.1 1.26.57l2.06 4.12c.2.4.14.88-.16 1.21l-1.86 2.07c1.06 2.2 2.84 3.98 5.04 5.04l2.07-1.86c.33-.3.81-.36 1.21-.16l4.12 2.06c.47.23.71.76.57 1.26l-1.1 3.85a1.1 1.1 0 0 1-1.06.8C12.2 24.16 7.84 19.8 7.84 8.9c0-.5.33-.93.8-1.06l2.4-.69Z"/></svg>';
 
 /* ========================================================================== */
 /* Imagens                                                                     */
@@ -251,8 +243,7 @@ ${footerServices(currentSlug)}
     </nav>
     <div class="footer-contact">
       <p class="footer-title">Contato</p>
-      <a href="${TEL}">${SITE.phoneLabel}</a>
-      <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>
+      <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener">WhatsApp ${SITE.phoneLabel}</a>
       <address>${SITE.street} — ${SITE.district}, ${SITE.city} - ${SITE.state}</address>
       <p class="footer-hours">${SITE.hours.map((h) => `${esc(h.label)}, ${esc(h.time)}`).join("<br>")}</p>
     </div>
@@ -527,10 +518,6 @@ ${header()}
           ${WA_ICON}
           <span>Agendar no WhatsApp</span>
         </a>
-        <a href="${TEL}" class="btn btn-ghost btn-large" data-service="${esc(service.name)}">
-          ${PHONE_ICON}
-          <span>Ligar</span>
-        </a>
         <a href="#detalhes" class="hero-secondary">Ver como funciona</a>
       </div>
       <ul class="hero-trust">
@@ -689,9 +676,9 @@ ${relatedCards(service)}
         <a href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(
           `${SITE.street.replace("/306", "")}, ${SITE.district}, ${SITE.city} - ${SITE.state}, ${SITE.zip}`
         )}" target="_blank" rel="noopener" class="btn btn-dark">Como chegar</a>
-        <a href="${TEL}" class="btn btn-outline" data-service="${esc(service.name)}">
-          ${PHONE_ICON}
-          <span>Ligar</span>
+        <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp" data-service="${esc(service.name)}">
+          ${WA_ICON}
+          <span>WhatsApp</span>
         </a>
         <a href="/#localizacao" class="btn btn-outline">Ver no mapa</a>
       </div>
@@ -707,7 +694,6 @@ ${relatedCards(service)}
         ${WA_ICON}
         <span>Agendar ${esc(service.shortName)}</span>
       </a>
-      <p class="cta-call">Prefere falar por telefone? <a href="${TEL}" data-service="${esc(service.name)}">${SITE.phoneLabel}</a></p>
     </div>
   </section>
 
@@ -772,10 +758,6 @@ function schedulingFaq() {
     {
       q: "Não sei qual massagem escolher. Tem problema?",
       a: "Nenhum. Descreva o que está sentindo no primeiro contato: a escolha da técnica é feita junto com a Terezinha."
-    },
-    {
-      q: "Prefiro ligar em vez de mandar mensagem.",
-      a: `Também pode: o telefone é ${SITE.phoneLabel}, o mesmo número do WhatsApp.`
     }
   ];
 }
@@ -900,10 +882,6 @@ ${header()}
           ${WA_ICON}
           <span>Agendar no WhatsApp</span>
         </a>
-        <a href="${TEL}" class="btn btn-ghost btn-large" data-service="${SCHEDULING_NAME}">
-          ${PHONE_ICON}
-          <span>Ligar ${SITE.phoneLabel}</span>
-        </a>
         <a href="#tecnicas" class="hero-secondary">Ver as técnicas</a>
       </div>
       <ul class="hero-trust">
@@ -985,9 +963,9 @@ ${schedulingServiceCards()}
         <a href="https://www.google.com/maps/dir/?api=1&amp;destination=${encodeURIComponent(
           `${SITE.street.replace("/306", "")}, ${SITE.district}, ${SITE.city} - ${SITE.state}, ${SITE.zip}`
         )}" target="_blank" rel="noopener" class="btn btn-dark">Como chegar</a>
-        <a href="${TEL}" class="btn btn-outline" data-service="${SCHEDULING_NAME}">
-          ${PHONE_ICON}
-          <span>Ligar</span>
+        <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp" data-service="${SCHEDULING_NAME}">
+          ${WA_ICON}
+          <span>WhatsApp</span>
         </a>
         <a href="/#localizacao" class="btn btn-outline">Ver no mapa</a>
       </div>
@@ -1023,7 +1001,6 @@ ${faq
         ${WA_ICON}
         <span>Agendar no WhatsApp</span>
       </a>
-      <p class="cta-call">Prefere falar por telefone? <a href="${TEL}" data-service="${SCHEDULING_NAME}">${SITE.phoneLabel}</a></p>
     </div>
   </section>
 
