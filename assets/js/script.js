@@ -35,23 +35,16 @@
   // two copies disagreed on the value. Keep it here — one listener, delegated
   // from the document so links added later are covered too.
   //
-  // Two kinds of contact link count as a lead: WhatsApp (wa.me) and the phone
-  // links (tel:). A call is at least as good a lead as a message, so leaving
-  // tel: out would hide part of what the campaign produces and let the bidding
-  // optimise against an incomplete signal. The GA4 event keeps the two apart
-  // (whatsapp_click vs phone_click) so the split stays visible in the reports.
+  // WhatsApp is the only contact channel on the site (the "Ligar" buttons were
+  // removed on purpose: every lead goes to the WhatsApp conversation).
   //
-  // The WhatsApp buttons open in a new tab and tel: hands off to the dialer, so
-  // this page stays alive either way and the event has time to send — no
-  // navigation callback needed, and hijacking window.location (as the default
-  // Google snippet does) would break the target="_blank" behaviour.
+  // The WhatsApp buttons open in a new tab, so this page stays alive and the
+  // event has time to send — no navigation callback needed, and hijacking
+  // window.location (as the default Google snippet does) would break the
+  // target="_blank" behaviour.
   document.addEventListener("click", function (event) {
-    var link =
-      event.target.closest &&
-      event.target.closest('a[href*="wa.me"], a[href^="tel:"]');
+    var link = event.target.closest && event.target.closest('a[href*="wa.me"]');
     if (!link || typeof gtag !== "function") return;
-
-    var isPhone = link.getAttribute("href").indexOf("tel:") === 0;
 
     // Qual técnica originou o clique: o data-service do próprio link (cards e
     // botões das páginas de serviço) ou, na falta dele, o da página inteira.
@@ -74,13 +67,11 @@
     var value = isNaN(price) ? 1.0 : price;
 
     // Read in the Google tag / GA4 reports: which button people actually use.
-    gtag("event", isPhone ? "phone_click" : "whatsapp_click", {
+    gtag("event", "whatsapp_click", {
       service: service,
       link_url: link.href,
       link_text:
-        link.textContent.trim() ||
-        link.getAttribute("aria-label") ||
-        (isPhone ? "Ligar" : "WhatsApp")
+        link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp"
     });
 
     gtag("event", "conversion", {
