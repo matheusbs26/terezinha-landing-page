@@ -1,0 +1,12 @@
+{
+  "name": "terezinha-landing-page",
+  "private": true,
+  "description": "Site estático da Terezinha Ramos Massoterapeuta. Sem dependências: o package.json existe só para rodar os testes.",
+  "scripts": {
+    "build": "node tools/build.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
