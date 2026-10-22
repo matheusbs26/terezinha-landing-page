@@ -61,10 +61,10 @@
     // numa eventual estratégia de lance por valor. Sem preço conhecido (ex.:
     // botão do cabeçalho, página /agendar/), mantém 1.0 só para marcar a
     // conversão.
-    var price = parseFloat(
+    var price = Number.parseFloat(
       link.getAttribute("data-price") || document.body.getAttribute("data-price")
     );
-    var value = isNaN(price) ? 1.0 : price;
+    var value = Number.isNaN(price) ? 1.0 : price;
 
     // Read in the Google tag / GA4 reports: which button people actually use.
     gtag("event", "whatsapp_click", {
