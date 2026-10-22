@@ -41,7 +41,7 @@
   // The WhatsApp buttons open in a new tab, so this page stays alive and the
   // event has time to send — no navigation callback needed, and hijacking
   // window.location (as the default Google snippet does) would break the
-  // target="_blank" behaviour.
+  // target="_blank" behavior.
   document.addEventListener("click", function (event) {
     var link = event.target.closest && event.target.closest('a[href*="wa.me"]');
     if (!link || typeof gtag !== "function") return;

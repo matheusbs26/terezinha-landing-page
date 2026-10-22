@@ -1,0 +1,58 @@
+{
+  "version": "0.2",
+  "language": "en,pt,pt_BR",
+  "ignorePaths": [".git", ".gitignore", "node_modules", "cspell.json"],
+  "ignoreRegExpList": [
+    "Urls",
+    "AW-\\d+/[A-Za-z0-9_-]+",
+    "\\byu0wghx01v\\b"
+  ],
+  "words": [
+    "Reiki",
+    "ventosaterapia",
+    "whatsapp",
+    "sitelink",
+    "sitelinks",
+    "terezinha",
+    "terezinharamos",
+    "Sidnei",
+    "Teka",
+    "Sturari",
+    "Louzada",
+    "Muay",
+    "LGPD",
+    "ANPD",
+    "Fraunces",
+    "noopener",
+    "webp",
+    "fetchpriority",
+    "jsonld",
+    "urlset",
+    "opsz",
+    "commitado",
+    "commitados",
+    "commitadas",
+    "sonarlint",
+    "claude"
+  ],
+  "overrides": [
+    {
+      "filename": ["**/tools/**", "**/assets/css/**", "**/README.md", "**/docs/**"],
+      "words": [
+        "reiki",
+        "sidnei",
+        "matheus",
+        "servicos",
+        "tecnicas",
+        "localizacao",
+        "avaliacoes",
+        "terapeutica",
+        "linfatica",
+        "operatoria",
+        "IHDR",
+        "SOFC",
+        "wght"
+      ]
+    }
+  ]
+}
