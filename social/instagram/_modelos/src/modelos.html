@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Modelos de slide — carrossel do feed</title>
+<style>
+  /* Biblioteca de layouts para os carrosséis do feed (1080×1350).
+     Cada bloco .slide é um modelo independente: copie o que servir para o
+     src/slides.html do post novo e troque os textos. */
+
+  @font-face { font-family: "Italiana"; src: url("fonts/italiana.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-300.woff2") format("woff2"); font-weight: 300; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+  :root {
+    --bg: #ddd7cd;          /* greige da marca */
+    --bg-light: #efede8;    /* variação clara, para peças mais arejadas */
+    --green: #475438;       /* verde-oliva dos títulos */
+    --green-soft: #69745b;
+    --ink: #1d1d1b;
+    --hair: rgba(29, 29, 27, 0.55);
+    --pad: 88px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #4a4a4a; }
+  body { font-family: "Poppins", sans-serif; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+  .slide {
+    position: relative;
+    width: 1080px;
+    height: 1350px;
+    overflow: hidden;
+    background: var(--bg);
+    display: none;
+  }
+  .slide.light { background: var(--bg-light); }
+  body[data-slide="1"] #m01, body[data-slide="2"] #m02, body[data-slide="3"] #m03,
+  body[data-slide="4"] #m04, body[data-slide="5"] #m05, body[data-slide="6"] #m06,
+  body[data-slide="7"] #m07, body[data-slide="8"] #m08, body[data-slide="9"] #m09,
+  body[data-slide="10"] #m10, body[data-slide="11"] #m11, body[data-slide="12"] #m12,
+  body[data-slide="13"] #m13, body[data-slide="14"] #m14, body[data-slide="15"] #m15 { display: block; }
+
+  /* ---------------- peças comuns ---------------- */
+
+  /* Assinatura corrida: troque o texto da esquerda pelo @ do perfil quando quiser. */
+  .head {
+    position: absolute;
+    top: 168px; left: var(--pad); right: var(--pad);
+    display: flex; align-items: center; gap: 26px;
+    font-weight: 300; font-size: 25px; color: var(--ink);
+    z-index: 5;
+  }
+  .head .line { flex: 1; height: 1px; background: var(--hair); }
+
+  .footrule {
+    position: absolute;
+    left: var(--pad); right: var(--pad); bottom: 148px;
+    height: 1px; background: var(--hair); z-index: 5;
+  }
+
+  /* Monograma MR: o PNG da marca é claro demais para fundo bege, então entra
+     escurecido por filtro. */
+  .mark {
+    position: absolute;
+    top: 130px; left: var(--pad);
+    width: 132px;
+    filter: brightness(0.34) saturate(0.5);
+    z-index: 5;
+  }
+  .mark.right { left: auto; right: var(--pad); }
+  .mark.circle { width: 176px; }
+
+  .stage { position: absolute; left: var(--pad); right: var(--pad); z-index: 3; }
+
+  .kicker {
+    font-weight: 300; font-size: 24px; letter-spacing: 0.24em;
+    text-transform: uppercase; color: var(--green-soft); margin-bottom: 28px;
+  }
+  h2 {
+    font-family: "Italiana", sans-serif; font-weight: 400; color: var(--green);
+    font-size: 100px; line-height: 0.96; letter-spacing: -0.005em;
+  }
+  p.body { font-weight: 300; font-size: 32px; line-height: 1.56; color: var(--ink); }
+  p.body + p.body { margin-top: 30px; }
+  p.body strong { font-weight: 400; color: var(--green); }
+
+  .photo {
+    position: absolute; object-fit: cover;
+    mix-blend-mode: multiply;
+    filter: saturate(0.72) contrast(1.02);
+    z-index: 1;
+  }
+  /* Dissolve a foto no fundo por um dos lados — sem borda dura. */
+  .photo.fade-left {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 46%), linear-gradient(180deg, transparent 0%, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 46%), linear-gradient(180deg, transparent 0%, #000 30%);
+    mask-composite: intersect;
+  }
+  .photo.fade-right {
+    -webkit-mask-image: linear-gradient(270deg, transparent 0%, #000 46%), linear-gradient(180deg, transparent 0%, #000 30%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(270deg, transparent 0%, #000 46%), linear-gradient(180deg, transparent 0%, #000 30%);
+    mask-composite: intersect;
+  }
+  /* Foto recortada em bloco, com cantos suaves — usada nos mosaicos. */
+  .photo.plain { mix-blend-mode: normal; filter: saturate(0.82) contrast(1.02); }
+
+  .swipe {
+    position: absolute; left: var(--pad); bottom: 92px;
+    font-weight: 300; font-size: 25px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--green-soft); z-index: 5;
+  }
+  .idx {
+    position: absolute; right: var(--pad); bottom: 92px;
+    font-weight: 300; font-size: 25px; letter-spacing: 0.22em;
+    color: var(--green-soft); z-index: 5;
+  }
+  .code {
+    position: absolute; left: var(--pad); top: 92px;
+    font-weight: 300; font-size: 22px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: rgba(29, 29, 27,0.42); z-index: 6;
+  }
+
+  /* ============ M01 · capa com foto ============ */
+  #m01 .photo { right: -50px; bottom: 0; width: 700px; height: 1130px; object-position: 44% 10%; }
+  #m01 .stage { top: 430px; right: 500px; }
+  #m01 p.body { margin-top: 38px; max-width: 470px; }
+
+  /* ============ M02 · só texto ============ */
+  #m02 .stage { top: 430px; right: 330px; }
+  #m02 p.body:first-child { margin-top: 0; }
+
+  /* ============ M03 · palavra vertical ============ */
+  /* A palavra fica de pé na borda, lendo de baixo para cima: rotação simples,
+     sem writing-mode, para as letras não virarem de cabeça para baixo. */
+  #m03 .word {
+    position: absolute; right: 30px; top: 50%;
+    transform: translate(50%, -50%) rotate(-90deg);
+    white-space: nowrap;
+    font-family: "Italiana", sans-serif;
+    font-size: 132px; line-height: 1;
+    color: rgba(75, 90, 57, 0.5);
+    z-index: 2;
+  }
+  #m03 .stage { top: 520px; right: 300px; }
+  #m03 .rule { width: 300px; height: 1px; background: var(--hair); margin-bottom: 40px; }
+
+  /* ============ M04 · foto em cima, texto embaixo ============ */
+  #m04 .photo { left: 0; top: 0; width: 1080px; height: 660px; object-position: 50% 34%;
+    -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 34%);
+    mask-image: linear-gradient(0deg, transparent 0%, #000 34%); }
+  #m04 .stage { top: 700px; }
+  #m04 p.body { margin-top: 30px; }
+
+  /* ============ M05 · card com CTA ============ */
+  #m05 .card {
+    position: absolute; left: var(--pad); right: var(--pad); top: 400px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(29, 29, 27,0.16);
+    border-radius: 34px;
+    padding: 66px 62px;
+    z-index: 3;
+  }
+  #m05 .cta {
+    position: absolute; left: 50%; transform: translateX(-50%); top: 940px;
+    padding: 26px 62px;
+    border: 1px solid var(--green);
+    border-radius: 999px;
+    font-weight: 400; font-size: 28px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--green);
+    z-index: 4;
+  }
+
+  /* ============ M06 · painel verde ============ */
+  #m06 .panel {
+    position: absolute; right: 0; top: 0; width: 640px; height: 1350px;
+    background: var(--green); z-index: 2;
+  }
+  #m06 .panel .inner { position: absolute; left: 64px; right: 64px; top: 300px; }
+  #m06 .panel h2 { color: #eae7df; font-size: 76px; }
+  #m06 .panel p { font-weight: 300; font-size: 29px; line-height: 1.55; color: #e3e0d6; margin-top: 34px; }
+  #m06 .photo { left: -110px; bottom: 0; width: 660px; height: 1080px; object-position: 52% 14%; }
+  #m06 .head { right: 700px; }
+  #m06 .footrule { right: 700px; }
+
+  /* ============ M07 · mosaico de fotos ============ */
+  #m07 .strip {
+    position: absolute; right: var(--pad); top: 150px; bottom: 150px; width: 330px;
+    display: grid; grid-template-rows: 1fr 1fr 1fr; gap: 18px; z-index: 2;
+  }
+  #m07 .strip img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.8); }
+  #m07 .stage { top: 520px; right: 480px; }
+  #m07 h2 { font-size: 84px; }
+  #m07 .sub { font-weight: 300; font-size: 27px; line-height: 1.5; color: var(--green-soft); margin-top: 26px; }
+
+  /* ============ M08 · dois cards no verde ============ */
+  #m08 { background: var(--green); }
+  #m08 .head, #m08 .footrule { color: #ddd7cd; }
+  #m08 .head { color: #e3e0d6; }
+  #m08 .head .line, #m08 .footrule { background: rgba(222,216,207,0.5); }
+  #m08 .cards {
+    position: absolute; left: var(--pad); right: var(--pad); top: 380px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 30px; z-index: 3;
+  }
+  #m08 .card {
+    background: var(--bg); border-radius: 26px; padding: 54px 46px;
+  }
+  #m08 .card h3 {
+    font-family: "Italiana", sans-serif; font-weight: 400; color: var(--green);
+    font-size: 58px; line-height: 0.98; margin-bottom: 32px;
+  }
+  #m08 .card p { font-weight: 300; font-size: 26px; line-height: 1.5; color: var(--ink); }
+  #m08 .card p + p { margin-top: 24px; }
+
+  /* ============ M09 · foto cheia com duas colunas ============ */
+  #m09 .photo { inset: 0; width: 1080px; height: 1350px; object-position: 50% 40%;
+    opacity: 0.55; filter: saturate(0.6) brightness(1.1); }
+  #m09 .cols {
+    position: absolute; left: var(--pad); right: var(--pad); bottom: 250px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 46px; z-index: 3;
+  }
+  #m09 .cols p { font-weight: 300; font-size: 27px; line-height: 1.5; color: var(--ink); }
+  #m09 .cols .top { border-top: 1px solid var(--hair); padding-top: 26px; }
+  #m09 .stage { top: 430px; }
+  #m09 h2 { font-size: 92px; }
+
+  /* ============ M10 · chamada final ============ */
+  #m10 .photo { left: -80px; bottom: 0; width: 680px; height: 1080px; object-position: 52% 14%; }
+  #m10 .stage { top: 400px; left: 480px; }
+  #m10 h2 { font-size: 88px; }
+  #m10 .contact { margin-top: 44px; }
+  #m10 .contact div {
+    padding: 16px 0; border-bottom: 1px solid rgba(29, 29, 27,0.22);
+    font-weight: 300; font-size: 27px; color: var(--ink);
+  }
+  #m10 .contact div small {
+    display: block; font-size: 19px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--green-soft); margin-bottom: 4px;
+  }
+
+  /* ============ M11 · fechamento / compartilhamento ============ */
+  #m11 .stage { top: 470px; right: 260px; }
+  #m11 h2 { font-size: 104px; }
+  #m11 p.body { margin-top: 40px; max-width: 620px; }
+  #m11 .leaf { position: absolute; right: -60px; bottom: -30px; width: 330px; z-index: 2; opacity: 0.75; transform: scaleX(-1); }
+
+  /* ============ M12 · depoimento ============ */
+  #m12 .stage { top: 430px; }
+  #m12 .score { display: flex; align-items: baseline; gap: 20px; color: var(--green); }
+  #m12 .score b { font-family: "Italiana", sans-serif; font-weight: 400; font-size: 88px; line-height: 1; }
+  #m12 .score i { font-style: normal; font-size: 28px; letter-spacing: 0.2em; }
+  #m12 .count {
+    margin-top: 12px; font-weight: 300; font-size: 23px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--green-soft);
+  }
+  #m12 .quote {
+    font-family: "Italiana", sans-serif; color: var(--green);
+    font-size: 70px; line-height: 1.08; margin-top: 54px;
+  }
+  #m12 .by {
+    margin-top: 42px; display: flex; align-items: center; gap: 20px;
+    font-weight: 300; font-size: 25px; color: var(--ink);
+  }
+  #m12 .by .dash { width: 54px; height: 1px; background: var(--hair); }
+
+  /* ============ M13 · lista numerada ============ */
+  #m13 .stage { top: 340px; }
+  #m13 h2 { font-size: 82px; margin-bottom: 56px; }
+  #m13 .item { display: flex; align-items: flex-start; gap: 30px; margin-bottom: 40px; }
+  #m13 .item .n {
+    flex: none; width: 62px; height: 62px; border-radius: 50%;
+    background: var(--green); color: #ece9e1;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 300; font-size: 28px;
+  }
+  #m13 .item p { font-weight: 300; font-size: 30px; line-height: 1.45; color: var(--ink); padding-top: 8px; }
+  #m13 .item p b { font-weight: 400; color: var(--green); }
+
+  /* ============ M14 · capa com moldura girada ============ */
+  #m14 .frame-rot {
+    position: absolute; left: 150px; top: 250px;
+    width: 500px; height: 560px;
+    border: 1.5px solid rgba(75,90,57,0.75);
+    transform: rotate(-14deg);
+    z-index: 2;
+  }
+  #m14 .photo {
+    left: 210px; top: 230px; width: 520px; height: 640px;
+    object-position: 50% 12%;
+    -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 72%, transparent 100%);
+    z-index: 3;
+  }
+  #m14 .stage { top: 930px; }
+  #m14 h2 { font-size: 96px; }
+  #m14 .tagline { font-weight: 300; font-size: 30px; color: var(--ink); margin-top: 26px; }
+  #m14 .tagline b { font-weight: 400; }
+
+  /* ============ M15 · marca d'água + destaque ============ */
+  #m15 .watermark {
+    position: absolute; left: 50%; top: 250px; transform: translateX(-50%);
+    width: 620px; opacity: 0.5;
+    filter: brightness(1.06) saturate(0.4);
+    z-index: 1;
+  }
+  #m15 .stage { top: 620px; right: 300px; }
+  #m15 h2 { font-size: 84px; }
+  #m15 p.body { margin-top: 34px; }
+  #m15 .star { position: absolute; z-index: 2; }
+  #m15 .star.a { right: 150px; top: 560px; width: 120px; }
+  #m15 .star.b { right: 260px; top: 700px; width: 66px; }
+</style>
+</head>
+<body>
+
+<!-- M01 · CAPA COM FOTO ------------------------------------------------- -->
+<section class="slide" id="m01">
+  <img class="photo fade-left" src="../../../../assets/img/portrait-smile.jpg" alt="">
+  <span class="code">M01 · capa</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <p class="kicker">Chapéu da peça</p>
+    <h2>Seu título<br>aqui, em<br>duas linhas.</h2>
+    <p class="body">Uma frase curta de apoio, explicando em uma respirada do que trata o carrossel.</p>
+  </div>
+  <span class="swipe">Arraste →</span>
+  <div class="footrule"></div>
+</section>
+
+<!-- M02 · SÓ TEXTO ------------------------------------------------------ -->
+<section class="slide light" id="m02">
+  <img class="mark" src="../../../../assets/img/logo.png" alt="">
+  <span class="code">M02 · só texto</span>
+  <div class="stage">
+    <p class="body"><strong>Primeiro parágrafo em destaque:</strong> a ideia principal do slide, curta, em no máximo três linhas.</p>
+    <p class="body">Segundo parágrafo, com o desenvolvimento. Este é o modelo mais silencioso da série — serve para o miolo do carrossel, quando o texto precisa mandar sozinho.</p>
+    <p class="body">Um terceiro parágrafo cabe, mas raramente é necessário.</p>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M03 · PALAVRA VERTICAL ---------------------------------------------- -->
+<section class="slide" id="m03">
+  <span class="word">massoterapia</span>
+  <span class="code">M03 · palavra vertical</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <div class="rule"></div>
+    <p class="body">O texto entra depois do filete, sempre alinhado à esquerda. A palavra vertical na borda é o nome da técnica, do serviço ou do tema — uma só palavra, sempre.</p>
+    <p class="body">Funciona bem como slide de transição entre dois assuntos do carrossel.</p>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M04 · FOTO EM CIMA, TEXTO EMBAIXO ----------------------------------- -->
+<section class="slide" id="m04">
+  <img class="photo" src="../../../../assets/img/massage-3.jpg" alt="">
+  <span class="code">M04 · foto + texto</span>
+  <div class="stage">
+    <p class="kicker">Chapéu</p>
+    <h2>Título sobre<br>a foto de cima</h2>
+    <p class="body">A foto ocupa a metade superior e se dissolve no fundo; o texto começa logo abaixo, sem moldura. É o modelo mais direto para explicar uma técnica.</p>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M05 · CARD COM CTA -------------------------------------------------- -->
+<section class="slide" id="m05">
+  <span class="code">M05 · card + CTA</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="card">
+    <h2 style="font-size: 62px; margin-bottom: 34px;">Título do card</h2>
+    <p class="body">O card destaca uma informação prática: preparo para a sessão, o que levar, como chegar, uma condição do mês.</p>
+    <p class="body">Logo abaixo vem o botão — que é desenho, não link: quem lê precisa saber para onde ir (WhatsApp, bio, direct).</p>
+  </div>
+  <span class="cta">Chame no WhatsApp</span>
+  <div class="footrule"></div>
+</section>
+
+<!-- M06 · PAINEL VERDE -------------------------------------------------- -->
+<section class="slide" id="m06">
+  <img class="photo fade-right" src="../../../../assets/img/portrait-laugh3.jpg" alt="">
+  <div class="panel">
+    <div class="inner">
+      <h2>Título no<br>painel verde</h2>
+      <p>O painel de cor entra quando o slide precisa de peso — abertura de um tema novo, um dado importante, uma citação da Terezinha.</p>
+      <p>Texto claro sobre verde tem contraste de sobra; evite passar de cinco linhas por bloco.</p>
+    </div>
+  </div>
+  <span class="code">M06 · painel verde</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia</span></div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M07 · MOSAICO DE FOTOS ---------------------------------------------- -->
+<section class="slide" id="m07">
+  <div class="strip">
+    <img src="../../../../assets/img/massage-1.jpg" alt="">
+    <img src="../../../../assets/img/massage-4.jpg" alt="">
+    <img src="../../../../assets/img/massage-5.jpg" alt="">
+  </div>
+  <span class="code">M07 · mosaico</span>
+  <div class="head" style="right: 470px;"><span>@mtekaramos</span><span class="line"></span></div>
+  <div class="stage">
+    <p class="kicker">Chapéu</p>
+    <h2>Título com<br>três fotos<br>ao lado</h2>
+    <p class="sub">Para mostrar etapas, ambientes ou variações de uma mesma técnica.</p>
+  </div>
+  <span class="swipe">Arraste →</span>
+  <div class="footrule" style="right: 470px;"></div>
+</section>
+
+<!-- M08 · DOIS CARDS NO VERDE ------------------------------------------- -->
+<section class="slide" id="m08">
+  <span class="code" style="color: rgba(222,216,207,0.55);">M08 · dois cards</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="cards">
+    <div class="card">
+      <h3>Antes<br>da sessão</h3>
+      <p>Um item por linha, curto.</p>
+      <p>Serve para comparar dois cenários, dois cuidados, duas técnicas.</p>
+    </div>
+    <div class="card">
+      <h3>Depois<br>da sessão</h3>
+      <p>O par do outro lado, com o mesmo número de linhas.</p>
+      <p>Simetria aqui é o que faz o slide funcionar.</p>
+    </div>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M09 · FOTO CHEIA COM DUAS COLUNAS ----------------------------------- -->
+<section class="slide" id="m09">
+  <img class="photo" src="../../../../assets/img/massage-5.jpg" alt="">
+  <span class="code">M09 · foto cheia</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <p class="kicker">Chapéu</p>
+    <h2>Título sobre<br>a fotografia</h2>
+  </div>
+  <div class="cols">
+    <p class="top">Coluna da esquerda: um aspecto do assunto, em três ou quatro linhas.</p>
+    <p class="top">Coluna da direita: o complemento, com o mesmo comprimento.</p>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M10 · CHAMADA FINAL ------------------------------------------------- -->
+<section class="slide" id="m10">
+  <img class="photo fade-right" src="../../../../assets/img/portrait-smile.jpg" alt="">
+  <span class="code">M10 · chamada final</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <p class="kicker">Sua chamada de ação</p>
+    <h2>Agende<br>sua sessão</h2>
+    <div class="contact">
+      <div><small>WhatsApp</small>(51) 98958-2730</div>
+      <div><small>Consultório</small>R. José de Alencar, 658/306<br>Menino Deus, Porto Alegre</div>
+      <div style="border-bottom-color: transparent;"><small>Site</small>terezinharamos.com.br</div>
+    </div>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M11 · FECHAMENTO / COMPARTILHAMENTO --------------------------------- -->
+<section class="slide" id="m11">
+  <span class="code">M11 · fechamento</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <h2>Gostou do<br>conteúdo?</h2>
+    <p class="body">Marca aqui aquela pessoa que anda precisando de um tempo para o corpo — e salva o post para quando for agendar.</p>
+  </div>
+  <svg class="leaf" viewBox="0 0 320 520" fill="none" aria-hidden="true"></svg>
+  <div class="footrule"></div>
+</section>
+
+<!-- M12 · DEPOIMENTO ---------------------------------------------------- -->
+<section class="slide" id="m12">
+  <span class="code">M12 · depoimento</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <div class="score"><b>5,0</b><i>★★★★★</i></div>
+    <p class="count">28 avaliações no Google</p>
+    <p class="quote">“A frase do depoimento, sempre curta e recortada do texto original.”</p>
+    <div class="by"><span class="dash"></span><span>Nome de quem escreveu · cliente</span></div>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+
+<!-- M13 · LISTA NUMERADA ------------------------------------------------ -->
+<section class="slide" id="m13">
+  <span class="code">M13 · lista numerada</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <h2>Título da<br>lista aqui</h2>
+    <div class="item"><span class="n">1</span><p><b>Primeiro item:</b> uma linha de explicação, no máximo duas.</p></div>
+    <div class="item"><span class="n">2</span><p><b>Segundo item:</b> mesma extensão do anterior, para o ritmo não quebrar.</p></div>
+    <div class="item"><span class="n">3</span><p><b>Terceiro item:</b> cinco itens é o limite confortável neste formato.</p></div>
+    <div class="item"><span class="n">4</span><p><b>Quarto item:</b> se precisar de mais, divida em dois slides.</p></div>
+    <div class="item"><span class="n">5</span><p><b>Quinto item:</b> feche com o mais forte da lista.</p></div>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<!-- M14 · CAPA COM MOLDURA GIRADA --------------------------------------- -->
+<section class="slide" id="m14">
+  <div class="frame-rot"></div>
+  <img class="photo" src="../../../../assets/img/portrait-smile.jpg" alt="">
+  <span class="code">M14 · capa com moldura</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <h2>massagem<br>relaxante</h2>
+    <p class="tagline">não é só <b>para quem gosta</b> de dormir.</p>
+  </div>
+  <span class="swipe">Arraste →</span>
+  <div class="footrule"></div>
+</section>
+
+<!-- M15 · MARCA D'ÁGUA + DESTAQUE --------------------------------------- -->
+<section class="slide light" id="m15">
+  <img class="watermark" src="../../../../assets/img/logo.png" alt="">
+  <svg class="star a" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 C54 38, 62 46, 100 50 C62 54, 54 62, 50 100 C46 62, 38 54, 0 50 C38 46, 46 38, 50 0 Z" fill="#475438" opacity="0.8"/></svg>
+  <svg class="star b" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0 C54 38, 62 46, 100 50 C62 54, 54 62, 50 100 C46 62, 38 54, 0 50 C38 46, 46 38, 50 0 Z" fill="#475438" opacity="0.55"/></svg>
+  <span class="code">M15 · marca d'água</span>
+  <div class="head"><span>@mtekaramos</span><span class="line"></span><span>massoterapia &amp; rotina</span></div>
+  <div class="stage">
+    <h2>Um destaque<br>sozinho</h2>
+    <p class="body">Slide de respiro: o monograma grande ao fundo, uma frase e nada mais. Bom para separar blocos de um carrossel longo.</p>
+  </div>
+  <div class="footrule"></div>
+</section>
+
+<script>
+  // Ramo desenhado a uma linha — o ornamento botânico da marca.
+  function leaf(svg) {
+    const S = "stroke='#1d1d1b' stroke-width='2' fill='none' stroke-linecap='round'";
+    let d = `<path d="M40 512 C 60 380, 110 250, 205 60" ${S}/>`;
+    const pairs = 7;
+    for (let i = 0; i < pairs; i++) {
+      const t = i / (pairs - 1);
+      const p = (a, b, c, e) => {
+        const u = 1 - t;
+        return u*u*u*a + 3*u*u*t*b + 3*u*t*t*c + t*t*t*e;
+      };
+      const x = p(40, 60, 110, 205), y = p(512, 380, 250, 60);
+      const len = 168 * (1 - 0.62 * t);
+      const lift = 40 * (1 - 0.5 * t);
+      for (const s of [-1, 1]) {
+        const tipX = x + s * len * 0.92, tipY = y - lift - len * 0.16;
+        d += `<path d="M${x.toFixed(1)} ${y.toFixed(1)}
+          C ${(x + s*len*0.34).toFixed(1)} ${(y - lift - len*0.42).toFixed(1)},
+            ${(x + s*len*0.74).toFixed(1)} ${(tipY - len*0.18).toFixed(1)},
+            ${tipX.toFixed(1)} ${tipY.toFixed(1)}
+          C ${(x + s*len*0.7).toFixed(1)} ${(tipY + len*0.2).toFixed(1)},
+            ${(x + s*len*0.32).toFixed(1)} ${(y - lift + len*0.06).toFixed(1)},
+            ${x.toFixed(1)} ${y.toFixed(1)} Z" ${S}/>`;
+      }
+    }
+    svg.innerHTML = d;
+  }
+  document.querySelectorAll(".leaf").forEach(leaf);
+
+  document.body.dataset.slide = new URLSearchParams(location.search).get("slide") || "1";
+</script>
+</body>
+</html>

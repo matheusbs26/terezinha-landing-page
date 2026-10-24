@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Reels — cenas</title>
+<style>
+  /* Cada cena do Reels é renderizada em duas camadas:
+       ?cena=N&camada=fundo    → a imagem (recebe o movimento de zoom no ffmpeg)
+       ?cena=N&camada=texto    → só o texto, em PNG transparente (entra em fade)
+     Assim a foto se move e a tipografia fica parada e nítida. */
+
+  @font-face { font-family: "Italiana"; src: url("fonts/italiana.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-300.woff2") format("woff2"); font-weight: 300; font-display: block; }
+  @font-face { font-family: "Poppins"; src: url("fonts/poppins-400.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+  :root {
+    --bg: #ddd7cd;
+    --green: #475438;
+    --green-soft: #69745b;
+    --ink: #1d1d1b;
+    --pad: 96px;
+    /* Zona segura do Reels: topo com o nome do perfil, pé com legenda e botões. */
+    --safe-top: 320px;
+    --safe-bottom: 520px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Poppins", sans-serif; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+
+  .cena { position: relative; width: 1080px; height: 1920px; overflow: hidden; display: none; }
+  body.mostra .cena.ativa { display: block; }
+
+  /* ---- camada de fundo ---- */
+  .fundo { position: absolute; inset: 0; background: var(--bg); }
+  .fundo img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    filter: saturate(0.7) contrast(1.02) brightness(1.04);
+  }
+  /* Véu para o texto respirar por cima da foto. */
+  .fundo .veu { position: absolute; inset: 0; }
+  .veu.baixo { background: linear-gradient(0deg, rgba(222,216,207,0.985) 40%, rgba(222,216,207,0.6) 62%, rgba(222,216,207,0) 100%); }
+  .veu.alto  { background: linear-gradient(180deg, rgba(222,216,207,0.985) 34%, rgba(222,216,207,0.5) 62%, rgba(222,216,207,0) 100%); }
+  .veu.cheio { background: rgba(222,216,207,0.7); }
+
+  /* ---- camada de texto (fundo transparente) ---- */
+  .texto { position: absolute; left: var(--pad); right: var(--pad); }
+  .texto.centro { top: 50%; transform: translateY(-50%); }
+  .texto.baixo  { bottom: var(--safe-bottom); }
+  .texto.alto   { top: var(--safe-top); }
+
+  h1 {
+    font-family: "Italiana", sans-serif; font-weight: 400; color: var(--green);
+    font-size: 150px; line-height: 0.94; letter-spacing: -0.01em;
+  }
+  h1.menor { font-size: 118px; }
+  p.apoio {
+    font-weight: 300; font-size: 44px; line-height: 1.42; color: var(--ink); margin-top: 40px;
+  }
+  p.apoio strong { font-weight: 400; color: var(--green); }
+  .chapeu {
+    font-weight: 300; font-size: 30px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--green-soft); margin-bottom: 34px;
+  }
+  .filete { width: 220px; height: 1px; background: rgba(29, 29, 27,0.5); margin: 46px 0; }
+
+  .lista li {
+    list-style: none;
+    font-family: "Italiana", sans-serif; font-size: 78px; line-height: 1.34; color: var(--green);
+  }
+  .nota {
+    display: flex; align-items: baseline; gap: 22px; color: var(--green);
+  }
+  .nota b { font-family: "Italiana", sans-serif; font-weight: 400; font-size: 130px; line-height: 1; }
+  .nota i { font-style: normal; font-size: 40px; letter-spacing: 0.2em; }
+
+  .contato { margin-top: 52px; }
+  .contato div {
+    padding: 22px 0; border-top: 1px solid rgba(29, 29, 27,0.28);
+    font-weight: 300; font-size: 38px; color: var(--ink);
+  }
+  .contato div small {
+    display: block; font-size: 24px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--green-soft); margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 · gancho -->
+<section class="cena" data-cena="1">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-3.jpg" alt="" style="object-position: 58% 30%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <p class="chapeu">Massoterapia · Porto Alegre</p>
+    <h1>Chegue<br>com dor.</h1>
+  </div>
+</section>
+
+<!-- 2 · virada do gancho -->
+<section class="cena" data-cena="2">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-3.jpg" alt="" style="object-position: 44% 52%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <h1>Saia mais<br>leve.</h1>
+  </div>
+</section>
+
+<!-- 3 · o problema -->
+<section class="cena" data-cena="3">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <h1 class="menor">O ombro que<br>trava no fim<br>da tarde.</h1>
+  </div>
+</section>
+
+<!-- 4 · o problema, parte 2 -->
+<section class="cena" data-cena="4">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <h1 class="menor">A lombar que<br>reclama na<br>hora de levantar.</h1>
+  </div>
+</section>
+
+<!-- 5 · o problema, parte 3 -->
+<section class="cena" data-cena="5">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <h1 class="menor">O pescoço que<br>virou pedra depois<br>de uma semana<br>difícil.</h1>
+  </div>
+</section>
+
+<!-- 6 · como é o atendimento -->
+<section class="cena" data-cena="6">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-5.jpg" alt="" style="object-position: 50% 45%;">
+    <div class="veu alto"></div>
+  </div>
+  <div class="texto alto">
+    <p class="apoio"><strong>A sessão começa com uma conversa:</strong> como você chegou, o que dói, o que anda tirando seu sono.</p>
+  </div>
+</section>
+
+<!-- 6 · técnicas -->
+<section class="cena" data-cena="7">
+  <div class="fundo"></div>
+  <div class="texto centro">
+    <p class="chapeu">Só depois vem a técnica</p>
+    <ul class="lista">
+      <li>Relaxante</li>
+      <li>Terapêutica</li>
+      <li>Drenagem linfática</li>
+      <li>Pedras quentes</li>
+      <li>Ventosaterapia</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 8 · respiro -->
+<section class="cena" data-cena="8">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-4.jpg" alt="" style="object-position: 50% 45%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <h1 class="menor">Um tempo<br>só seu.</h1>
+  </div>
+</section>
+
+<!-- 9 · prova social -->
+<section class="cena" data-cena="9">
+  <div class="fundo">
+    <img src="../../../../assets/img/massage-1.jpg" alt="" style="object-position: 50% 40%;">
+    <div class="veu cheio"></div>
+  </div>
+  <div class="texto centro">
+    <div class="nota"><b>5,0</b><i>★★★★★</i></div>
+    <div class="filete"></div>
+    <p class="apoio">28 avaliações no Google e clientes que voltam desde 2009.</p>
+  </div>
+</section>
+
+<!-- 10 · chamada -->
+<section class="cena" data-cena="10">
+  <div class="fundo">
+    <img src="../../../../assets/img/portrait-smile.jpg" alt="" style="object-position: 50% 16%;">
+    <div class="veu baixo"></div>
+  </div>
+  <div class="texto baixo">
+    <h1 class="menor" style="font-size: 104px;">Agende<br>sua sessão</h1>
+    <div class="contato">
+      <div><small>WhatsApp</small>(51) 98958-2730</div>
+      <div><small>Consultório</small>Menino Deus, Porto Alegre</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const q = new URLSearchParams(location.search);
+  const n = q.get("cena") || "1";
+  const camada = q.get("camada") || "fundo";
+
+  const cena = document.querySelector(`.cena[data-cena="${n}"]`);
+  cena.classList.add("ativa");
+  document.body.classList.add("mostra");
+
+  // Na camada de texto o fundo some: o PNG sai com transparência e o ffmpeg
+  // sobrepõe o texto à imagem já em movimento.
+  if (camada === "texto") {
+    cena.querySelectorAll(".fundo").forEach(el => el.remove());
+    document.documentElement.style.background = "transparent";
+    document.body.style.background = "transparent";
+  } else {
+    cena.querySelectorAll(".texto").forEach(el => el.remove());
+  }
+</script>
+</body>
+</html>
