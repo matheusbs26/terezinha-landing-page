@@ -88,21 +88,72 @@ function webpFor(relativePath) {
   return webp !== relativePath && fs.existsSync(path.join(ROOT, webp)) ? webp : null;
 }
 
+/* Larguras das versões menores geradas por tools/responsive-images.py. */
+const RESPONSIVE_WIDTHS = [184, 480, 800, 1080];
+
+/**
+ * srcset do WebP com as versões menores que existirem (<nome>-<largura>w.webp)
+ * mais a original como a maior opção. Sem versões menores, devolve null e a
+ * página usa só a original, como antes.
+ */
+function srcsetFor(relativePath) {
+  const webp = webpFor(relativePath);
+  if (!webp) return null;
+  const { width } = imageSize(relativePath);
+  const variants = RESPONSIVE_WIDTHS.map((w) => ({
+    w,
+    file: webp.replace(/\.webp$/, `-${w}w.webp`)
+  })).filter((v) => v.w < width && fs.existsSync(path.join(ROOT, v.file)));
+  if (!variants.length) return null;
+  return [...variants.map((v) => `/${v.file} ${v.w}w`), `/${webp} ${width}w`].join(", ");
+}
+
+/**
+ * Largura com que cada imagem aparece, para o navegador escolher no srcset.
+ *
+ * Até 720px o hero ocupa a largura toda da tela. Acima disso ele divide a tela
+ * com o texto, mas a foto cobre uma caixa alta (92vh) e acaba mais larga que a
+ * coluna; ali vale a original, como sempre foi. O logo tem altura fixa no CSS
+ * (46px no cabeçalho, 64px no rodapé), o que dá 53px e 74px de largura.
+ */
+const SIZES = {
+  hero: "(max-width: 720px) 100vw, 1350px",
+  brand: "53px",
+  footer: "74px"
+};
+
 /**
  * <img> com dimensões, servido como WebP quando há uma versão convertida.
  *
  * O WebP das fotos do site pesa cerca de metade do JPEG. O <source> só entra
  * quando o arquivo existe, então uma foto nova continua funcionando (em JPEG)
- * antes de ser convertida.
+ * antes de ser convertida. Com `sizes` e versões menores disponíveis, o
+ * <source> vira um srcset e o celular baixa a foto no tamanho da tela.
  */
-function picture(relativePath, alt, attrs) {
+function picture(relativePath, alt, attrs, sizes) {
   const { width, height } = imageSize(relativePath);
   const webp = webpFor(relativePath);
+  const srcset = sizes && srcsetFor(relativePath);
   const extra = attrs ? ` ${attrs}` : "";
   const img = `<img src="/${relativePath}" alt="${esc(alt)}" width="${width}" height="${height}"${extra}>`;
-  return webp
-    ? `<picture><source srcset="/${webp}" type="image/webp">${img}</picture>`
-    : img;
+  if (!webp) return img;
+  const source = srcset
+    ? `<source srcset="${srcset}" sizes="${sizes}" type="image/webp">`
+    : `<source srcset="/${webp}" type="image/webp">`;
+  return `<picture>${source}${img}</picture>`;
+}
+
+/**
+ * Pré-carregamento da foto do hero (o LCP). Precisa repetir o mesmo srcset e
+ * sizes do <source>: um preload só com href baixaria a original e o <picture>
+ * ainda pediria a versão menor — duas imagens no caminho crítico.
+ */
+function heroPreload(relativePath) {
+  const href = `/${webpFor(relativePath) || relativePath}`;
+  const srcset = srcsetFor(relativePath);
+  return srcset
+    ? `<link rel="preload" as="image" href="${href}" imagesrcset="${srcset}" imagesizes="${SIZES.hero}" fetchpriority="high">`
+    : `<link rel="preload" as="image" href="${href}" fetchpriority="high">`;
 }
 
 /* ========================================================================== */
@@ -194,7 +245,7 @@ const GTAG = `<!-- Google tag (gtag.js) -->
 const header = () => `<header class="site-header" id="topo">
   <div class="container header-inner">
     <a href="/" class="brand">
-      ${picture("assets/img/logo-mark.png", "Terezinha Ramos Massoterapeuta", 'class="brand-logo"')}
+      ${picture("assets/img/logo-mark.png", "Terezinha Ramos Massoterapeuta", 'class="brand-logo"', SIZES.brand)}
     </a>
 
     <nav class="main-nav" id="mainNav">
@@ -224,7 +275,7 @@ const footerServices = (currentSlug) =>
 const footer = (currentSlug) => `<footer class="site-footer">
   <div class="container footer-inner">
     <div class="footer-brand">
-      ${picture("assets/img/logo-mark.png", "Terezinha Ramos Massoterapeuta", 'class="footer-logo"')}
+      ${picture("assets/img/logo-mark.png", "Terezinha Ramos Massoterapeuta", 'class="footer-logo"', SIZES.footer)}
       <p>Massoterapia com técnica, presença e cuidado.</p>
     </div>
     <nav class="footer-nav">
@@ -456,8 +507,7 @@ function servicePage(service) {
   /* A foto do hero é o maior elemento da primeira tela (o LCP). Pré-carregá-la
      tira uma ida ao servidor do caminho crítico — o navegador não precisa
      esperar o CSS para descobrir que vai precisar dela. */
-  const heroImage = webpFor(service.image) || service.image;
-  const heroPreload = `<link rel="preload" as="image" href="/${heroImage}" fetchpriority="high">`;
+  const preload = heroPreload(service.image);
 
   const noteBlock = service.note
     ? `\n        <p class="note-box">${esc(service.note)}</p>`
@@ -488,14 +538,10 @@ ${GTAG}
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#1b1a17">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="/assets/css/style.css">
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 
-${heroPreload}
+${preload}
 
 ${jsonLdTag(serviceJsonLd(service))}
 </head>
@@ -531,7 +577,7 @@ ${header()}
       </ul>
     </div>
     <div class="hero-image">
-      ${picture(service.image, service.imageAlt, 'loading="eager" fetchpriority="high"')}
+      ${picture(service.image, service.imageAlt, 'loading="eager" fetchpriority="high"', SIZES.hero)}
     </div>
   </section>
 
@@ -730,7 +776,7 @@ const SCHEDULING = {
   slug: "agendar",
   title: "Agendar sessão de massagem em Porto Alegre | Terezinha Ramos",
   description:
-    "Agende sua sessão de massoterapia no Menino Deus, Porto Alegre. Fale com a Terezinha pelo WhatsApp ou por telefone e combine técnica e horário.",
+    "Agende sua sessão de massoterapia no Menino Deus, Porto Alegre. Chame a Terezinha no WhatsApp e combine a técnica e o melhor horário.",
   image: "assets/img/portrait-smile.jpg",
   imageAlt: "Terezinha Ramos, massoterapeuta em Porto Alegre",
   sitelink: {
@@ -745,7 +791,6 @@ const SCHEDULING_NAME = "Agendamento";
 /* Mesmas perguntas na página e no JSON-LD: o texto visível e o dado estruturado
    não podem divergir, é o que a política de dados estruturados exige. */
 function schedulingFaq() {
-  const cheapest = Math.min.apply(null, SERVICES.map((s) => s.price.single));
   return [
     {
       q: "Preciso agendar com antecedência?",
@@ -753,7 +798,9 @@ function schedulingFaq() {
     },
     {
       q: "Quanto custa a sessão?",
-      a: `Cada técnica tem o valor na própria página, a partir de ${brl(cheapest)} a sessão avulsa. Há pacotes de 4 e 8 sessões com desconto.`
+      /* Sem "a partir de": o menor valor é o da Reflexologia (40 min) e criava
+         uma expectativa errada para quem procura as sessões de 60 min. */
+      a: "Depende da técnica. A duração e o valor da sessão avulsa de cada uma estão na lista desta página e na página da técnica. Há pacotes de 4 e 8 sessões com desconto."
     },
     {
       q: "Não sei qual massagem escolher. Tem problema?",
@@ -809,7 +856,6 @@ function schedulingServiceCards() {
 function schedulingPage() {
   const url = `${SITE.url}/${SCHEDULING.slug}/`;
   const waHref = wa(WA_DEFAULT);
-  const heroImage = webpFor(SCHEDULING.image) || SCHEDULING.image;
   const steps = [
     {
       title: "Você chama no WhatsApp",
@@ -852,14 +898,10 @@ ${GTAG}
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#1b1a17">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="/assets/css/style.css">
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 
-<link rel="preload" as="image" href="/${heroImage}" fetchpriority="high">
+${heroPreload(SCHEDULING.image)}
 
 ${jsonLdTag(schedulingJsonLd())}
 </head>
@@ -895,7 +937,7 @@ ${header()}
       </ul>
     </div>
     <div class="hero-image">
-      ${picture(SCHEDULING.image, SCHEDULING.imageAlt, 'loading="eager" fetchpriority="high"')}
+      ${picture(SCHEDULING.image, SCHEDULING.imageAlt, 'loading="eager" fetchpriority="high"', SIZES.hero)}
     </div>
   </section>
 
