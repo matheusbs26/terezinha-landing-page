@@ -1,0 +1,31 @@
+# Publicação no GitHub Pages (build legado, com Jekyll).
+#
+# Sem este arquivo o Pages publicava tudo o que está no repositório: o README,
+# o código do gerador (tools/), os testes, o package.json, o cspell.json e os
+# textos da campanha do Google Ads em docs/ — inclusive uma versão HTML de
+# docs/google-ads-sitelinks.md, renderizada pelo tema padrão e rastreável.
+# Nada disso é usado pelas páginas. As páginas, assets/, robots.txt,
+# sitemap.xml, site.webmanifest e CNAME continuam publicados como antes.
+#
+# Testado com a mesma imagem que o GitHub usa para montar o site
+# (ghcr.io/actions/jekyll-build-pages): a saída só perde os arquivos abaixo.
+#
+# Uma lista própria de exclude SUBSTITUI a padrão (não soma). Por isso as
+# primeiras entradas repetem os padrões do Jekyll 3.10 e do gem github-pages
+# (que exclui o CNAME só quando ninguém mexe nesta lista).
+exclude:
+  - CNAME
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - README.md
+  - package.json
+  - cspell.json
+  - docs/
+  - tools/
+  - tests/
+  - contexto/

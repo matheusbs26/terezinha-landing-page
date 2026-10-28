@@ -19,7 +19,22 @@
 
   var floatBtn = document.getElementById("whatsappFloat");
   var hero = document.querySelector(".hero");
-  if (floatBtn && hero) {
+  if (floatBtn && hero && "IntersectionObserver" in window) {
+    // O botão flutuante fica escondido enquanto o hero (que já tem o próprio
+    // botão) ocupa a tela abaixo dos 80px do topo. Antes isso era lido com
+    // getBoundingClientRect() logo na carga, o que obrigava o navegador a
+    // calcular o layout da página inteira dentro do script, antes da primeira
+    // pintura (~250ms no trace do Lighthouse). O observer dá a mesma resposta
+    // sem forçar layout e sem rodar a cada evento de scroll.
+    floatBtn.classList.add("hide-in-hero");
+    new IntersectionObserver(
+      function (entries) {
+        var entry = entries[entries.length - 1];
+        floatBtn.classList.toggle("hide-in-hero", entry.isIntersecting);
+      },
+      { rootMargin: "-80px 0px 0px 0px" }
+    ).observe(hero);
+  } else if (floatBtn && hero) {
     var toggleFloat = function () {
       var heroBottom = hero.getBoundingClientRect().bottom;
       floatBtn.classList.toggle("hide-in-hero", heroBottom > 80);

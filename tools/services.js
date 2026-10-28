@@ -357,14 +357,14 @@ const SERVICES = [
     description:
       "Drenagem pós-operatória no Menino Deus, Porto Alegre. Acompanhamento delicado da sua recuperação, sempre com liberação da equipe médica. Agende pelo WhatsApp.",
     cardText:
-      "Acompanhamento no pós-operatório para reduzir inchaço e acelerar a recuperação.",
+      "Acompanhamento delicado no pós-operatório, com liberação médica, para ajudar com o inchaço.",
     heroSub:
       "Um trabalho delicado para a fase de recuperação, feito com hora marcada, em ambiente reservado e sempre dentro da orientação da sua equipe médica.",
     image: "assets/img/massage-5.jpg",
     imageAlt: "Consultório de massoterapia preparado para atendimento pós-operatório",
     waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Drenagem Pós-Operatória.",
     intro: [
-      "Depois de uma cirurgia, o corpo precisa de tempo e de cuidado. A drenagem pós-operatória é um trabalho delicado, feito para acompanhar essa fase e ajudar a lidar com o inchaço e o desconforto da recuperação.",
+      "Depois de uma cirurgia, o corpo precisa de tempo e de cuidado. A drenagem pós-operatória (que muita gente procura como massagem pós-operatória) é um trabalho delicado, feito para acompanhar essa fase e ajudar a lidar com o inchaço e o desconforto da recuperação.",
       "O atendimento respeita integralmente a orientação da sua equipe médica: a liberação do cirurgião, o tempo de cada etapa e as regiões que podem ou não ser tocadas."
     ],
     indications: [
