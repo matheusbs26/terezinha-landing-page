@@ -144,6 +144,20 @@ test("todo link de WhatsApp vai para o número da Terezinha com mensagem pronta"
   }
 });
 
+test("o Sonar ignora na duplicação exatamente as páginas geradas pelo build", () => {
+  const { SERVICES } = require("../tools/services.js");
+  const generated = [...SERVICES.map((s) => `${s.slug}/index.html`), "agendar/index.html"].sort();
+  const props = read(".sonarcloud.properties");
+  // sonar.exclusions tiraria as páginas de TODA a análise, não só da duplicação.
+  assert.doesNotMatch(props, /^sonar\.exclusions=/m, "use só sonar.cpd.exclusions");
+  const line = props.match(/^sonar\.cpd\.exclusions=(.+)$/m);
+  assert.ok(line, ".sonarcloud.properties sem sonar.cpd.exclusions");
+  const excluded = line[1].split(",").map((p) => p.trim()).sort();
+  // A análise automática não aceita curingas: cada página nova do build precisa
+  // entrar na lista, e nenhuma página mantida à mão pode estar nela.
+  assert.deepEqual(excluded, generated, "sonar.cpd.exclusions difere das páginas geradas por tools/build.js");
+});
+
 test("o _config.yml não exclui nada que as páginas usam", () => {
   const excluded = all(read("_config.yml"), /^\s*-\s*(\S+)\s*$/gm).map((e) => e.replace(/\/$/, ""));
   for (const needed of ["assets", "index.html", "robots.txt", "sitemap.xml", "site.webmanifest"]) {
