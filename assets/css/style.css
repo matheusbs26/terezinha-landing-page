@@ -65,10 +65,18 @@
   --sand: #d9d0bf;
   --gold: #a9895f;
   /* Versão escurecida do dourado para texto pequeno: o --gold original fica em
-     3,2:1 sobre o creme, abaixo do mínimo de 4,5:1 da WCAG AA. */
-  --gold-deep: #8a6a3f;
-  --whatsapp: #25d366;
-  --whatsapp-dark: #1ebc59;
+     3,2:1 sobre o creme, abaixo do mínimo de 4,5:1 da WCAG AA. O tom anterior
+     (#8a6a3f) passava no creme, mas ficava em 4,1:1 sobre o --cream-alt das
+     seções alternadas; este dá 4,8:1 no bege e 5,3:1 no creme. */
+  --gold-deep: #7e6038;
+  /* Verde dos botões de WhatsApp. O verde da marca do WhatsApp (#25d366) com
+     texto branco dava 1,98:1 — o botão que converte era o texto menos legível
+     da página. Este tom fecha 5,4:1 com o branco (WCAG AA) e continua lido
+     como "WhatsApp"; contra o painel escuro do hero o botão fica em 3,2:1,
+     acima dos 3:1 exigidos para componentes. */
+  --whatsapp: #167a43;
+  --whatsapp-dark: #11663a;
+  --whatsapp-glow: rgba(22, 122, 67, 0.45);
   --text-muted: #6b6558;
   --radius: 14px;
   --shadow: 0 20px 40px -20px rgba(27, 26, 23, 0.25);
@@ -202,7 +210,7 @@ address { font-style: normal; }
 .btn svg { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
 .btn:hover { transform: translateY(-2px); }
 
-.btn-whatsapp { background: var(--whatsapp); color: #fff; box-shadow: 0 12px 24px -10px rgba(37,211,102,0.55); }
+.btn-whatsapp { background: var(--whatsapp); color: #fff; box-shadow: 0 12px 24px -10px var(--whatsapp-glow); }
 .btn-whatsapp:hover { background: var(--whatsapp-dark); }
 
 .btn-dark { background: var(--ink); color: var(--cream); }
@@ -437,6 +445,12 @@ address { font-style: normal; }
   .hero-text > * { animation: none; }
 }
 
+/* Itens de grid têm min-width:auto: crescem até a largura mínima do próprio
+   conteúdo (linhas de preço com nowrap, botões) e não encolhem com a coluna.
+   Nas páginas de técnica isso abria 58px de rolagem horizontal em 320px e 3px
+   em 375px. Com min-width:0 a coluna manda e o conteúdo quebra dentro dela. */
+.hero > *, .info-grid > *, .about-grid > *, .location-grid > * { min-width: 0; }
+
 /* ========== Sections ========== */
 .section { padding: 100px 0; }
 .section-alt { background: var(--cream-alt); }
@@ -464,23 +478,21 @@ address { font-style: normal; }
 }
 .about-content h2 { margin-bottom: 0.3em; }
 
-.chip-list {
+/* Diferenciais: eram uma seção inteira de quatro cartões com ícones, que
+   repetia o que o "Sobre" já dizia (até as mesmas palavras, "ambiente
+   acolhedor"). Aqui ficam junto da apresentação da Terezinha, em lista
+   compacta com um fio dourado — o mesmo texto, um quarto da altura. */
+.about-points {
   list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 28px;
   padding: 0;
-  margin: 20px 0 28px;
+  margin: 26px 0 30px;
 }
-.chip-list li {
-  background: var(--cream-alt);
-  border: 1px solid var(--sand);
-  color: var(--ink-soft);
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 999px;
-}
+.about-points li { border-top: 2px solid var(--gold); padding-top: 12px; }
+.about-points h3 { font-size: 1rem; margin: 0 0 0.25em; }
+.about-points p { font-size: 0.9rem; margin: 0; color: var(--text-muted); }
 
 /* ========== Benefits ========== */
 .benefit-grid {
@@ -495,18 +507,6 @@ address { font-style: normal; }
   text-align: left;
   border: 1px solid rgba(27,26,23,0.06);
 }
-.benefit-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-.benefit-icon svg { width: 26px; height: 26px; }
 .benefit-card h3 { margin-bottom: 0.4em; font-size: 1.08rem; }
 .benefit-card p { font-size: 0.92rem; margin: 0; }
 
@@ -537,12 +537,12 @@ address { font-style: normal; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 20px;
+  gap: 0 22px;
   margin-top: auto; /* alinha as ações na base, mesmo com textos de tamanhos diferentes */
-  padding-top: 8px;
 }
 .service-cta {
   display: inline-block;
+  padding: 10px 0;
   color: var(--gold-deep);
   font-weight: 600;
   font-size: 0.9rem;
@@ -552,6 +552,7 @@ address { font-style: normal; }
 .service-wa {
   display: inline-flex;
   align-items: center;
+  padding: 10px 0;
   gap: 6px;
   color: var(--text-muted);
   font-weight: 600;
@@ -678,6 +679,7 @@ address { font-style: normal; }
   display: flex;
   flex-direction: column;
 }
+.review-hint { display: none; }
 .review-stars { color: #f5a623; letter-spacing: 2px; margin-bottom: 12px; font-size: 0.95rem; }
 .review-card p { font-size: 0.92rem; color: var(--ink-soft); flex-grow: 1; }
 .review-author {
@@ -839,6 +841,20 @@ address { font-style: normal; }
   inset: 0;
 }
 
+/* Duração e valor já na primeira tela: quem chega por anúncio de uma técnica
+   procura primeiro o preço, que antes só aparecia depois de rolar (no desktop
+   também, abaixo da dobra). */
+.hero-price {
+  align-self: flex-start;
+  margin: 4px 0 22px;
+  padding: 6px 14px;
+  border: 1px solid rgba(247, 244, 238, 0.22);
+  border-radius: 999px;
+  color: rgba(247, 244, 238, 0.86);
+  font-size: 0.95rem;
+}
+.hero-price strong { color: #fff; font-weight: 600; }
+
 .breadcrumb {
   background: var(--cream-alt);
   border-bottom: 1px solid rgba(27, 26, 23, 0.06);
@@ -853,7 +869,7 @@ address { font-style: normal; }
   padding-top: 14px;
   padding-bottom: 14px;
 }
-.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a { color: var(--text-muted); text-decoration: none; padding: 6px 0; }
 .breadcrumb a:hover { color: var(--ink); text-decoration: underline; }
 .breadcrumb [aria-current="page"] { color: var(--ink); font-weight: 500; }
 
@@ -1026,6 +1042,12 @@ address { font-style: normal; }
   margin: 0;
 }
 
+/* ========== 404 ========== */
+.not-found .container { max-width: 820px; }
+.not-found .location-actions { margin: 30px 0 52px; }
+.not-found h2 { font-size: 1.45rem; margin-bottom: 18px; }
+.not-found .related-grid { grid-template-columns: repeat(2, 1fr); }
+
 /* ========== CTA Final ========== */
 .cta-final {
   background: var(--ink);
@@ -1047,7 +1069,8 @@ address { font-style: normal; }
 }
 .footer-logo { height: 64px; width: auto; margin-bottom: 14px; }
 .footer-brand p { color: rgba(247,244,238,0.6); font-size: 0.92rem; }
-.footer-nav { display: flex; flex-direction: column; gap: 12px; }
+.footer-nav { display: flex; flex-direction: column; gap: 4px; }
+.footer-nav a { padding: 4px 0; }
 .footer-nav a, .footer-contact a { color: rgba(247,244,238,0.75); text-decoration: none; font-size: 0.95rem; }
 .footer-nav a:hover, .footer-contact a:hover { color: #fff; }
 .footer-nav a[aria-current="page"] { color: #fff; font-weight: 600; }
@@ -1083,7 +1106,7 @@ address { font-style: normal; }
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 14px 30px -8px rgba(37,211,102,0.65);
+  box-shadow: 0 14px 30px -8px var(--whatsapp-glow);
   z-index: 90;
   opacity: 1;
   transform: translateY(0);
@@ -1098,7 +1121,7 @@ address { font-style: normal; }
   border-radius: 50%;
   border: 2px solid var(--whatsapp);
   opacity: 0.55;
-  animation: pulse-ring 2.2s ease-out infinite;
+  animation: pulse-ring 2.2s ease-out 2;
 }
 @keyframes pulse-ring {
   0% { transform: scale(0.9); opacity: 0.55; }
@@ -1180,8 +1203,14 @@ address { font-style: normal; }
   .hero-text .hero-trust { order: 1; margin-bottom: 22px; gap: 7px 20px; }
   .hero-text .hero-actions { order: 2; margin: 0; }
   .hero-trust li { font-size: 0.83rem; }
-  .hero-service .hero-text { padding: 26px 24px 40px; }
-  .hero-service .hero-image { height: 28vh; min-height: 200px; }
+  .hero-service .hero-text { padding: 20px 24px 40px; }
+  .hero-service .hero-image { height: 23vh; min-height: 150px; }
+  /* Com o preço na primeira tela, o "Clientes desde 2009" sai no celular das
+     páginas de técnica (continua na home): sem isso o botão caía 46px abaixo
+     da dobra num iPhone (390×664). A nota do Google e o horário ficam. */
+  .hero-price ~ .hero-trust .trust-since { display: none; }
+  .hero-price { font-size: 0.88rem; margin: 10px 0 14px; padding: 5px 12px; }
+  .hero-price-extra { display: none; }
 
   .benefit-grid, .service-grid, .gallery-grid, .review-grid { grid-template-columns: 1fr 1fr; }
   .gallery-grid { gap: 12px; }
@@ -1190,6 +1219,36 @@ address { font-style: normal; }
   .gallery-item.is-featured { grid-row: auto; aspect-ratio: 4/5; }
   .gallery-item:last-child { grid-column: span 2; aspect-ratio: 4/3; }
   .gallery-item.is-portrait:last-child img { object-position: 50% 30%; }
+
+  .section-head { margin-bottom: 40px; }
+
+  /* Seis depoimentos empilhados somavam ~3.000px de rolagem no celular. Numa
+     faixa que desliza para o lado, o primeiro aparece inteiro, a ponta do
+     seguinte mostra que há mais, e a página fica 2.300px mais curta. Só CSS:
+     sem biblioteca de carrossel, sem troca automática. A faixa é focável
+     (tabindex no HTML) para rolar pelas setas do teclado. */
+  .review-grid {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin: 0 -20px;
+    padding: 4px 20px 18px;
+    scroll-padding: 0 20px;
+    scrollbar-width: thin;
+  }
+  .review-grid .review-card { flex: 0 0 min(86%, 340px); scroll-snap-align: start; }
+  .review-hint {
+    display: block;
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+  }
+
+  .service-card { padding: 24px 22px; }
+  .service-card p { min-height: 0; }
 
   .studio-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .studio-item figcaption { padding: 36px 12px 10px; font-size: 0.8rem; }
@@ -1212,7 +1271,9 @@ address { font-style: normal; }
 }
 
 @media (max-width: 480px) {
-  .benefit-grid, .benefit-grid.cols-3, .service-grid, .review-grid { grid-template-columns: 1fr; }
+  .benefit-grid, .benefit-grid.cols-3, .service-grid { grid-template-columns: 1fr; }
+  .about-points { grid-template-columns: 1fr; gap: 14px; margin: 22px 0 26px; }
+  .not-found .related-grid { grid-template-columns: 1fr; }
   .about-media img { aspect-ratio: 1/1; object-position: 50% 40%; }
   .related-grid { grid-template-columns: 1fr; }
   .hero-actions { flex-direction: column; align-items: stretch; gap: 18px; }
@@ -1224,4 +1285,13 @@ address { font-style: normal; }
   .location-actions .btn { justify-content: center; }
   .location-strip .location-actions { width: 100%; }
   .steps-stack li { gap: 16px; }
+}
+
+/* 320px: o "Agendar no WhatsApp" grande media 274px numa coluna de 272px. */
+@media (max-width: 360px) {
+  .container { padding: 0 16px; }
+  .hero-text, .hero-service .hero-text { padding-left: 16px; padding-right: 16px; }
+  .btn-large { padding: 15px 20px; font-size: 1rem; }
+  .btn { white-space: normal; text-align: center; }
+  .review-grid { margin: 0 -16px; padding-left: 16px; padding-right: 16px; scroll-padding: 0 16px; }
 }

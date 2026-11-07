@@ -116,7 +116,7 @@ const SERVICES = [
       "Um tempo só seu: toque suave e ritmado, respiração mais calma e o corpo desacelerando de verdade — em um consultório reservado no Menino Deus.",
     image: "assets/img/massage-1.jpg",
     imageAlt: "Sessão de massagem relaxante com Terezinha Ramos",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Massagem Relaxante.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Massagem Relaxante.",
     intro: [
       "A massagem relaxante é o caminho mais direto para desacelerar. Movimentos suaves, contínuos e em ritmo constante ajudam o corpo a sair do estado de alerta em que a rotina costuma deixar a gente.",
       "No consultório da Terezinha, a sessão é individual e sem pressa. Antes de começar, vocês conversam sobre como você está chegando — cansaço, noites mal dormidas, tensão nos ombros — e a pressão do toque é ajustada ao que o seu corpo pede naquele dia."
@@ -197,7 +197,7 @@ const SERVICES = [
       "Para quando existe uma queixa clara: o pescoço que não solta, o ombro travado, a lombar que reclama no fim do dia. Trabalho direcionado, com pressão ajustada ao seu limite.",
     image: "assets/img/massage-4.jpg",
     imageAlt: "Massagem terapêutica aplicada por Terezinha Ramos",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Massagem Terapêutica.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Massagem Terapêutica.",
     intro: [
       "A massagem terapêutica é a escolha quando existe uma queixa clara: aquela dor no pescoço que não passa, o ombro travado, a lombar que reclama depois de horas sentado.",
       "A sessão começa por uma conversa sobre a sua queixa — onde dói, há quanto tempo, o que piora e o que alivia. A partir daí, a Terezinha trabalha os pontos de tensão com pressão firme e progressiva, sempre dentro do que o seu corpo aguenta."
@@ -280,7 +280,7 @@ const SERVICES = [
       "Toque leve, ritmo constante e a direção certa dos movimentos para ajudar o corpo a lidar com a retenção de líquidos e a sensação de inchaço.",
     image: "assets/img/massage-2.jpg",
     imageAlt: "Drenagem linfática manual realizada por Terezinha Ramos",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Drenagem Linfática.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Drenagem Linfática.",
     intro: [
       "A drenagem linfática é uma técnica de toque suave e ritmado que acompanha o caminho natural do sistema linfático, ajudando o corpo a lidar melhor com a retenção de líquidos.",
       "Nada de pressão forte: o que faz diferença aqui é a direção correta dos movimentos, a constância do ritmo e a sequência da sessão. Por isso a técnica de quem aplica importa tanto."
@@ -362,7 +362,7 @@ const SERVICES = [
       "Um trabalho delicado para a fase de recuperação, feito com hora marcada, em ambiente reservado e sempre dentro da orientação da sua equipe médica.",
     image: "assets/img/massage-5.jpg",
     imageAlt: "Consultório de massoterapia preparado para atendimento pós-operatório",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Drenagem Pós-Operatória.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Drenagem Pós-Operatória.",
     intro: [
       "Depois de uma cirurgia, o corpo precisa de tempo e de cuidado. A drenagem pós-operatória (que muita gente procura como massagem pós-operatória) é um trabalho delicado, feito para acompanhar essa fase e ajudar a lidar com o inchaço e o desconforto da recuperação.",
       "O atendimento respeita integralmente a orientação da sua equipe médica: a liberação do cirurgião, o tempo de cada etapa e as regiões que podem ou não ser tocadas."
@@ -444,7 +444,7 @@ const SERVICES = [
       "Movimentos firmes e vigorosos nas regiões combinadas com você, ativando a circulação local e trabalhando o contorno corporal sessão após sessão.",
     image: "assets/img/massage-3.jpg",
     imageAlt: "Massagem modeladora realizada por Terezinha Ramos",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Massagem Modeladora.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Massagem Modeladora.",
     intro: [
       "A massagem modeladora usa movimentos mais firmes e vigorosos sobre as regiões trabalhadas, ativando a circulação local e atuando no contorno corporal.",
       "É um trabalho estético e progressivo: os resultados aparecem com a constância das sessões e caminham junto com hábitos de alimentação, hidratação e movimento."
@@ -526,7 +526,7 @@ const SERVICES = [
       "Todo o trabalho acontece nos pés: pressão precisa, ponto a ponto, numa das técnicas mais discretas e restauradoras do consultório.",
     image: "assets/img/massage-1.jpg",
     imageAlt: "Atendimento de reflexologia podal com Terezinha Ramos",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Reflexologia Podal.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Reflexologia Podal.",
     intro: [
       "A reflexologia podal parte da ideia de que os pés concentram pontos reflexos ligados a diferentes regiões do corpo. A sessão trabalha esses pontos com pressão precisa, dedo a dedo, região a região.",
       "É uma técnica discreta e profundamente relaxante: não é preciso tirar a roupa e todo o trabalho acontece nos pés."
@@ -607,7 +607,7 @@ const SERVICES = [
     image: "assets/img/massage-2.jpg",
     imageAlt: "Massagem com pedras quentes realizada por Terezinha Ramos",
     waMessage:
-      "Olá, Terezinha! Vim pelo site e tenho interesse na Massagem com Pedras Quentes.",
+      "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Massagem com Pedras Quentes.",
     intro: [
       "Na massagem com pedras quentes, pedras aquecidas são posicionadas sobre o corpo e também deslizadas pela musculatura, junto com o trabalho das mãos.",
       "O calor faz metade do trabalho: ele ajuda a musculatura a se soltar antes mesmo de a pressão aumentar, o que torna o relaxamento mais profundo e a sessão bem mais confortável."
@@ -688,7 +688,7 @@ const SERVICES = [
       "A sucção das ventosas alcança a tensão que o toque sozinho demora a soltar — muito usada em costas e ombros, sozinha ou dentro de uma sessão terapêutica.",
     image: "assets/img/massage-4.jpg",
     imageAlt: "Aplicação de ventosaterapia por Terezinha Ramos",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse na Ventosaterapia.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Ventosaterapia.",
     intro: [
       "Na ventosaterapia, copos de vidro ou silicone criam uma sucção sobre a pele. Essa pressão negativa ajuda a soltar a musculatura tensionada e estimula a circulação local.",
       "As ventosas podem ficar paradas em pontos específicos ou deslizar pela região trabalhada. É uma técnica muito usada em costas e ombros, sozinha ou combinada com a massagem terapêutica."
@@ -770,7 +770,7 @@ const SERVICES = [
       "Uma pausa silenciosa: sem pressão sobre o corpo, sem precisar tirar a roupa. Sozinha ou como fechamento de uma sessão de massagem.",
     image: "assets/img/massage-5.jpg",
     imageAlt: "Ambiente reservado para sessão de Reiki no consultório",
-    waMessage: "Olá, Terezinha! Vim pelo site e tenho interesse no Reiki.",
+    waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para o Reiki.",
     intro: [
       "O Reiki é uma prática de imposição das mãos, feita em silêncio ou com música suave, com a pessoa deitada e confortável.",
       "É um cuidado complementar, procurado por quem busca um momento de pausa e de reorganização interna — sozinho ou ao final de uma sessão de massagem."
@@ -846,21 +846,21 @@ const SPECIALS = [
     name: "Terezinha Terapêutica Premium",
     text: "Avaliação + massagem terapêutica + técnicas complementares conforme a necessidade.",
     waMessage:
-      "Olá, Terezinha! Vim pelo site e tenho interesse no atendimento Terezinha Terapêutica Premium.",
+      "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para o atendimento Terezinha Terapêutica Premium.",
     price: { duration: "1h10min", single: 220, pack4: 840, pack8: 1600 }
   },
   {
     name: "Relaxamento Profundo",
     text: "Massagem relaxante + pedras quentes, na mesma sessão.",
     waMessage:
-      "Olá, Terezinha! Vim pelo site e tenho interesse no atendimento Relaxamento Profundo.",
+      "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para o atendimento Relaxamento Profundo.",
     price: { duration: "1h10min", single: 240, pack4: 910, pack8: 1730 }
   },
   {
     name: "Alívio de Tensões",
     text: "Massagem terapêutica + ventosaterapia localizada nos pontos de tensão.",
     waMessage:
-      "Olá, Terezinha! Vim pelo site e tenho interesse no atendimento Alívio de Tensões.",
+      "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para o atendimento Alívio de Tensões.",
     price: { duration: "1h10min", single: 230, pack4: 870, pack8: 1650 }
   }
 ];

@@ -146,7 +146,7 @@ test("todo link de WhatsApp vai para o número da Terezinha com mensagem pronta"
 
 test("o Sonar ignora na duplicação exatamente as páginas geradas pelo build", () => {
   const { SERVICES } = require("../tools/services.js");
-  const generated = [...SERVICES.map((s) => `${s.slug}/index.html`), "agendar/index.html"].sort();
+  const generated = [...SERVICES.map((s) => `${s.slug}/index.html`), "agendar/index.html", "404.html"].sort();
   const props = read(".sonarcloud.properties");
   // sonar.exclusions tiraria as páginas de TODA a análise, não só da duplicação.
   assert.doesNotMatch(props, /^sonar\.exclusions=/m, "use só sonar.cpd.exclusions");
@@ -168,4 +168,17 @@ test("o _config.yml não exclui nada que as páginas usam", () => {
   }
   // Uma lista própria substitui a padrão do gem github-pages, que excluía o CNAME.
   assert.ok(excluded.includes("CNAME"), "_config.yml precisa manter o CNAME excluído, como o padrão");
+});
+
+test("a 404 própria existe, é noindex e só aponta para páginas que existem", () => {
+  const html = read("404.html");
+  assert.match(html, /<meta name="robots" content="noindex, follow">/);
+  assert.equal((html.match(/<h1[\s>]/g) || []).length, 1);
+  assert.ok(html.includes("wa.me/5551989582730"), "404 sem caminho para o WhatsApp");
+  // Servida em qualquer profundidade de URL: todo caminho interno é absoluto.
+  for (const ref of all(html, /\s(?:href|src)="([^"]+)"/g)) {
+    if (isExternal(ref) || ref.startsWith("#")) continue;
+    assert.ok(ref.startsWith("/"), `404.html: caminho relativo quebraria em /a/b/ → ${ref}`);
+    assert.ok(fs.existsSync(resolveLocal("404.html", ref)), `404.html: link quebrado → ${ref}`);
+  }
 });

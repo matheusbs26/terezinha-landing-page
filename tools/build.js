@@ -249,9 +249,9 @@ const header = () => `<header class="site-header" id="topo">
     </a>
 
     <nav class="main-nav" id="mainNav">
-      <a href="/#sobre">Sobre</a>
       <a href="/#servicos">Serviços</a>
-      <a href="/#galeria">Galeria</a>
+      <a href="/#avaliacoes">Avaliações</a>
+      <a href="/#sobre">Sobre</a>
       <a href="/#consultorio">Consultório</a>
       <a href="/#localizacao">Localização</a>
       <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-small nav-cta">
@@ -281,8 +281,9 @@ const footer = (currentSlug) => `<footer class="site-footer">
     </div>
     <nav class="footer-nav">
       <p class="footer-title">Navegação</p>
-      <a href="/#sobre">Sobre</a>
       <a href="/#servicos">Serviços</a>
+      <a href="/#avaliacoes">Avaliações</a>
+      <a href="/#sobre">Sobre</a>
       <a href="/#galeria">Galeria</a>
       <a href="/#consultorio">Consultório</a>
       <a href="/#localizacao">Localização</a>
@@ -561,6 +562,7 @@ ${header()}
       <p class="eyebrow">Massoterapia em ${SITE.city}</p>
       <h1>${esc(service.h1)}</h1>
       <p class="hero-sub">${esc(service.heroSub)}</p>
+      <p class="hero-price">Sessão de ${esc(service.price.duration)} · <strong>${brl(service.price.single)}</strong><span class="hero-price-extra"> · pacotes com desconto</span></p>
       <div class="hero-actions">
         <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-large" data-service="${esc(service.name)}">
           ${WA_ICON}
@@ -574,7 +576,7 @@ ${header()}
           <span class="trust-stars" aria-hidden="true">★★★★★</span>
           <span class="trust-count">em 28 avaliações no Google</span>
         </li>
-        <li>Clientes desde 2009</li>
+        <li class="trust-since">Clientes desde 2009</li>
         <li class="trust-hours">${hoursInline()}</li>
       </ul>
     </div>
@@ -726,7 +728,7 @@ ${relatedCards(service)}
         )}" target="_blank" rel="noopener" class="btn btn-dark">Como chegar</a>
         <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-whatsapp" data-service="${esc(service.name)}">
           ${WA_ICON}
-          <span>WhatsApp</span>
+          <span>Chamar no WhatsApp</span>
         </a>
         <a href="/#localizacao" class="btn btn-outline">Ver no mapa</a>
       </div>
@@ -1294,6 +1296,81 @@ function sitelinksCsv() {
 }
 
 /* ========================================================================== */
+/* Página 404                                                                  */
+/* ========================================================================== */
+
+/**
+ * O GitHub Pages serve /404.html, com status 404, para qualquer endereço que
+ * não existe. Sem ele a pessoa via a página genérica do GitHub — sem menu, sem
+ * WhatsApp, sem caminho de volta — justamente quem chegou por um link antigo
+ * ou digitado errado. Mesmo cabeçalho, rodapé e tags das outras páginas (os
+ * cliques no WhatsApp contam igual), com noindex: não é conteúdo para busca.
+ */
+function notFoundPage() {
+  const popular = SERVICES.slice(0, 4)
+    .map((s) => `        <a href="/${s.slug}/" class="related-card">
+          <span class="related-name">${esc(s.name)}</span>
+          <span class="related-text">${esc(s.price.duration)} · ${brl(s.price.single)}</span>
+        </a>`)
+    .join("\n");
+
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+${GTAG}
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Página não encontrada | ${esc(SITE.name)}</title>
+<meta name="description" content="Esta página não existe mais. Veja as técnicas de massagem de Terezinha Ramos no Menino Deus, em Porto Alegre, ou agende pelo WhatsApp.">
+<meta name="robots" content="noindex, follow">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/img/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#1b1a17">
+
+<link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body data-service="(404)">
+
+<a class="skip-link" href="#inicio">Pular para o conteúdo</a>
+
+${header()}
+
+<main id="inicio">
+
+  <section class="section not-found">
+    <div class="container">
+      <p class="eyebrow">Erro 404</p>
+      <h1>Esta página não foi encontrada</h1>
+      <p class="lead">O endereço pode ter mudado ou ter sido digitado com algum erro. As técnicas, os valores e o agendamento continuam a um clique daqui.</p>
+      <div class="location-actions">
+        <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener" class="btn btn-whatsapp">
+          ${WA_ICON}
+          <span>Agendar no WhatsApp</span>
+        </a>
+        <a href="/" class="btn btn-outline">Ir para a página inicial</a>
+      </div>
+      <h2>Técnicas mais procuradas</h2>
+      <div class="related-grid">
+${popular}
+      </div>
+      <p class="service-note"><a href="/#servicos">Ver todas as técnicas e valores →</a></p>
+    </div>
+  </section>
+
+</main>
+
+${footer(null)}
+</body>
+</html>
+`;
+}
+
+/* ========================================================================== */
 /* Execução                                                                    */
 /* ========================================================================== */
 
@@ -1311,6 +1388,9 @@ SERVICES.forEach((s) => write(path.join(s.slug, "index.html"), servicePage(s)));
 
 console.log("Agendamento:");
 write(path.join(SCHEDULING.slug, "index.html"), schedulingPage());
+
+console.log("404:");
+write("404.html", notFoundPage());
 
 console.log("Home:");
 const indexPath = path.join(ROOT, "index.html");
