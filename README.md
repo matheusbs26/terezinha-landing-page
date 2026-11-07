@@ -2,11 +2,12 @@
 
 Landing page da Massoterapeuta Terezinha Ramos.
 
-Site estático (HTML/CSS/JS puro, sem build) pensado para conversão via WhatsApp:
-hero com foto real de atendimento, seção sobre, benefícios, serviços, galeria,
-fotos do consultório (recepção e salas),
-link para avaliações no Google, mapa/localização do consultório e botão
-flutuante de WhatsApp.
+Site estático (HTML/CSS/JS puro, sem build) pensado para conversão via WhatsApp.
+A home segue a ordem da decisão de quem chega por anúncio: hero (quem, o quê,
+onde, nota do Google e botão) → técnicas com preço → protocolos → avaliações
+→ sobre a Terezinha e diferenciais → galeria → como funciona → fotos do
+consultório → localização → convite final. Botão flutuante de WhatsApp em
+todas as páginas.
 
 ## Estrutura
 
@@ -21,6 +22,7 @@ reflexologia-podal/index.html
 massagem-pedras-quentes/index.html
 ventosaterapia/index.html
 reiki/index.html
+404.html                           # página de erro do Pages (gerada, noindex)
 assets/
   css/style.css
   js/script.js
@@ -87,7 +89,7 @@ serviços** muda. Nesse caso, edite `tools/services.js` e rode:
 node tools/build.js
 ```
 
-Isso reescreve as nove páginas, o grid de serviços e a lista do rodapé em
+Isso reescreve as nove páginas, a `/agendar/`, a `404.html`, o grid de serviços e a lista do rodapé em
 `index.html` (entre os marcadores `<!-- services:start -->`, `<!-- footer-services:start -->`
 e `<!-- jsonld:start -->`), o `sitemap.xml`, o `robots.txt` e os dois arquivos
 em `docs/`. O script valida os limites de caracteres dos sitelinks do Google Ads
