@@ -624,6 +624,43 @@ address { font-style: normal; }
   .gallery-item:hover img { transform: none; }
 }
 
+/* ========== Consultório ========== */
+/* Seis fotos do espaço em 3×2, cada uma com legenda sobre um degradê escuro
+   na base — legível sobre as paredes claras das salas. */
+.studio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.studio-item {
+  position: relative;
+  margin: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4/5;
+}
+.studio-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.studio-item:hover img { transform: scale(1.04); }
+.studio-item figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 44px 18px 16px;
+  background: linear-gradient(180deg, rgba(27, 26, 23, 0) 0%, rgba(27, 26, 23, 0.72) 100%);
+  color: var(--cream);
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-item img { transition: none; }
+  .studio-item:hover img { transform: none; }
+}
+
 /* ========== Reviews ========== */
 .google-mark { width: 40px; height: 40px; margin: 0 auto 16px; }
 #avaliacoes .section-head { margin-bottom: 48px; }
@@ -1153,6 +1190,9 @@ address { font-style: normal; }
   .gallery-item.is-featured { grid-row: auto; aspect-ratio: 4/5; }
   .gallery-item:last-child { grid-column: span 2; aspect-ratio: 4/3; }
   .gallery-item.is-portrait:last-child img { object-position: 50% 30%; }
+
+  .studio-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .studio-item figcaption { padding: 36px 12px 10px; font-size: 0.8rem; }
 
   .info-aside { padding: 26px 24px; }
   .location-strip { padding: 32px 26px; }

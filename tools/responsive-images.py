@@ -31,6 +31,15 @@ PHOTOS = [
     "portrait-about", "portrait-laugh3", "portrait-smile",
 ]
 
+# Fotos do consultório (seção #consultorio da home). Vieram do celular com
+# 1086 px de largura: a própria original já faz o papel da versão de 1080.
+STUDIO_WIDTHS = (480, 800)
+STUDIO_PHOTOS = [
+    "consultorio-recepcao", "consultorio-espera", "consultorio-sala",
+    "consultorio-sala-equipamentos", "consultorio-sala-clara",
+    "consultorio-detalhe",
+]
+
 # O logo aparece com 46 px (cabeçalho) e 64 px (rodapé) de altura: a metade
 # do arquivo original (368 px) já cobre telas de densidade 3x.
 LOGO_WIDTHS = (184,)
@@ -57,4 +66,6 @@ def generate(name, widths):
 if __name__ == "__main__":
     for photo in PHOTOS:
         generate(photo, PHOTO_WIDTHS)
+    for photo in STUDIO_PHOTOS:
+        generate(photo, STUDIO_WIDTHS)
     generate("logo-mark", LOGO_WIDTHS)

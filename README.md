@@ -4,6 +4,7 @@ Landing page da Massoterapeuta Terezinha Ramos.
 
 Site estático (HTML/CSS/JS puro, sem build) pensado para conversão via WhatsApp:
 hero com foto real de atendimento, seção sobre, benefícios, serviços, galeria,
+fotos do consultório (recepção e salas),
 link para avaliações no Google, mapa/localização do consultório e botão
 flutuante de WhatsApp.
 

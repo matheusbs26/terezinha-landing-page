@@ -252,6 +252,7 @@ const header = () => `<header class="site-header" id="topo">
       <a href="/#sobre">Sobre</a>
       <a href="/#servicos">Serviços</a>
       <a href="/#galeria">Galeria</a>
+      <a href="/#consultorio">Consultório</a>
       <a href="/#localizacao">Localização</a>
       <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-small nav-cta">
         ${WA_ICON}
@@ -283,6 +284,7 @@ const footer = (currentSlug) => `<footer class="site-footer">
       <a href="/#sobre">Sobre</a>
       <a href="/#servicos">Serviços</a>
       <a href="/#galeria">Galeria</a>
+      <a href="/#consultorio">Consultório</a>
       <a href="/#localizacao">Localização</a>
       <a href="/agendar/">Agendar</a>
     </nav>
