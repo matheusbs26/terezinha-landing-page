@@ -332,7 +332,10 @@ const business = {
     postalCode: SITE.zip,
     addressCountry: "BR"
   },
+  geo: { "@type": "GeoCoordinates", ...SITE.geo },
+  hasMap: SITE.googleMaps,
   areaServed: { "@type": "City", name: SITE.city },
+  sameAs: [SITE.googleProfile],
   openingHoursSpecification: SITE.hours.map((h) => ({
     "@type": "OpeningHoursSpecification",
     dayOfWeek: h.days,

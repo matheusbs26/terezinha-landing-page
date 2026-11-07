@@ -23,6 +23,14 @@ const SITE = {
   city: "Porto Alegre",
   state: "RS",
   zip: "90880-480",
+  /* Perfil da Empresa no Google, pelo ID do Knowledge Graph (estável, ao
+     contrário do link curto de compartilhar). Vai no sameAs do JSON-LD para o
+     Google ligar o site ao perfil que aparece no Maps e na busca. */
+  googleProfile: "https://www.google.com/search?kgmid=/g/11jt5hxmhg",
+  /* Ficha do Maps pelo CID e coordenadas do alfinete do perfil (lidas da
+     própria ficha, não geocodificadas pelo endereço). Alimentam hasMap e geo. */
+  googleMaps: "https://maps.google.com/?cid=15470961996013149620",
+  geo: { latitude: -30.0600587, longitude: -51.2250271 },
 
   /* Horário de atendimento. Fonte única: alimenta o texto visível nas páginas e
      o openingHoursSpecification do JSON-LD — é dele que o Google tira o horário
