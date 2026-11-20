@@ -225,9 +225,15 @@ test("todo link de WhatsApp vai para o número da Terezinha com mensagem pronta"
   }
 });
 
-test("o Sonar ignora na duplicação exatamente as páginas geradas pelo build", () => {
+test("o Sonar ignora na duplicação exatamente as páginas geradas pelo build e o arquivo de dados", () => {
   const { SERVICES } = require("../tools/services.js");
-  const generated = [...SERVICES.map((s) => `${s.slug}/index.html`), "agendar/index.html", "404.html"].sort();
+  // tools/services.js é dado (os mesmos campos repetidos por técnica), não lógica.
+  const generated = [
+    ...SERVICES.map((s) => `${s.slug}/index.html`),
+    "agendar/index.html",
+    "404.html",
+    "tools/services.js"
+  ].sort();
   const props = read(".sonarcloud.properties");
   // sonar.exclusions tiraria as páginas de TODA a análise, não só da duplicação.
   assert.doesNotMatch(props, /^sonar\.exclusions=/m, "use só sonar.cpd.exclusions");
