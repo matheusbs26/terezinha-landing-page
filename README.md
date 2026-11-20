@@ -32,9 +32,11 @@ assets/
 docs/
   google-ads-sitelinks.md   # textos prontos para colar no Google Ads
   google-ads-sitelinks.csv  # mesma coisa, para importar no Google Ads Editor
+  medicao-ga4.md            # eventos, valor da conversão e config. do GA4
 tools/
   services.js     # conteúdo dos serviços (fonte única de verdade)
   build.js        # gera as páginas a partir de services.js
+  lastmod.json    # hash do conteúdo + data da última mudança (lastmod)
   responsive-images.py  # gera as versões menores das fotos (Pillow)
 _config.yml       # o que o GitHub Pages NÃO publica (README, docs/, tools/…)
 sitemap.xml
@@ -95,22 +97,57 @@ e `<!-- jsonld:start -->`), o `sitemap.xml`, o `robots.txt` e os dois arquivos
 em `docs/`. O script valida os limites de caracteres dos sitelinks do Google Ads
 e falha se algum texto passar do permitido.
 
+Regras de SEO que o build aplica (e o `npm test` confere):
+
+- **Links entre técnicas:** em `intro` e nas respostas do `faq`, escreva
+  `[massagem terapêutica](/massagem-terapeutica/)` para virar link. O build
+  falha se o slug não existir. O campo `related` define quais técnicas
+  aparecem primeiro em "Outras técnicas".
+- **Description:** no máximo 160 caracteres, e única por página.
+- **`lastmod` do sitemap:** muda só quando muda o conteúdo relevante da
+  página: título, description, `<main>` e JSON-LD.
+  - Cabeçalho, rodapé, CSS e scripts não alteram a data.
+  - `tools/lastmod.json` guarda, por página, um hash desse conteúdo e a data
+    em que ele mudou.
+  - Rode o build no dia da alteração, inclusive depois de editar a home à
+    mão, e faça o commit do `lastmod.json` junto.
+- **JSON-LD:** `WebSite` na home e, em todas as páginas, o negócio com `geo`,
+  `hasMap`, `sameAs`, horário, `logo` e `priceRange` (calculado dos preços
+  publicados).
+
 Editar as páginas geradas à mão funciona, mas a próxima execução do build
 sobrescreve as alterações — prefira mexer em `tools/services.js`.
 
 ## Conteúdo a revisar
 
-- **Serviços**: a lista em `#servicos` (Relaxante, Terapêutica, Drenagem
-  Linfática, Drenagem Pós-Operatória, Modeladora, Reflexologia Podal, Pedras
-  Quentes, Ventosaterapia, Reiki) foi montada a partir de termos comuns de
-  massoterapia e do que aparece nas avaliações reais do Google. Sem preço fixo.
-  Vale confirmar com a Terezinha se a lista bate exatamente com o que ela
-  oferece.
+- **Serviços e preços**: as nove técnicas e os três protocolos, com duração,
+  sessão avulsa e pacotes, vêm de `tools/services.js` (fonte única).
+- **Radiofrequência e endermologia**: o responsável pelo projeto informa que a
+  Terezinha oferece os dois. Eles ainda não têm página nem preço no site.
+  - Para criar as páginas, é preciso confirmar: duração, valores da sessão e
+    dos pacotes, indicações e contraindicações, aparelho usado e fotos reais
+    do atendimento.
+  - Feito isso, basta acrescentar os serviços em `services.js` e rodar o
+    build.
+- **Fotos por técnica**: reflexologia podal, pedras quentes e ventosaterapia
+  usam fotos genéricas de massagem nas costas, com alt que descreve o que
+  aparece nelas.
+  - Faltam fotos reais de cada técnica: pés, pedras posicionadas e ventosas
+    aplicadas.
+  - Também não há foto específica de Reiki nem de drenagem pós-operatória.
 - **Textos das páginas de cada técnica**: descrevem as técnicas de forma
   genérica (indicações, como é a sessão, dúvidas frequentes) e evitam prometer
-  resultado, citar duração ou preço, justamente porque esses detalhes não foram
-  confirmados. Vale a Terezinha ler e ajustar o que não corresponder ao
-  atendimento dela — principalmente as perguntas frequentes.
+  resultado. Vale a Terezinha ler e ajustar o que não corresponder ao
+  atendimento dela, principalmente as perguntas frequentes.
+- **Instagram**: o único perfil oficial é
+  [@terezinhamassoterapia](https://www.instagram.com/terezinhamassoterapia/).
+  Ele está no `sameAs` e no rodapé, a partir de `SITE.instagram` em
+  `tools/services.js`.
+  - O perfil antigo (@mtekaramos) e a marca anterior (MOOREA) não
+    representam a identidade atual.
+  - Um teste impede que voltem ao site.
+- **Medição**: eventos, valor da conversão e configuração pendente no GA4 em
+  `docs/medicao-ga4.md`.
 - **Avaliações**: `#avaliacoes` traz 6 depoimentos reais extraídos do perfil
   do Google Meu Negócio (5,0 ★, 28 avaliações), com link para ver todas.
 - **WhatsApp/endereço**: já preenchidos com os dados informados
