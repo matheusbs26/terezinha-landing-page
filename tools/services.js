@@ -11,6 +11,15 @@
  *   texto do sitelink  -> 25 caracteres
  *   linhas de descrição -> 35 caracteres cada
  * O build valida esses limites e falha se algum campo passar.
+ *
+ * Links entre técnicas: em `intro` e nas respostas do `faq`, o trecho
+ * [texto](/slug/) vira um link para a página da outra técnica. No JSON-LD
+ * sai só o texto. O build falha se o slug não existir.
+ *
+ * `related`: técnicas mais próximas desta, na ordem em que aparecem primeiro
+ * em "Outras técnicas". As demais vêm depois, na ordem de SERVICES.
+ *
+ * `description`: até 160 caracteres, que é o que o Google mostra sem cortar.
  */
 
 const SITE = {
@@ -30,6 +39,11 @@ const SITE = {
   /* Ficha do Maps pelo CID e coordenadas do alfinete do perfil (lidas da
      própria ficha, não geocodificadas pelo endereço). Alimentam hasMap e geo. */
   googleMaps: "https://maps.google.com/?cid=15470961996013149620",
+  /* Único Instagram oficial (confirmado pelo Matheus em 2026-11-20). O
+     @mtekaramos e a marca MOOREA são antigos e não devem ser usados. Alimenta
+     o sameAs do JSON-LD e o link do rodapé. */
+  instagram: "https://www.instagram.com/terezinhamassoterapia/",
+  instagramHandle: "@terezinhamassoterapia",
   geo: { latitude: -30.0600587, longitude: -51.2250271 },
 
   /* Horário de atendimento. Fonte única: alimenta o texto visível nas páginas e
@@ -167,7 +181,7 @@ const SERVICES = [
     faq: [
       {
         q: "Qual a diferença entre massagem relaxante e terapêutica?",
-        a: "A relaxante trabalha o corpo todo com um toque mais suave e contínuo, com foco em desacelerar. A terapêutica é mais direcionada: age nos pontos de dor e tensão, com mais pressão e técnica específica. Na dúvida, a Terezinha indica a melhor opção para o seu caso."
+        a: "A relaxante trabalha o corpo todo com um toque mais suave e contínuo, com foco em desacelerar. A [massagem terapêutica](/massagem-terapeutica/) é mais direcionada: age nos pontos de dor e tensão, com mais pressão e técnica específica. Na dúvida, a Terezinha indica a melhor opção para o seu caso."
       },
       {
         q: "Quanto custa a sessão?",
@@ -178,6 +192,7 @@ const SERVICES = [
         a: "Não. Venha com uma roupa confortável e, se puder, reserve um tempinho depois da sessão para não sair correndo."
       }
     ],
+    related: ["massagem-pedras-quentes", "reflexologia-podal", "reiki", "massagem-terapeutica"],
     review: REVIEWS.sidnei,
     sitelink: {
       text: "Massagem Relaxante",
@@ -261,6 +276,7 @@ const SERVICES = [
         a: "Muita gente atendida no consultório convive com dores e histórico de coluna. Comente o seu caso no primeiro contato e traga as orientações do seu médico ou fisioterapeuta — o trabalho é sempre adaptado a elas."
       }
     ],
+    related: ["ventosaterapia", "massagem-pedras-quentes", "massagem-relaxante"],
     review: REVIEWS.matheus,
     sitelink: {
       text: "Massagem Terapêutica",
@@ -331,7 +347,7 @@ const SERVICES = [
     faq: [
       {
         q: "A drenagem linfática emagrece?",
-        a: "Não. A drenagem trabalha a retenção de líquidos e a sensação de inchaço, não a gordura corporal. Para contorno corporal, a técnica indicada é a massagem modeladora — e muitas vezes as duas se complementam."
+        a: "Não. A drenagem trabalha a retenção de líquidos e a sensação de inchaço, não a gordura corporal. Para contorno corporal, a técnica indicada é a [massagem modeladora](/massagem-modeladora/) — e muitas vezes as duas se complementam."
       },
       {
         q: "Com que frequência devo fazer?",
@@ -342,6 +358,7 @@ const SERVICES = [
         a: "Sim. Beber bastante água ao longo do dia ajuda o corpo no processo e potencializa a sensação de leveza."
       }
     ],
+    related: ["drenagem-pos-operatoria", "massagem-modeladora"],
     review: REVIEWS.ana,
     sitelink: {
       text: "Drenagem Linfática",
@@ -369,7 +386,7 @@ const SERVICES = [
     heroSub:
       "Um trabalho delicado para a fase de recuperação, feito com hora marcada, em ambiente reservado e sempre dentro da orientação da sua equipe médica.",
     image: "assets/img/massage-5.jpg",
-    imageAlt: "Consultório de massoterapia preparado para atendimento pós-operatório",
+    imageAlt: "Terezinha Ramos em atendimento no consultório do Menino Deus, com luz natural",
     waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Drenagem Pós-Operatória.",
     intro: [
       "Depois de uma cirurgia, o corpo precisa de tempo e de cuidado. A drenagem pós-operatória (que muita gente procura como massagem pós-operatória) é um trabalho delicado, feito para acompanhar essa fase e ajudar a lidar com o inchaço e o desconforto da recuperação.",
@@ -425,6 +442,7 @@ const SERVICES = [
         a: "Depende do procedimento e da orientação médica. Em geral é um acompanhamento em série, com sessões mais próximas no início da recuperação."
       }
     ],
+    related: ["drenagem-linfatica", "massagem-modeladora"],
     review: REVIEWS.tais,
     sitelink: {
       text: "Drenagem Pós-Operatória",
@@ -446,7 +464,7 @@ const SERVICES = [
     h1: "Massagem Modeladora em Porto Alegre",
     title: "Massagem Modeladora em Porto Alegre | Terezinha Ramos",
     description:
-      "Massagem modeladora no Menino Deus, Porto Alegre. Movimentos firmes que ativam a circulação e trabalham o contorno corporal, com protocolo combinado. Agende pelo WhatsApp.",
+      "Massagem modeladora no Menino Deus, Porto Alegre. Movimentos firmes que ativam a circulação e trabalham o contorno corporal. Agende pelo WhatsApp.",
     cardText: "Tratamento estético que ativa a circulação e trabalha o contorno corporal.",
     heroSub:
       "Movimentos firmes e vigorosos nas regiões combinadas com você, ativando a circulação local e trabalhando o contorno corporal sessão após sessão.",
@@ -496,7 +514,7 @@ const SERVICES = [
     faq: [
       {
         q: "Modeladora ou drenagem linfática?",
-        a: "A drenagem trabalha a retenção de líquidos com toque leve; a modeladora é mais firme e foca no contorno corporal. É comum combinar as duas num mesmo protocolo — a Terezinha indica o melhor caminho para o seu objetivo."
+        a: "A [drenagem linfática](/drenagem-linfatica/) trabalha a retenção de líquidos com toque leve; a modeladora é mais firme e foca no contorno corporal. É comum combinar as duas num mesmo protocolo — a Terezinha indica o melhor caminho para o seu objetivo."
       },
       {
         q: "A massagem modeladora deixa roxo?",
@@ -507,6 +525,7 @@ const SERVICES = [
         a: "Varia de pessoa para pessoa. É um trabalho progressivo, que depende de regularidade e dos hábitos do dia a dia."
       }
     ],
+    related: ["drenagem-linfatica", "drenagem-pos-operatoria"],
     review: REVIEWS.bruna,
     sitelink: {
       text: "Massagem Modeladora",
@@ -528,12 +547,13 @@ const SERVICES = [
     h1: "Reflexologia Podal em Porto Alegre",
     title: "Reflexologia Podal em Porto Alegre | Terezinha Ramos",
     description:
-      "Reflexologia podal no Menino Deus, Porto Alegre. Estímulo dos pontos reflexos dos pés para relaxamento e bem-estar geral, sem precisar tirar a roupa. Agende pelo WhatsApp.",
+      "Reflexologia podal no Menino Deus, Porto Alegre: pressão nos pontos reflexos dos pés para relaxar, sem precisar tirar a roupa. Agende pelo WhatsApp.",
     cardText: "Estímulo de pontos reflexos dos pés para equilíbrio e bem-estar geral.",
     heroSub:
       "Todo o trabalho acontece nos pés: pressão precisa, ponto a ponto, numa das técnicas mais discretas e restauradoras do consultório.",
     image: "assets/img/massage-1.jpg",
-    imageAlt: "Atendimento de reflexologia podal com Terezinha Ramos",
+    /* Não há foto de reflexologia: o alt descreve o que a foto mostra. */
+    imageAlt: "Terezinha Ramos em atendimento de massoterapia no consultório do Menino Deus",
     waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Reflexologia Podal.",
     intro: [
       "A reflexologia podal parte da ideia de que os pés concentram pontos reflexos ligados a diferentes regiões do corpo. A sessão trabalha esses pontos com pressão precisa, dedo a dedo, região a região.",
@@ -584,9 +604,10 @@ const SERVICES = [
       },
       {
         q: "Posso combinar com outra técnica?",
-        a: "Sim. É comum encaixar a reflexologia ao fim de uma sessão de massagem relaxante, por exemplo. Basta combinar no agendamento."
+        a: "Sim. É comum encaixar a reflexologia ao fim de uma sessão de [massagem relaxante](/massagem-relaxante/), por exemplo. Basta combinar no agendamento."
       }
     ],
+    related: ["massagem-relaxante", "reiki"],
     review: REVIEWS.raquel,
     sitelink: {
       text: "Reflexologia Podal",
@@ -613,7 +634,8 @@ const SERVICES = [
     heroSub:
       "Pedras aquecidas posicionadas sobre o corpo e deslizadas pela musculatura: o calor prepara, o toque finaliza e o relaxamento vai mais fundo.",
     image: "assets/img/massage-2.jpg",
-    imageAlt: "Massagem com pedras quentes realizada por Terezinha Ramos",
+    /* A foto não mostra as pedras: o alt descreve o que ela mostra. */
+    imageAlt: "Terezinha Ramos massageando as costas de uma cliente no consultório",
     waMessage:
       "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Massagem com Pedras Quentes.",
     intro: [
@@ -661,13 +683,14 @@ const SERVICES = [
       },
       {
         q: "Serve para quem tem muita dor?",
-        a: "O calor costuma ajudar bastante em musculatura tensionada. Se a sua queixa for uma dor específica e persistente, vale conversar sobre combinar com a massagem terapêutica."
+        a: "O calor costuma ajudar bastante em musculatura tensionada. Se a sua queixa for uma dor específica e persistente, vale conversar sobre combinar com a [massagem terapêutica](/massagem-terapeutica/)."
       },
       {
         q: "Posso fazer no verão?",
         a: "Pode. A procura é maior no inverno, mas a técnica funciona o ano todo — o que muda é o tempo de contato do calor com o corpo."
       }
     ],
+    related: ["massagem-relaxante", "massagem-terapeutica"],
     review: REVIEWS.sidnei,
     sitelink: {
       text: "Pedras Quentes",
@@ -689,17 +712,18 @@ const SERVICES = [
     h1: "Ventosaterapia em Porto Alegre",
     title: "Ventosaterapia em Porto Alegre | Terezinha Ramos",
     description:
-      "Ventosaterapia no Menino Deus, Porto Alegre. Ventosas aplicadas sobre a pele para soltar a musculatura tensionada e estimular a circulação local. Agende pelo WhatsApp.",
+      "Ventosaterapia no Menino Deus, Porto Alegre. Ventosas que soltam a musculatura tensionada e estimulam a circulação local. Agende pelo WhatsApp.",
     cardText:
       "Ventosas que soltam a musculatura tensionada e estimulam a circulação local.",
     heroSub:
       "A sucção das ventosas alcança a tensão que o toque sozinho demora a soltar — muito usada em costas e ombros, sozinha ou dentro de uma sessão terapêutica.",
     image: "assets/img/massage-4.jpg",
-    imageAlt: "Aplicação de ventosaterapia por Terezinha Ramos",
+    /* A foto não mostra ventosas: o alt descreve o que ela mostra. */
+    imageAlt: "Terezinha Ramos trabalhando a musculatura das costas com o antebraço",
     waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para a Ventosaterapia.",
     intro: [
       "Na ventosaterapia, copos de vidro ou silicone criam uma sucção sobre a pele. Essa pressão negativa ajuda a soltar a musculatura tensionada e estimula a circulação local.",
-      "As ventosas podem ficar paradas em pontos específicos ou deslizar pela região trabalhada. É uma técnica muito usada em costas e ombros, sozinha ou combinada com a massagem terapêutica."
+      "As ventosas podem ficar paradas em pontos específicos ou deslizar pela região trabalhada. É uma técnica muito usada em costas e ombros, sozinha ou combinada com a [massagem terapêutica](/massagem-terapeutica/)."
     ],
     indications: [
       "Tensão persistente nas costas e nos ombros",
@@ -751,6 +775,7 @@ const SERVICES = [
         a: "Sim, é uma combinação muito comum: a ventosa prepara a região e a massagem terapêutica finaliza o trabalho."
       }
     ],
+    related: ["massagem-terapeutica", "massagem-pedras-quentes"],
     review: REVIEWS.matheus,
     sitelink: {
       text: "Ventosaterapia",
@@ -777,7 +802,7 @@ const SERVICES = [
     heroSub:
       "Uma pausa silenciosa: sem pressão sobre o corpo, sem precisar tirar a roupa. Sozinha ou como fechamento de uma sessão de massagem.",
     image: "assets/img/massage-5.jpg",
-    imageAlt: "Ambiente reservado para sessão de Reiki no consultório",
+    imageAlt: "Terezinha Ramos em atendimento, com as mãos apoiadas nas costas da cliente",
     waMessage: "Olá, Terezinha! Vim pelo site e gostaria de saber os horários disponíveis para o Reiki.",
     intro: [
       "O Reiki é uma prática de imposição das mãos, feita em silêncio ou com música suave, com a pessoa deitada e confortável.",
@@ -833,6 +858,7 @@ const SERVICES = [
         a: "Sim. Muita gente finaliza a sessão de massagem com alguns minutos de Reiki. Basta combinar no agendamento."
       }
     ],
+    related: ["massagem-relaxante", "reflexologia-podal"],
     review: REVIEWS.bruna,
     sitelink: {
       text: "Reiki",

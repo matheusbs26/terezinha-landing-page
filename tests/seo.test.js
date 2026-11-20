@@ -51,6 +51,87 @@ test("cada página tem um H1, title, description e canonical para a própria URL
   }
 });
 
+test("as descriptions cabem no snippet do Google e não se repetem entre páginas", () => {
+  const seen = new Map();
+  for (const page of PAGES) {
+    const desc = read(page).match(/<meta name="description" content="([^"]+)">/)[1];
+    assert.ok(desc.length <= 160, `${page}: description com ${desc.length} caracteres (máx. 160)`);
+    assert.ok(!seen.has(desc), `${page}: mesma description de ${seen.get(desc)}`);
+    seen.set(desc, page);
+  }
+});
+
+test("os títulos são únicos entre as páginas", () => {
+  const seen = new Map();
+  for (const page of PAGES) {
+    const title = read(page).match(/<title>([^<]+)<\/title>/)[1];
+    assert.ok(!seen.has(title), `${page}: mesmo <title> de ${seen.get(title)}`);
+    seen.set(title, page);
+  }
+});
+
+test("o sitemap traz lastmod em data válida e que não está no futuro", () => {
+  const sitemap = read("sitemap.xml");
+  const locs = all(sitemap, /<loc>([^<]+)<\/loc>/g);
+  const dates = all(sitemap, /<lastmod>([^<]+)<\/lastmod>/g);
+  assert.equal(dates.length, locs.length, "toda URL do sitemap precisa de <lastmod>");
+  const tomorrow = new Date(Date.now() + 864e5).toISOString().slice(0, 10);
+  for (const date of dates) {
+    assert.match(date, /^\d{4}-\d{2}-\d{2}$/, `lastmod fora do formato AAAA-MM-DD: ${date}`);
+    assert.ok(!Number.isNaN(Date.parse(date)) && date <= tomorrow, `lastmod inválido ou no futuro: ${date}`);
+  }
+});
+
+test("a home declara o WebSite e o negócio com a faixa de preço publicada", () => {
+  const { SERVICES, SPECIALS } = require("../tools/services.js");
+  const block = read("index.html").match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1];
+  const graph = JSON.parse(block)["@graph"];
+  const site = graph.find((n) => n["@type"] === "WebSite");
+  assert.ok(site, "home sem WebSite no JSON-LD");
+  assert.equal(site.url, `${SITE}/`);
+  const business = graph.find((n) => n["@type"] === "HealthAndBeautyBusiness");
+  const prices = [...SERVICES, ...SPECIALS].map((s) => s.price.single);
+  assert.equal(business.priceRange, `R$ ${Math.min(...prices)}-${Math.max(...prices)}`);
+});
+
+test("os links entre técnicas no texto foram convertidos e não sobrou marcação", () => {
+  const { SERVICES } = require("../tools/services.js");
+  for (const s of SERVICES) {
+    const html = read(`${s.slug}/index.html`);
+    assert.doesNotMatch(html, /\]\(\/[a-z0-9-]+\/\)/, `${s.slug}: marcação [texto](/slug/) sobrou na página`);
+    // A primeira técnica relacionada é o primeiro card de "Outras técnicas".
+    if (s.related && s.related.length) {
+      const section = html.split('id="outras-tecnicas"')[1];
+      const first = section.match(/class="related-card" href="\/([^/]+)\/"/)[1];
+      assert.equal(first, s.related[0], `${s.slug}: "Outras técnicas" não começa pela mais relacionada`);
+    }
+  }
+});
+
+test("todo link de Instagram vai só para o perfil oficial, que está no sameAs", () => {
+  const OFFICIAL = "https://www.instagram.com/terezinhamassoterapia/";
+  for (const page of [...PAGES, "404.html"]) {
+    const html = read(page);
+    // Perfil e marca antigos não podem voltar ao site.
+    assert.doesNotMatch(html, /mtekaramos|moorea/i, `${page}: referência ao Instagram ou à marca antigos`);
+    const links = all(html, /href="(https?:\/\/(?:www\.)?instagram\.com[^"]*)"/g);
+    assert.ok(links.length > 0, `${page}: rodapé sem o link do Instagram`);
+    for (const href of links) assert.equal(href, OFFICIAL, `${page}: Instagram fora do perfil oficial → ${href}`);
+    for (const block of all(html, /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+      const business = (JSON.parse(block)["@graph"] || []).find((n) => n["@type"] === "HealthAndBeautyBusiness");
+      if (business) assert.ok(business.sameAs.includes(OFFICIAL), `${page}: sameAs sem o Instagram oficial`);
+    }
+  }
+});
+
+test("as páginas indexáveis têm og:locale e og:site_name", () => {
+  for (const page of PAGES.filter((p) => p !== "politica-de-privacidade/index.html")) {
+    const html = read(page);
+    assert.ok(html.includes('<meta property="og:locale" content="pt_BR">'), `${page}: sem og:locale`);
+    assert.ok(html.includes('property="og:site_name"'), `${page}: sem og:site_name`);
+  }
+});
+
 test("só a política de privacidade é noindex, e ela fica fora do sitemap", () => {
   const sitemap = read("sitemap.xml");
   for (const page of PAGES) {

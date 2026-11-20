@@ -58,6 +58,32 @@ test("os arquivos gerados commitados são idênticos à saída do build", (t) =>
   );
 });
 
+test("o lastmod só muda quando muda o conteúdo da página, não o rodapé", (t) => {
+  const copy = fs.mkdtempSync(path.join(os.tmpdir(), "terezinha-lastmod-"));
+  t.after(() => fs.rmSync(copy, { recursive: true, force: true }));
+  fs.cpSync(ROOT, copy, { recursive: true, filter: (source) => !IGNORED_DIRS.has(path.basename(source)) });
+
+  const HOME = "https://terezinharamos.com.br/";
+  const registryFile = path.join(copy, "tools", "lastmod.json");
+  const build = () => execFileSync(process.execPath, [path.join(copy, "tools", "build.js")], { stdio: "pipe" });
+  const homeDate = () =>
+    fs.readFileSync(path.join(copy, "sitemap.xml"), "utf8").match(new RegExp(`<loc>${HOME}</loc>\\s*<lastmod>([^<]+)`))[1];
+
+  // Data antiga conhecida, para distinguir "manteve" de "virou hoje".
+  const registry = JSON.parse(fs.readFileSync(registryFile, "utf8"));
+  registry[HOME].date = "2000-01-01";
+  fs.writeFileSync(registryFile, JSON.stringify(registry));
+
+  const index = path.join(copy, "index.html");
+  fs.writeFileSync(index, fs.readFileSync(index, "utf8").replace("Massoterapia com técnica, presença e cuidado.", "Rodapé alterado."));
+  build();
+  assert.equal(homeDate(), "2000-01-01", "mudança só no rodapé não deveria mudar o lastmod");
+
+  fs.writeFileSync(index, fs.readFileSync(index, "utf8").replace("Um espaço tranquilo para o seu cuidado", "Um espaço tranquilo e novo"));
+  build();
+  assert.equal(homeDate(), new Date().toLocaleDateString("sv-SE"), "mudança no conteúdo deveria atualizar o lastmod");
+});
+
 test("cada serviço tem página e entrada no sitemap", () => {
   const { SERVICES } = require("../tools/services.js");
   const sitemap = normalize(fs.readFileSync(path.join(ROOT, "sitemap.xml")));

@@ -999,6 +999,18 @@ address { font-style: normal; }
   color: var(--ink-soft);
 }
 
+/* Links para outras técnicas no meio do texto (gerados de [texto](/slug/) em
+   tools/services.js). Sublinhados, para não depender só da cor. */
+.info-grid p a,
+.faq-item p a {
+  color: var(--gold-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.info-grid p a:hover,
+.faq-item p a:hover { color: var(--ink); }
+
 .related-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

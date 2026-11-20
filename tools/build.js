@@ -18,6 +18,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { SITE, SERVICES, SPECIALS } = require("./services");
 
 const ROOT = path.join(__dirname, "..");
@@ -37,6 +38,45 @@ const esc = (s) =>
 
 const wa = (message) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
+
+/**
+ * Links entre técnicas escritos em services.js como [texto](/slug/).
+ * Devolve o texto em pedaços: { text } ou { text, href }. Lido com indexOf,
+ * sem regex, para não ter custo de backtracking em texto malformado.
+ */
+function inlineSegments(s) {
+  const str = String(s);
+  const out = [];
+  let pos = 0;
+  while (pos < str.length) {
+    const open = str.indexOf("[", pos);
+    const mid = open === -1 ? -1 : str.indexOf("](/", open);
+    const close = mid === -1 ? -1 : str.indexOf(")", mid);
+    if (close === -1) {
+      out.push({ text: str.slice(pos) });
+      break;
+    }
+    if (open > pos) out.push({ text: str.slice(pos, open) });
+    out.push({ text: str.slice(open + 1, mid), href: str.slice(mid + 2, close) });
+    pos = close + 1;
+  }
+  return out;
+}
+
+/** Texto escapado, com os [texto](/slug/) convertidos em <a>. */
+const linkify = (s) =>
+  inlineSegments(s)
+    .map((p) => (p.href ? `<a href="${esc(p.href)}">${esc(p.text)}</a>` : esc(p.text)))
+    .join("");
+
+/** Só o texto, sem a marcação dos links (para o JSON-LD). */
+const plain = (s) =>
+  inlineSegments(s)
+    .map((p) => p.text)
+    .join("");
+
+/* Limite de caracteres da meta description que o Google costuma mostrar. */
+const DESCRIPTION_MAX = 160;
 
 const WA_ICON =
   '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16.02 3C9.4 3 4 8.38 4 15c0 2.36.68 4.56 1.86 6.42L4 29l7.77-1.83A11.9 11.9 0 0 0 16.02 27C22.63 27 28 21.62 28 15S22.63 3 16.02 3Zm0 21.6c-2.02 0-3.9-.57-5.5-1.56l-.4-.24-4.6 1.08 1.1-4.48-.26-.42A9.53 9.53 0 0 1 6.4 15c0-5.3 4.32-9.6 9.62-9.6 5.3 0 9.6 4.3 9.6 9.6 0 5.3-4.3 9.6-9.6 9.6Zm5.27-7.19c-.29-.15-1.7-.84-1.96-.93-.26-.1-.46-.15-.65.14-.19.29-.75.93-.92 1.12-.17.19-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.44.12-.59.13-.13.29-.34.44-.5.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.65-1.56-.89-2.14-.23-.56-.47-.48-.65-.49h-.55c-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38 0 1.4 1.02 2.76 1.16 2.95.14.19 2 3.05 4.85 4.28.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.34Z"/></svg>';
@@ -184,7 +224,36 @@ function validate() {
 
     const img = path.join(ROOT, s.image);
     if (!fs.existsSync(img)) problems.push(`${s.slug}: imagem não encontrada — ${s.image}`);
+
+    if (s.description.length > DESCRIPTION_MAX) {
+      problems.push(
+        `${s.slug}: description tem ${s.description.length} caracteres (máx. ${DESCRIPTION_MAX})`
+      );
+    }
   });
+
+  /* Links no texto e técnicas relacionadas só podem apontar para técnicas que
+     existem — um slug errado viraria link quebrado na página publicada. */
+  SERVICES.forEach((s) => {
+    const texts = [...s.intro, ...s.faq.map((f) => f.a)];
+    texts.forEach((t) => {
+      for (const { href } of inlineSegments(t).filter((p) => p.href)) {
+        if (!/^\/[a-z0-9-]+\/$/.test(href)) {
+          problems.push(`${s.slug}: link mal escrito — ${href} (use /slug/)`);
+          continue;
+        }
+        const target = href.slice(1, -1);
+        if (!slugs.has(target)) problems.push(`${s.slug}: link para técnica inexistente — ${href}`);
+        if (target === s.slug) problems.push(`${s.slug}: link para a própria página — ${href}`);
+      }
+    });
+    (s.related || []).forEach((r) => {
+      if (!slugs.has(r) || r === s.slug) problems.push(`${s.slug}: related inválido — ${r}`);
+    });
+  });
+  if (SCHEDULING.description.length > DESCRIPTION_MAX) {
+    problems.push(`agendar: description tem ${SCHEDULING.description.length} caracteres (máx. ${DESCRIPTION_MAX})`);
+  }
 
   /* A página de agendamento também vira sitelink, e vale para ela o mesmo
      limite de caracteres do Google Ads. */
@@ -248,7 +317,7 @@ const header = () => `<header class="site-header" id="topo">
       ${picture("assets/img/logo-mark.png", "Terezinha Ramos Massoterapeuta", 'class="brand-logo"', SIZES.brand)}
     </a>
 
-    <nav class="main-nav" id="mainNav">
+    <nav class="main-nav" id="mainNav" aria-label="Menu principal">
       <a href="/#servicos">Serviços</a>
       <a href="/#avaliacoes">Avaliações</a>
       <a href="/#sobre">Sobre</a>
@@ -279,7 +348,7 @@ const footer = (currentSlug) => `<footer class="site-footer">
       ${picture("assets/img/logo-mark.png", "Terezinha Ramos Massoterapeuta", 'class="footer-logo"', SIZES.footer)}
       <p>Massoterapia com técnica, presença e cuidado.</p>
     </div>
-    <nav class="footer-nav">
+    <nav class="footer-nav" aria-label="Navegação do rodapé">
       <p class="footer-title">Navegação</p>
       <a href="/#servicos">Serviços</a>
       <a href="/#avaliacoes">Avaliações</a>
@@ -289,7 +358,7 @@ const footer = (currentSlug) => `<footer class="site-footer">
       <a href="/#localizacao">Localização</a>
       <a href="/agendar/">Agendar</a>
     </nav>
-    <nav class="footer-nav footer-services">
+    <nav class="footer-nav footer-services" aria-label="Massagens">
       <p class="footer-title">Massagens</p>
 <!-- footer-services:start -->
 ${footerServices(currentSlug)}
@@ -298,6 +367,7 @@ ${footerServices(currentSlug)}
     <div class="footer-contact">
       <p class="footer-title">Contato</p>
       <a href="${wa(WA_DEFAULT)}" target="_blank" rel="noopener">WhatsApp ${SITE.phoneLabel}</a>
+      <a href="${SITE.instagram}" target="_blank" rel="noopener">Instagram ${SITE.instagramHandle}</a>
       <address>${SITE.street} — ${SITE.district}, ${SITE.city} - ${SITE.state}</address>
       <p class="footer-hours">${SITE.hours.map((h) => `${esc(h.label)}, ${esc(h.time)}`).join("<br>")}</p>
     </div>
@@ -317,13 +387,20 @@ ${footerServices(currentSlug)}
 /* Dados estruturados                                                          */
 /* ========================================================================== */
 
+/* Faixa de preço da sessão avulsa, da técnica mais barata ao protocolo mais
+   caro — os mesmos valores publicados nas páginas, nada estimado. */
+const singlePrices = [...SERVICES, ...SPECIALS].map((s) => s.price.single);
+const PRICE_RANGE = `R$ ${Math.min(...singlePrices)}-${Math.max(...singlePrices)}`;
+
 const business = {
   "@type": "HealthAndBeautyBusiness",
   "@id": `${SITE.url}/#business`,
   name: SITE.name,
   url: `${SITE.url}/`,
   image: `${SITE.url}/assets/img/og-image.jpg`,
+  logo: `${SITE.url}/assets/img/logo-mark.png`,
   telephone: SITE.phone,
+  priceRange: PRICE_RANGE,
   address: {
     "@type": "PostalAddress",
     streetAddress: SITE.street,
@@ -335,7 +412,7 @@ const business = {
   geo: { "@type": "GeoCoordinates", ...SITE.geo },
   hasMap: SITE.googleMaps,
   areaServed: { "@type": "City", name: SITE.city },
-  sameAs: [SITE.googleProfile],
+  sameAs: [SITE.googleProfile, SITE.instagram],
   openingHoursSpecification: SITE.hours.map((h) => ({
     "@type": "OpeningHoursSpecification",
     dayOfWeek: h.days,
@@ -457,7 +534,7 @@ function serviceJsonLd(service) {
         mainEntity: service.faq.map((item) => ({
           "@type": "Question",
           name: item.q,
-          acceptedAnswer: { "@type": "Answer", text: item.a }
+          acceptedAnswer: { "@type": "Answer", text: plain(item.a) }
         }))
       }
     ]
@@ -468,6 +545,17 @@ function homeJsonLd() {
   return {
     "@context": "https://schema.org",
     "@graph": [
+      /* WebSite na home é de onde o Google tira o nome do site que aparece
+         acima do título nos resultados (em vez do domínio). */
+      {
+        "@type": "WebSite",
+        "@id": `${SITE.url}/#website`,
+        url: `${SITE.url}/`,
+        name: SITE.name,
+        alternateName: "Terezinha Ramos",
+        inLanguage: "pt-BR",
+        publisher: { "@id": `${SITE.url}/#business` }
+      },
       Object.assign({}, business, {
         hasOfferCatalog: {
           "@type": "OfferCatalog",
@@ -495,8 +583,18 @@ const jsonLdTag = (data) =>
 /* Página de serviço                                                           */
 /* ========================================================================== */
 
+/* As técnicas mais próximas primeiro (o `related` de services.js), depois as
+   demais: quem lê sobre drenagem linfática vê a pós-operatória e a modeladora
+   antes do Reiki. Todas continuam listadas, para nenhuma página ficar sem link. */
 function relatedCards(service) {
+  const rank = (s) => {
+    const i = (service.related || []).indexOf(s.slug);
+    return i === -1 ? Infinity : i;
+  };
   return SERVICES.filter((s) => s.slug !== service.slug)
+    .map((s, order) => ({ s, order }))
+    .sort((a, b) => rank(a.s) - rank(b.s) || a.order - b.order)
+    .map(({ s }) => s)
     .map(
       (s) => `        <a class="related-card" href="/${s.slug}/">
           <span class="related-name">${esc(s.name)}</span>
@@ -536,6 +634,8 @@ ${GTAG}
 <meta property="og:title" content="${esc(service.title)}">
 <meta property="og:description" content="${esc(service.description)}">
 <meta property="og:image" content="${SITE.url}/${service.image}">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="${esc(SITE.name)}">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
@@ -604,7 +704,7 @@ ${header()}
       <div class="reveal">
         <p class="eyebrow">A técnica</p>
         <h2>${esc(service.name)}</h2>
-${service.intro.map((p) => `        <p>${esc(p)}</p>`).join("\n")}
+${service.intro.map((p) => `        <p>${linkify(p)}</p>`).join("\n")}
         <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-dark" data-service="${esc(service.name)}">Tirar dúvidas no WhatsApp</a>
       </div>
       <div class="info-aside reveal">
@@ -690,7 +790,7 @@ ${service.faq
   .map(
     (item, i) => `        <details class="faq-item"${i === 0 ? " open" : ""}>
           <summary>${esc(item.q)}</summary>
-          <p>${esc(item.a)}</p>
+          <p>${linkify(item.a)}</p>
         </details>`
   )
   .join("\n")}
@@ -897,6 +997,8 @@ ${GTAG}
 <meta property="og:title" content="${esc(SCHEDULING.title)}">
 <meta property="og:description" content="${esc(SCHEDULING.description)}">
 <meta property="og:image" content="${SITE.url}/${SCHEDULING.image}">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="${esc(SITE.name)}">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
@@ -1127,16 +1229,74 @@ function injectBlock(source, name, content, file) {
 /* Sitemap, robots e documentação da campanha                                  */
 /* ========================================================================== */
 
+/** Data local de hoje no formato do sitemap (AAAA-MM-DD). */
+const today = () => new Date().toLocaleDateString("sv-SE");
+
+/**
+ * O que conta como alteração da página para a busca: título, description,
+ * o conteúdo de <main> e os dados estruturados. Cabeçalho, rodapé, CSS e
+ * scripts de medição ficam de fora — mexer neles não muda a página para quem
+ * pesquisa, e não pode mudar a data de todas as páginas de uma vez.
+ */
+function significantContent(html) {
+  const pick = (re) => [...html.matchAll(re)].map((m) => m[1]).join("\n");
+  return [
+    pick(/<title>([\s\S]*?)<\/title>/g),
+    pick(/<meta name="description" content="([^"]*)"/g),
+    pick(/<main[^>]*>([\s\S]*?)<\/main>/g),
+    pick(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)
+  ]
+    .join("\n")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/*
+ * Data da última alteração relevante de cada página, para o <lastmod>.
+ *
+ * O Google só usa o lastmod quando ele é confiável. Por isso a data não é a
+ * do build nem a do último commit do arquivo (que pode ter mexido só no
+ * rodapé): tools/lastmod.json guarda, por página, um hash do conteúdo
+ * relevante (significantContent) e a data em que ele mudou pela última vez.
+ *   - hash igual: mantém a data registrada;
+ *   - hash diferente (ou página nova): hoje, e o registro é atualizado.
+ * Vale também para a home, editada à mão: o build lê o arquivo que está no
+ * disco. Rode o build no mesmo dia da alteração, antes do commit.
+ */
+const LASTMOD_FILE = path.join(ROOT, "tools", "lastmod.json");
+
+function readLastmod() {
+  return fs.existsSync(LASTMOD_FILE) ? JSON.parse(fs.readFileSync(LASTMOD_FILE, "utf8")) : {};
+}
+
+function lastModified(relativeFile, loc, registry) {
+  const html = fs.readFileSync(path.join(ROOT, relativeFile), "utf8");
+  const hash = crypto.createHash("sha256").update(significantContent(html)).digest("hex").slice(0, 16);
+  const known = registry[loc];
+  if (known && known.hash === hash) return known.date;
+  registry[loc] = { hash, date: today() };
+  return registry[loc].date;
+}
+
 function sitemap() {
-  const urls = [`${SITE.url}/`]
-    .concat(SERVICES.map((s) => `${SITE.url}/${s.slug}/`))
-    .concat([`${SITE.url}/${SCHEDULING.slug}/`]);
+  const pages = [{ loc: `${SITE.url}/`, file: "index.html" }]
+    .concat(SERVICES.map((s) => ({ loc: `${SITE.url}/${s.slug}/`, file: `${s.slug}/index.html` })))
+    .concat([{ loc: `${SITE.url}/${SCHEDULING.slug}/`, file: `${SCHEDULING.slug}/index.html` }]);
+
+  const registry = readLastmod();
+  const entries = pages.map((p) => ({ ...p, lastmod: lastModified(p.file, p.loc, registry) }));
+
+  /* Registro só com as páginas atuais, em ordem estável (diff limpo). */
+  const ordered = Object.fromEntries(entries.map((e) => [e.loc, registry[e.loc]]));
+  fs.writeFileSync(LASTMOD_FILE, JSON.stringify(ordered, null, 2) + "\n");
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls
+${entries
   .map(
-    (u, i) => `  <url>
-    <loc>${u}</loc>
+    (p, i) => `  <url>
+    <loc>${p.loc}</loc>
+    <lastmod>${p.lastmod}</lastmod>
     <priority>${i === 0 ? "1.0" : "0.8"}</priority>
   </url>`
   )
